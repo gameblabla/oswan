@@ -1,0 +1,48 @@
+CC=kos-cc
+SH_DIRECTORY=/opt/toolchains/dc/sh-elf/bin/
+
+CFLAGS = -Ofast -Wunused-variable -I$(KOS_BASE)/addons/include/SDL -I$(KOS_BASE)/addons/include
+CFLAGS += ${DEFINES} 
+DEFINES = -DSOUND_ON -DSMOOTH -DDREAMCAST -DLAYERS
+LDFLAGS = -flto -Wl,--as-needed -Wl,--gc-sections -lSDL -lm
+OUTPUT = oswan.elf
+
+SOURCES = sdl/main_od.c sdl/menu.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
+OBJS = ${SOURCES:.c=.o}
+
+KOS_CFLAGS+=-DNO_FNMATCH
+KOS_CFLAGS+=-DNO_NETWORK
+KOS_CFLAGS+=-DNO_MIPMAPPING
+KOS_CFLAGS+=-DNO_NORMALS
+KOS_CFLAGS+=-DNO_COLORMATERIAL
+KOS_CFLAGS+=-DNO_LIGHTING
+KOS_CFLAGS+=-DNO_CLIP_PLANES
+KOS_CFLAGS+=-DNO_DITHERING
+KOS_CFLAGS+=-DFORCE_VERTEX_ARRAY
+KOS_CFLAGS+=-DALLOC_GRANULARITY=32
+KOS_CFLAGS+=-DNO_MEMORY_FUNCS
+KOS_CFLAGS+=-DMEM_CACHE
+KOS_CFLAGS+=-DUSE_MATH_INLINE
+KOS_CFLAGS+=-DAUTO_FLUSH_VRAM
+KOS_CFLAGS+=-DAUTO_FLUSH_LUMP
+KOS_CFLAGS+=-DNO_ALPHA_TEST
+KOS_CFLAGS+=-DINTOLERANT_MATH
+
+all : ${OUTPUT} scramble
+
+${OUTPUT}:${OBJS}
+	${CC} -o ${OUTPUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
+	
+clean:
+	rm emu/*.o
+	rm emu/cpu/*.o
+	rm sdl/*.o
+	rm ${OUTPUT}
+	rm ${OUTPUT}.prg.tns
+	rm ${OUTPUT}.tns
+	
+scramble:
+	${SH_DIRECTORY}sh-elf-objcopy -R .stack -O binary ${OUTPUT} ${OUTPUT}.bin
+	mv ./${OUTPUT}.bin ./BOOT.BIN
+	mv ./BOOT.BIN ./DC/BOOT.BIN
+	rm ./oswan.elf
