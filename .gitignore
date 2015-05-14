@@ -9,3 +9,5 @@ roms/
 snapshot/
 oswan-nspire/
 SDL2_branch/
+./oswan.cfg
+sdl/data/fireworks
