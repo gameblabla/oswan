@@ -101,7 +101,8 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 #define PEEK(addr) ((BYTE)cpu_readop_arg(addr))
 #define PEEKOP(addr) ((BYTE)cpu_readop(addr))
 
-#define GetModRM UINT32 ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)
+/*#define GetModRM UINT32 ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)*/
+#define GetModRM unsigned int ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)
 
 /* Cycle count macros:
 	CLK  - cycle count is the same on all processors

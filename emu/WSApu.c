@@ -8,7 +8,6 @@ $Rev: 71 $
 #include "WSHard.h"
 #include "WS.h"
 #include "WSApu.h"
-#include "startup.h"
 
 #ifdef SOUND_ON
 #include <SDL/SDL.h>
@@ -26,9 +25,14 @@ WAVEOUT_INFO mywaveinfo;
 
 #define BUFSIZEN    0x10000
 #define WAV_FREQ    12000
-#define SND_BNKSIZE 256   
-//#define SND_RNGSIZE (64 * SND_BNKSIZE)
-#define SND_RNGSIZE ((44100/60)*2*64)
+#define SND_BNKSIZE 256  
+ 
+#if defined(SOUND_ON) && !defined(SOUND_EMULATION)
+	#define SND_RNGSIZE ((44100/60)*2*64)
+#else
+	#define SND_RNGSIZE (64 * SND_BNKSIZE)
+#endif
+
 #define WAV_VOLUME  40
 
 unsigned long WaveMap;
@@ -38,12 +42,15 @@ SWEEP Swp;
 NOISE Noise;
 int Sound[7] = {1, 1, 1, 1, 1, 1, 1};
 
+#ifdef SOUND_EMULATION
 static unsigned char PData[4][32];
 static unsigned char PDataN[8][BUFSIZEN];
 static unsigned int  RandData[BUFSIZEN];
 
 static unsigned short sndbuffer[SND_RNGSIZE]; // Sound Ring Buffer
 static int   rBuf, wBuf;
+#endif
+
 static int   StartupFlag;
 
 extern BYTE *Page[16];
@@ -59,9 +66,11 @@ extern BYTE IO[0x100];
 // ----------------------------------------------------------------------------
 int apuBufLen(void)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
 	if (wBuf >= rBuf) return wBuf - rBuf;
 	return SND_RNGSIZE + wBuf - rBuf;
+#else
+	return 0;
 #endif
 }
 
@@ -86,7 +95,7 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 {
 #ifdef SOUND_ON
 	int i=len;
-	unsigned short *buffer = (unsigned short *) stream, *src;
+	unsigned short *buffer = (unsigned short *) stream;
 
 	SDL_LockMutex(sound_mutex);
 
@@ -128,7 +137,7 @@ void apuWaveClear(void)
 
 int apuInit(void)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     int i, j;
 
     for (i = 0; i < 4; i++) {
@@ -148,23 +157,28 @@ int apuInit(void)
     wBuf = 0;
 	apuWaveCreate();
 	
+#ifdef SOUND_ON
 	sound_mutex = SDL_CreateMutex();
 	sound_cv = SDL_CreateCond();
+#endif
+
 #endif
     return 0;
 }
 
 void apuEnd(void)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
 	apuWaveDel();
+#ifdef SOUND_ON
 	SDL_CondSignal(sound_cv);
+#endif
 #endif
 }
 
 unsigned int apuMrand(unsigned int Degree)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
 #define BIT(n) (1<<n)
     typedef struct {
         unsigned int N;
@@ -231,7 +245,7 @@ unsigned int apuMrand(unsigned int Degree)
 
 void apuSetPData(int addr, unsigned char val)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     int i, j;
 
     i = (addr & 0x30) >> 4;
@@ -243,7 +257,7 @@ void apuSetPData(int addr, unsigned char val)
 
 unsigned char apuVoice(void)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     static int index = 0, b = 0;
     unsigned char v;
 
@@ -285,7 +299,7 @@ unsigned char apuVoice(void)
 }
 
 unsigned char ws_apuhVoice(int count, BYTE *hvoice) {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
 	static int index = 0;
 
 	if ( (IO[0x52] & 0x98) == 0x98) { // Hyper Voice On?
@@ -307,16 +321,18 @@ unsigned char ws_apuhVoice(int count, BYTE *hvoice) {
     *hvoice = 0x80;
     index     = 0;
   }
+  
 #endif
+  return 0;
 }
 
 unsigned char ws_apuVoice(int count)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     if ((SDMACTL & 0x88) == 0x80) { // DMA start
 		int i =                          (IO[0x4f] << 8) | IO[0x4e]; // size
 		int j = (IO[0x4c] << 16) | (IO[0x4b] << 8) | IO[0x4a]; // start bank:address
-		int k = (IO[0x52] & 0x03 == 0x03 ? 2 : 1);
+		int k = ((IO[0x52] & 0x03) == 0x03 ? 2 : 1);
 
 		IO[0x89] = cpu_readmem20(j);
 
@@ -344,7 +360,7 @@ unsigned char ws_apuVoice(int count)
 
 void apuSweep(void)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     if ((Swp.step) && Swp.on) { // sweep on
         if (Swp.cnt < 0) {
             Swp.cnt = Swp.time;
@@ -358,7 +374,7 @@ void apuSweep(void)
 
 WORD apuShiftReg(void)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     static int nPos = 0;
     // Noise counter
     if (++nPos >= BUFSIZEN) {
@@ -373,17 +389,20 @@ WORD apuShiftReg(void)
 
 void WsWaveSet(BYTE voice, BYTE hvoice)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     static  int point[] = {0, 0, 0, 0};
     static  int preindex[] = {0, 0, 0, 0};
     int     channel, index;
-    signed short value, lVol[4], rVol[4];
+    signed short value, lVol[4];
+    /*signed short rVol[4];*/
     signed short LL, vVol, hVol;
 #define MULT 4
 	static int conv=MULT;
 	int i;
 
+#ifdef SOUND_ON
 	SDL_LockMutex(sound_mutex);
+#endif
 	
 	for (channel = 0; channel < 4; channel++) {
 		if (Ch[channel].on) {
@@ -413,17 +432,16 @@ void WsWaveSet(BYTE voice, BYTE hvoice)
 			preindex[channel] = index;
 			point[channel]++;
 			lVol[channel] = value * Ch[channel].volL; // -8*15=-120, 7*15=105
-			rVol[channel] = value * Ch[channel].volR;
+			/*rVol[channel] = value * Ch[channel].volR;*/
 		}
 		else {
 			lVol[channel] = 0;
-			rVol[channel] = 0;
+			/*rVol[channel] = 0;*/
 		}
 	}
 	vVol = ( ((short)voice) - 0x80) * 2;
 	hVol = ( ((short) hvoice) - 0x80) * 2;
 	// mix 16bits wave -32768 ` +32767 32768/120 = 273
-	//LL = (lVol[0] + lVol[1] + lVol[2] + lVol[3] + vVol +hVol) * WAV_VOLUME;
 	LL = (lVol[0] + lVol[1] + lVol[2] + lVol[3] + vVol +hVol) * WAV_VOLUME;
 
 	if (conv ==MULT) 
@@ -438,14 +456,17 @@ void WsWaveSet(BYTE voice, BYTE hvoice)
 			wBuf = 0;
 		}
 	}
+#ifdef SOUND_ON
 	SDL_CondSignal(sound_cv);
 	SDL_UnlockMutex(sound_mutex);
+#endif
+
 #endif
 }
 
 void apuWaveSet(void)
 {
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
 	BYTE voice , hvoice;
 	apuSweep();
 	

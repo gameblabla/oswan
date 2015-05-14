@@ -1,7 +1,8 @@
 CC = gcc
 
-CFLAGS = -Os -pipe -fomit-frame-pointer -fcrossjumping -ffast-math -Wunused-result -march=native ${DEFINES} 
-DEFINES = -DSOUND_ON -DSMOOTH
+CFLAGS = -O2 -Wall ${DEFINES} 
+#DEFINES = -DSOUND_ON -DSMOOTH
+DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS
 LDFLAGS = -Wl,--as-needed `sdl-config --cflags --libs` -lSDLmain -lSDL 
 OUTPUT = oswan
 

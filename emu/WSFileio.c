@@ -26,57 +26,19 @@ $Rev: 71 $
 #define ERR_CHECKSUM				0
 #define ERR_FREAD_SAVE				0
 
+/*
 static char *SaveDir = "RAM";
 static char *StateDir = "STATE";
+*/
 static char SaveName[512];   // ".sav"
 static char StateName[512];
 #ifdef NSPIRE
-static char* IEepPath = "./oswan-od.dat.tns";
+static char* IEepPath = "./ossav.tns";
 #else
-static char* IEepPath = "./oswan-od.dat";
+static char* IEepPath = "./oswan.dat";
 #endif
 
-#if 0
-void WsSetDir(char* path)
-{
-	char temp[512];
-	char file[512];
-	char* p;
-
-	SaveName[0] = 0;
-	StateName[0] = 0;
-	if (path == NULL)
-	{
-		return;
-	}
-	strcpy(temp, path);
-	p = strrchr(temp, '\\');
-	if (p == NULL)
-	{
-		return;
-	}
-	strcpy(file, p++);
-	*p = 0;
-	p = strrchr(file, '.');
-	if (p == NULL)
-	{
-		return;
-	}
-	*p = 0;
-	strcpy(SaveName, temp);
-	strcat(SaveName, SaveDir);
-	strcat(SaveName, file);
-#ifdef NSPIRE
-	strcat(SaveName, ".sav.tns");
-	strcat(SaveName, ".sav");
-#else
-	strcat(SaveName, ".sav");
-#endif
-	strcpy(StateName, temp);
-	strcat(StateName, StateDir);
-	strcat(StateName, file);
-}
-#endif
+int result = NULL;
 
 int WsSetPdata(void)
 {
@@ -121,9 +83,10 @@ int WsCreate(char *CartName)
 		fprintf(stderr,"ERR_FOPEN");
         return ERR_FOPEN;
     }
-    //ws_romsize = sizeof(fp);
+    
+    /*ws_romsize = sizeof(fp);*/
 
-    fseek(fp, -10, SEEK_END);
+    result = fseek(fp, -10, SEEK_END);
     if (fread(buf, 1, 10, fp) != 10)
     {
         //ErrorMsg(ERR_FREAD_ROMINFO);
@@ -354,7 +317,7 @@ void WsLoadIEep(void)
 
     if ((fp = fopen(IEepPath, "rb")) != NULL)
     {
-        fread(IEep, sizeof(WORD), 64, fp);
+        result = fread(IEep, sizeof(WORD), 64, fp);
         fclose(fp);
     }
 	else
@@ -383,7 +346,7 @@ void WsSaveIEep(void)
 }
 
 #define MacroLoadNecRegisterFromFile(F,R) \
-		fread(&value, sizeof(unsigned int), 1, fp); \
+		result = fread(&value, sizeof(unsigned int), 1, fp); \
 	    nec_set_reg(R,value); 
 void WsLoadState(int num)
 {
@@ -415,20 +378,20 @@ void WsLoadState(int num)
 	MacroLoadNecRegisterFromFile(fp,NEC_PENDING);
 	MacroLoadNecRegisterFromFile(fp,NEC_NMI_STATE);
 	MacroLoadNecRegisterFromFile(fp,NEC_IRQ_STATE);
-    fread(IRAM, sizeof(BYTE), 0x10000, fp);
-    fread(IO, sizeof(BYTE), 0x100, fp);
+    result = fread(IRAM, sizeof(BYTE), 0x10000, fp);
+    result = fread(IO, sizeof(BYTE), 0x100, fp);
     for (i  =0; i < RAMBanks; i++)
     {
         if (RAMSize < 0x10000)
         {
-            fread(RAMMap[i], 1, RAMSize, fp);
+            result = fread(RAMMap[i], 1, RAMSize, fp);
         }
         else
         {
-            fread(RAMMap[i], 1, 0x10000, fp);
+            result = fread(RAMMap[i], 1, 0x10000, fp);
         }
     }
-	fread(Palette, sizeof(WORD), 16 * 16, fp);
+	result = fread(Palette, sizeof(WORD), 16 * 16, fp);
     fclose(fp);
 	WriteIO(0xC1, IO[0xC1]);
 	WriteIO(0xC2, IO[0xC2]);

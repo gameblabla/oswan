@@ -12,7 +12,7 @@ $Rev: 71 $
 #include "WSApu.h"
 #include "WSInput.h"
 #include "WSPdata.h"
-#include "WSBandai.h"
+#include "WSFileio.h"
 #include "cpu/necintrf.h"
 
 #include "../sdl/hack.h"
@@ -61,6 +61,7 @@ static WORD DefColor[] = {
 void  ComEEP(struct EEPROM *eeprom, WORD *cmd, WORD *data)
 {
     int i, j, op, addr;
+
     const int tblmask[16][5]=
     {
         {0x0000, 0, 0x0000, 0, 0x0000}, // dummy
@@ -159,6 +160,7 @@ void WriteMem(DWORD A, BYTE V)
 
 static void WriteRom(DWORD A, BYTE V)
 {
+	printf("ERR_WRITE_ROM\n");
 	//ErrorMsg(ERR_WRITE_ROM);
 }
 
@@ -949,8 +951,10 @@ int Interrupt(void)
 int WsRun(void)
 {
     static int period = IPeriod;
-    int i, cycle, iack, inum;
-    int a;
+    int i, iack, inum;
+#ifndef SPEEDHACKS
+	int cycle;
+#endif
     
 #ifdef NSPIRE
     for(i = 0; i < 159*8; i = i + 1) // 1/75s
@@ -958,9 +962,13 @@ int WsRun(void)
     for(i = 0; i < 159*8; i = i + 1) // 1/75s
 #endif
     {
-
-			cycle = nec_execute(period);
+#ifdef SPEEDHACKS
+			nec_execute(period);
 			period = tableau_games[game_choosen][1];
+#else
+			cycle = nec_execute(period);
+			period += IPeriod - cycle;
+#endif
 					
 			if(Interrupt())
 			{

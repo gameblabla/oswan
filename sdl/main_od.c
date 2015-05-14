@@ -16,11 +16,13 @@ int FPS = 60;
 int pastFPS = 0; 
 
 #ifdef LAYERS
-SDL_Surface *actualScreen, *layer, *layerback, *layerbackgrey;
+	SDL_Surface *actualScreen, *layer, *layerback, *layerbackgrey;
 #else
-SDL_Surface *actualScreen;
+	SDL_Surface *actualScreen;
 #endif
 SDL_Event event;
+
+void exit_oswan();
 
 unsigned long SDL_UXTimerRead(void) {
 	struct timeval tval; // timing
@@ -153,7 +155,7 @@ void initSDL(void) {
 #ifdef NSPIRE
 	actualScreen = SDL_SetVideoMode(320, 240, has_colors ? 16 : 8, SDL_SWSURFACE ); 
 #else
-	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_FULLSCREEN );
+	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE | SDL_FULLSCREEN );
 #endif
 	if(actualScreen == NULL) {
 		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
@@ -161,7 +163,7 @@ void initSDL(void) {
 	}
 	SDL_ShowCursor(SDL_DISABLE);
 
-#ifdef LAYERS
+#if defined(LAYERS)
 	// Init new layer to add background and text
 	layer = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0,0,0,0);
 	if(layer == NULL) {
@@ -201,10 +203,12 @@ void initSDL(void) {
 
 
 int main(int argc, char *argv[]) {
-	unsigned int index;
-	int lostfps;
 	double period;
-
+	
+#ifdef NSPIRE
+	enable_relative_paths(argv);
+#endif
+	
 	// Get init file directory & name
 	getcwd(current_conf_app, MAX__PATH);
 #ifdef NSPIRE
@@ -296,24 +300,31 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-#ifdef SOUND_ON
-	SDL_PauseAudio(1);
-#endif
+	exit_oswan();
+	return 0;
+}
 
-	// Free memory
-#ifdef LAYERS
-	SDL_FreeSurface(layerbackgrey);
-	SDL_FreeSurface(layerback);
-	SDL_FreeSurface(layer);
-#endif
-	SDL_FreeSurface(actualScreen);
-	
-	// Free memory
-#ifdef SOUND_ON
-	SDL_QuitSubSystem(SDL_INIT_VIDEO|SDL_INIT_AUDIO);
-#else
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-#endif
+void exit_oswan()
+{
+	#ifdef SOUND_ON
+		SDL_PauseAudio(1);
+	#endif
+
+		// Free memory
+	#ifdef LAYERS
+		if (layerbackgrey != NULL) SDL_FreeSurface(layerbackgrey);
+		if (layerback != NULL) SDL_FreeSurface(layerback);
+		if (layer != NULL) SDL_FreeSurface(layer);
+	#endif
+		if (actualScreen != NULL) SDL_FreeSurface(actualScreen);
+		
+		// Free memory
+		
+	#ifdef SOUND_ON
+		SDL_QuitSubSystem(SDL_INIT_VIDEO|SDL_INIT_AUDIO);
+	#else
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	#endif
 	
 	exit(0);
 }

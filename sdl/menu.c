@@ -716,7 +716,8 @@ int sort_function(const void *src_str_ptr, const void *dest_str_ptr) {
 }
 
 int strcmp_function(char *s1, char *s2) {
-	char c,i;
+	int i;
+	/*int c;*/
 	
 	if (strlen(s1) != strlen(s2)) return 1;
 
@@ -729,7 +730,7 @@ int strcmp_function(char *s1, char *s2) {
 
 signed int load_file(char **wildcards, char *result) {
 	unsigned char *keys;
-	unsigned int keya=0, keyb=0, keyup=0, kepufl=8, keydown=0, kepdfl=8, keyleft=0, keyright=0, keyr=0, keyl=0;
+	unsigned int keya=0, keyb=0, keyup=0, kepufl=8, keydown=0, kepdfl=8, /*keyleft=0, keyright=0,*/ keyr=0, keyl=0;
 
 	char current_dir_name[MAX__PATH];
 	DIR *current_dir;
@@ -742,7 +743,7 @@ signed int load_file(char **wildcards, char *result) {
 	char *file_name;
 	unsigned int file_name_length;
 	unsigned int ext_pos = -1;
-	unsigned int dialog_result = 1;
+	/*unsigned int dialog_result = 1;*/
 	signed int return_value = 1;
 	unsigned int repeat;
 	unsigned int i;

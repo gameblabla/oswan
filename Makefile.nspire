@@ -1,10 +1,9 @@
 CC = nspire-gcc
 
-CFLAGS = -Ofast -fomit-frame-pointer -marm -mcpu=arm926ej-s -Wunused-result
-CFLAGS += -fno-math-errno -fgcse-sm -fgcse-las -funsafe-loop-optimizations -fno-fat-lto-objects -frename-registers -fprefetch-loop-arrays -mno-thumb-interwork -ffunction-sections -fdata-sections
+CFLAGS = -O2
 CFLAGS += ${DEFINES} 
-DEFINES = -DNSPIRE -DSWITCHING_GRAPHICS 
-LDFLAGS = -flto -Wl,--as-needed -Wl,--gc-sections
+DEFINES = -DNSPIRE -DLAYERS -DSOUND_EMULATION
+LDFLAGS =
 OUTPUT = oswan.elf
 
 SOURCES = sdl/main_od.c sdl/menu.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
@@ -13,10 +12,13 @@ OBJS = ${SOURCES:.c=.o}
 all : ${OUTPUT} gen mkprg
 
 gen :
-	genzehn --input ${OUTPUT} --output ${OUTPUT}.tns --compress
+	genzehn --input ${OUTPUT} --output ${OUTPUT}.tns
 	
 mkprg:
 	make-prg ${OUTPUT}.tns ${OUTPUT}.prg.tns
+	rm ${OUTPUT}.tns
+	rm ${OUTPUT}
+	mv  ${OUTPUT}.prg.tns ${OUTPUT}.tns
 
 ${OUTPUT}:${OBJS}
 	${CC} -o ${OUTPUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}

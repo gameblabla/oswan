@@ -7,3 +7,5 @@ emu/cpu/*.o
 DC/
 roms/
 snapshot/
+oswan-nspire/
+SDL2_branch/
