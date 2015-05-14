@@ -3,7 +3,7 @@ SH_DIRECTORY=/opt/toolchains/dc/sh-elf/bin/
 
 CFLAGS = -Ofast -Wunused-variable -I$(KOS_BASE)/addons/include/SDL -I$(KOS_BASE)/addons/include
 CFLAGS += ${DEFINES} 
-DEFINES = -DSOUND_ON -DSMOOTH -DDREAMCAST -DLAYERS
+DEFINES = -DSOUND_ON -DSMOOTH -DDREAMCAST -DLAYERS -DSPEEDHACKS
 LDFLAGS = -flto -Wl,--as-needed -Wl,--gc-sections -lSDL -lm
 OUTPUT = oswan.elf
 

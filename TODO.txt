@@ -1,0 +1,8 @@
+- Proper way to identify roms
+CRC checks and buffering checking can't be trusted because they return different values on each architecture.
+This is what prevents some games from running since the roms can't be properly detected.
+(See WsRomPatch())
+
+Which means i can't warn users from roms that could potentially crash the emulator !
+We need an alternative that could work on TI Nspire.
+(Check the header ? (if there's even one) Use MD5 instead ?)

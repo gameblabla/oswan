@@ -2,7 +2,7 @@
 OSWAN
 =======
 
-Port of Oswan to TI nspire (CX).
+Port of Oswan for TI nspire (CX).
 GUI is coming from the GCW0 version of Oswan by Alekmaul.
 
 Oswan is a Wonderswan/Wonderswan color emulator made by bird_may_nike.

@@ -1,0 +1,9 @@
+*.o
+*.png
+*.dat
+sdl/*.o
+emu/*.o
+emu/cpu/*.o
+DC/
+roms/
+snapshot/

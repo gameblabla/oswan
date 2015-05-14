@@ -12,7 +12,7 @@ int tableau_games[128][3] =
 	{ -873928613, 1},	//	Digimon 02 (Color)
 	{-2098137406, 25},	//	Mr. Driller
 	{-1224026040, 6},	//	Riviera
-	{432737515, 5},		//	Rockman EXE WS
+	{432737515, 1},	//	Rockman EXE WS
 	{877148804, 1},		//	Rockman EXE N1 	
 	{-1521148107, 10},	//	Naruto
 	{-965854311, 25},	//	FF1
@@ -31,6 +31,7 @@ void hack_period();
 
 void hack_period()
 {
+#ifdef SPEEDHACKS
 	short i;
 	short hack;
 	hack = 0;
@@ -47,9 +48,11 @@ void hack_period()
 	
 	if (hack == 0)
 	{	
-		gameCRC == tableau_games[2][0];
+		gameCRC = tableau_games[2][0];
 		game_choosen = 2;
 	}
+	gameCRC = tableau_games[2][0];
+#endif
 	
 }
  
