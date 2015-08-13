@@ -140,7 +140,7 @@ extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 
 void initSDL(void) {
 	
-#ifdef NSPIRE
+#ifndef SOUND_ON
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 #else
 	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0) {
@@ -154,6 +154,8 @@ void initSDL(void) {
 
 #ifdef NSPIRE
 	actualScreen = SDL_SetVideoMode(320, 240, has_colors ? 16 : 8, SDL_SWSURFACE ); 
+#elif defined(GCW)
+	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE | SDL_TRIPLEBUF );
 #else
 	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE | SDL_FULLSCREEN );
 #endif
