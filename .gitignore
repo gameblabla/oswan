@@ -3,6 +3,7 @@
 *.dat
 *.wsc
 *.cfg
+*.map
 *.opk
 ./oswan
 /opk/oswan
