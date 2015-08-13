@@ -1,10 +1,10 @@
 CC = nspire-gcc
 
-CFLAGS = -O2
+CFLAGS = -O2 -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -msoft-float
 CFLAGS += ${DEFINES} 
-DEFINES = -DNSPIRE -DLAYERS -DSOUND_EMULATION
+DEFINES = -DNSPIRE -DSPEEDHACKS -DSWITCHING_GRAPHICS
 LDFLAGS =
-OUTPUT = oswan.elf
+OUTPUT = oswan
 
 SOURCES = sdl/main_od.c sdl/menu.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
 OBJS = ${SOURCES:.c=.o}
@@ -12,7 +12,7 @@ OBJS = ${SOURCES:.c=.o}
 all : ${OUTPUT} gen mkprg
 
 gen :
-	genzehn --input ${OUTPUT} --output ${OUTPUT}.tns
+	genzehn --input ${OUTPUT} --output ${OUTPUT}.tns --compress
 	
 mkprg:
 	make-prg ${OUTPUT}.tns ${OUTPUT}.prg.tns

@@ -1,0 +1,1576 @@
+Archive member included because of file (symbol)
+
+/home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o)
+                              sdl/menu.o (SDL_UpperBlit)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_video.o)
+                              sdl/menu.o (SDL_DisplayFormat)
+/home/hatsune/menuetos/lib/libSDL.a(SDL.o)
+                              sdl/main_od.o (SDL_Init)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_error.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o) (SDL_printf)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_cursor.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o) (SDL_CursorPaletteChanged)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL.o) (SDL_AudioInit)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o)
+                              sdl/menu.o (SDL_RWFromFile)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_bmp.o)
+                              sdl/menu.o (SDL_LoadBMP_RW)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_events.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o) (SDL_StopEventLoop)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_keyboard.o)
+                              sdl/menu.o (SDL_GetKeyState)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_systimer.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL.o) (SDL_StartTicks)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_sysmutex.o)
+                              emu/WSApu.o (SDL_CreateMutex)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_syscond.o)
+                              emu/WSApu.o (SDL_CreateCond)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_RLEaccel.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o) (SDL_UnRLESurface)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_pixels.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o) (SDL_FreeFormat)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o) (mosvideo_bootstrab)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_resize.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o) (SDL_PrivateResize)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_mouse.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o) (SDL_MouseInit)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_getenv.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL.o) (SDL_getenv)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_timer.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o) (SDL_SetTimerThreaded)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_fatal.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL.o) (SDL_InstallParachute)
+/home/hatsune/menuetos/lib/libSDL.a(init.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o) (InitSound@4)
+/home/hatsune/menuetos/lib/libSDL.a(sndgetsize.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o) (GetBufferSize@8)
+/home/hatsune/menuetos/lib/libSDL.a(setbuf.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o) (SetBuffer@16)
+/home/hatsune/menuetos/lib/libSDL.a(stopbuf.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o) (StopBuffer@4)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_endian.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_bmp.o) (SDL_ReadLE16)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_systhread.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o) (SDL_ThreadID)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_thread.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o) (SDL_CreateThread)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_active.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o) (SDL_AppActiveInit)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_quit.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o) (SDL_QuitInit)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_syssem.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_sysmutex.o) (SDL_CreateSemaphore)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_pixels.o) (SDL_CalculateBlit)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o) (MenuetOS_InitOSKeymap)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_blit_0.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o) (SDL_CalculateBlit0)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_blit_N.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o) (SDL_CalculateBlitN)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_blit_1.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o) (SDL_CalculateBlit1)
+/home/hatsune/menuetos/lib/libSDL.a(SDL_blit_A.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_N.o) (SDL_CalculateAlphaBlit)
+/home/hatsune/menuetos/lib/libc.a(param.o)
+                              /home/hatsune/menuetos/stub/crt0.o (__menuet__app_path_area)
+/home/hatsune/menuetos/lib/libc.a(crt1.o)
+                              /home/hatsune/menuetos/stub/crt0.o (__crt1_startup)
+/home/hatsune/menuetos/lib/libc.a(stderr.o)
+                              sdl/main_od.o (__dj_stderr)
+/home/hatsune/menuetos/lib/libc.a(_main.o)
+                              sdl/main_od.o (__main)
+/home/hatsune/menuetos/lib/libc.a(gettimeo.o)
+                              sdl/main_od.o (gettimeofday)
+/home/hatsune/menuetos/lib/libc.a(sprintf.o)
+                              sdl/main_od.o (sprintf)
+/home/hatsune/menuetos/lib/libc.a(atexit.o)
+                              sdl/main_od.o (atexit)
+/home/hatsune/menuetos/lib/libc.a(fprintf.o)
+                              sdl/main_od.o (fprintf)
+/home/hatsune/menuetos/lib/libc.a(exit.o)
+                              sdl/main_od.o (exit)
+/home/hatsune/menuetos/lib/libc.a(getcwd.o)
+                              sdl/main_od.o (getcwd)
+/home/hatsune/menuetos/lib/libc.a(strcpy.o)
+                              sdl/main_od.o (strcpy)
+/home/hatsune/menuetos/lib/libc.a(strlen.o)
+                              sdl/main_od.o (strlen)
+/home/hatsune/menuetos/lib/libc.a(fflush.o)
+                              sdl/main_od.o (fflush)
+/home/hatsune/menuetos/lib/libc.a(usleep.o)
+                              sdl/main_od.o (usleep)
+/home/hatsune/menuetos/lib/libc.a(strcmp.o)
+                              sdl/menu.o (strcmp)
+/home/hatsune/menuetos/lib/libc.a(memcpy.o)
+                              sdl/menu.o (memcpy)
+/home/hatsune/menuetos/lib/libc.a(strrchr.o)
+                              sdl/menu.o (strrchr)
+/home/hatsune/menuetos/lib/libc.a(open.o)
+                              sdl/menu.o (open)
+/home/hatsune/menuetos/lib/libc.a(close.o)
+                              sdl/menu.o (close)
+/home/hatsune/menuetos/lib/libc.a(toupper.o)
+                              sdl/menu.o (toupper)
+/home/hatsune/menuetos/lib/libc.a(chdir.o)
+                              sdl/menu.o (chdir)
+/home/hatsune/menuetos/lib/libc.a(opendir.o)
+                              sdl/menu.o (opendir)
+/home/hatsune/menuetos/lib/libc.a(readdir.o)
+                              sdl/menu.o (readdir)
+/home/hatsune/menuetos/lib/libc.a(qsort.o)
+                              sdl/menu.o (qsort)
+/home/hatsune/menuetos/lib/libc.a(stat.o)
+                              sdl/menu.o (stat)
+/home/hatsune/menuetos/lib/libc.a(closedir.o)
+                              sdl/menu.o (closedir)
+/home/hatsune/menuetos/lib/libc.a(strncpy.o)
+                              sdl/menu.o (strncpy)
+/home/hatsune/menuetos/lib/libc.a(read.o)
+                              sdl/menu.o (read)
+/home/hatsune/menuetos/lib/libc.a(write.o)
+                              sdl/menu.o (write)
+/home/hatsune/menuetos/lib/libc.a(memset.o)
+                              emu/cpu/nec.o (memset)
+/home/hatsune/menuetos/lib/libc.a(printf.o)
+                              emu/WS.o (printf)
+/home/hatsune/menuetos/lib/libc.a(time.o)
+                              emu/WS.o (time)
+/home/hatsune/menuetos/lib/libc.a(ctime.o)
+                              emu/WS.o (localtime)
+/home/hatsune/menuetos/lib/libc.a(malloc.o)
+                              emu/WSFileio.o (malloc)
+/home/hatsune/menuetos/lib/libc.a(fopen.o)
+                              emu/WSFileio.o (fopen)
+/home/hatsune/menuetos/lib/libc.a(fseek.o)
+                              emu/WSFileio.o (fseek)
+/home/hatsune/menuetos/lib/libc.a(fread.o)
+                              emu/WSFileio.o (fread)
+/home/hatsune/menuetos/lib/libc.a(fclose.o)
+                              emu/WSFileio.o (fclose)
+/home/hatsune/menuetos/lib/libc.a(fwrite.o)
+                              emu/WSFileio.o (fwrite)
+/home/hatsune/menuetos/lib/libc.a(strncmp.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o) (strncmp)
+/home/hatsune/menuetos/lib/libc.a(vsprintf.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_error.o) (vsprintf)
+/home/hatsune/menuetos/lib/libc.a(exit.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o) (__menuet__sys_exit)
+/home/hatsune/menuetos/lib/libc.a(delay.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o) (__menuet__delay100)
+/home/hatsune/menuetos/lib/libc.a(ferror.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o) (ferror)
+/home/hatsune/menuetos/lib/libc.a(ftell.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o) (ftell)
+/home/hatsune/menuetos/lib/libc.a(memcmp.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_pixels.o) (memcmp)
+/home/hatsune/menuetos/lib/libc.a(image.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o) (__menuet__putimage)
+/home/hatsune/menuetos/lib/libc.a(window.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o) (__menuet__define_window)
+/home/hatsune/menuetos/lib/libc.a(event.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o) (__menuet__check_for_event)
+/home/hatsune/menuetos/lib/libc.a(debug.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_fatal.o) (__libclog_vprintf)
+/home/hatsune/menuetos/lib/libc.a(keyb.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o) (__menuet__getkey)
+/home/hatsune/menuetos/lib/libc.a(button.o)
+                              /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o) (__menuet__get_button_id)
+/home/hatsune/menuetos/lib/libc.a(brk.o)
+                              /home/hatsune/menuetos/lib/libc.a(crt1.o) (init_brk)
+/home/hatsune/menuetos/lib/libc.a(crt0.o)
+                              /home/hatsune/menuetos/lib/libc.a(exit.o) (_exit)
+/home/hatsune/menuetos/lib/libc.a(emu_init.o)
+                              /home/hatsune/menuetos/lib/libc.a(crt1.o) (dosemu_inithandles)
+/home/hatsune/menuetos/lib/libc.a(stdiohk.o)
+                              /home/hatsune/menuetos/lib/libc.a(stderr.o) (__stdio_cleanup_proc)
+/home/hatsune/menuetos/lib/libc.a(clock.o)
+                              /home/hatsune/menuetos/lib/libc.a(gettimeo.o) (__menuet__getsystemclock)
+/home/hatsune/menuetos/lib/libc.a(doprnt.o)
+                              /home/hatsune/menuetos/lib/libc.a(sprintf.o) (_doprnt)
+/home/hatsune/menuetos/lib/libc.a(chkstk.o)
+                              /home/hatsune/menuetos/lib/libc.a(fprintf.o) (__chkstk_ms)
+/home/hatsune/menuetos/lib/libc.a(curdir.o)
+                              /home/hatsune/menuetos/lib/libc.a(getcwd.o) (__get_curdir)
+/home/hatsune/menuetos/lib/libc.a(dosemu.o)
+                              /home/hatsune/menuetos/lib/libc.a(open.o) (dosemu_open)
+/home/hatsune/menuetos/lib/libc.a(clock.o)
+                              /home/hatsune/menuetos/lib/libc.a(usleep.o) (clock)
+/home/hatsune/menuetos/lib/libc.a(ct_upper.o)
+                              /home/hatsune/menuetos/lib/libc.a(toupper.o) (__dj_ctype_toupper)
+/home/hatsune/menuetos/lib/libc.a(fixpath.o)
+                              /home/hatsune/menuetos/lib/libc.a(opendir.o) (_fixpath)
+/home/hatsune/menuetos/lib/libc.a(systree.o)
+                              /home/hatsune/menuetos/lib/libc.a(opendir.o) (__kolibri__system_tree_access2)
+/home/hatsune/menuetos/lib/libc.a(errno.o)
+                              /home/hatsune/menuetos/lib/libc.a(stat.o) (errno)
+/home/hatsune/menuetos/lib/libc.a(stdout.o)
+                              /home/hatsune/menuetos/lib/libc.a(printf.o) (__dj_stdout)
+/home/hatsune/menuetos/lib/libc.a(ct_flags.o)
+                              /home/hatsune/menuetos/lib/libc.a(ctime.o) (__dj_ctype_flags)
+/home/hatsune/menuetos/lib/libc.a(getenv.o)
+                              /home/hatsune/menuetos/lib/libc.a(ctime.o) (getenv)
+/home/hatsune/menuetos/lib/libc.a(fmode.o)
+                              /home/hatsune/menuetos/lib/libc.a(fopen.o) (_fmode)
+/home/hatsune/menuetos/lib/libc.a(allocfil.o)
+                              /home/hatsune/menuetos/lib/libc.a(fopen.o) (__alloc_file)
+/home/hatsune/menuetos/lib/libc.a(lseek.o)
+                              /home/hatsune/menuetos/lib/libc.a(fopen.o) (lseek)
+/home/hatsune/menuetos/lib/libc.a(filbuf.o)
+                              /home/hatsune/menuetos/lib/libc.a(fread.o) (_filbuf)
+/home/hatsune/menuetos/lib/libc.a(remove.o)
+                              /home/hatsune/menuetos/lib/libc.a(fclose.o) (remove)
+/home/hatsune/menuetos/lib/libc.a(flsbuf.o)
+                              /home/hatsune/menuetos/lib/libc.a(fwrite.o) (_flsbuf)
+/home/hatsune/menuetos/lib/libc.a(dosio.o)
+                              /home/hatsune/menuetos/lib/libc.a(ftell.o) (__file_handle_modes)
+/home/hatsune/menuetos/lib/libc.a(fwalk.o)
+                              /home/hatsune/menuetos/lib/libc.a(stdiohk.o) (_fwalk)
+/home/hatsune/menuetos/lib/libc.a(modfl.o)
+                              /home/hatsune/menuetos/lib/libc.a(doprnt.o) (__modfl)
+/home/hatsune/menuetos/lib/libc.a(lconv.o)
+                              /home/hatsune/menuetos/lib/libc.a(doprnt.o) (localeconv)
+/home/hatsune/menuetos/lib/libc.a(memchr.o)
+                              /home/hatsune/menuetos/lib/libc.a(doprnt.o) (memchr)
+/home/hatsune/menuetos/lib/libc.a(putc.o)
+                              /home/hatsune/menuetos/lib/libc.a(doprnt.o) (putc)
+/home/hatsune/menuetos/lib/libc.a(env.o)
+                              /home/hatsune/menuetos/lib/libc.a(getenv.o) (__libc_getenv)
+/home/hatsune/menuetos/lib/libc.a(frlist.o)
+                              /home/hatsune/menuetos/lib/libc.a(allocfil.o) (__file_rec_list)
+/home/hatsune/menuetos/lib/libc.a(stdin.o)
+                              /home/hatsune/menuetos/lib/libc.a(filbuf.o) (__dj_stdin)
+/home/hatsune/menuetos/lib/libc.a(fputc.o)
+                              /home/hatsune/menuetos/lib/libc.a(putc.o) (fputc)
+/home/hatsune/menuetos/lib/libc.a(hooks.o)
+                              /home/hatsune/menuetos/lib/libc.a(fputc.o) (__libc_write_termios_hook)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0x0000000000400000                __image_base__ = 0x400000
+                0x0000000000000000                __dll__ = 0x0
+                0x0000000000400000                ___ImageBase = 0x400000
+                0x0000000000000010                __section_alignment__ = 0x10
+                0x0000000000000010                __file_alignment__ = 0x10
+                0x0000000000000004                __major_os_version__ = 0x4
+                0x0000000000000000                __minor_os_version__ = 0x0
+                0x0000000000000001                __major_image_version__ = 0x1
+                0x0000000000000000                __minor_image_version__ = 0x0
+                0x0000000000000004                __major_subsystem_version__ = 0x4
+                0x0000000000000000                __minor_subsystem_version__ = 0x0
+                0x0000000000000003                __subsystem__ = 0x3
+                0x0000000000200000                __size_of_stack_reserve__ = 0x200000
+                0x0000000000001000                __size_of_stack_commit__ = 0x1000
+                0x0000000000100000                __size_of_heap_reserve__ = 0x100000
+                0x0000000000001000                __size_of_heap_commit__ = 0x1000
+                0x0000000000000000                __loader_flags__ = 0x0
+                0x0000000000000000                __dll_characteristics__ = 0x0
+
+.text           0x0000000000000000    0x304a0
+                0x0000000000000000                code = .
+                0x0000000000000000                _code = .
+ *(.A)
+ .A             0x0000000000000000       0x24 /home/hatsune/menuetos/stub/crt0.o
+                0x0000000000000000                __menuet__app_header
+                0x0000000000000014                __menuet__memsize
+ *(.text)
+ .text          0x0000000000000024        0x0 /home/hatsune/menuetos/stub/crt0.o
+                0x0000000000000024                start
+ .text          0x0000000000000024      0x408 sdl/main_od.o
+                0x0000000000000024                SDL_UXTimerRead
+                0x000000000000004b                graphics_paint
+                0x00000000000001f9                initSDL
+                0x00000000000002e7                exit_oswan
+                0x000000000000031f                crc32
+ .text          0x000000000000042c     0x1984 sdl/menu.o
+                0x000000000000042c                menuReturn
+                0x0000000000000437                menuContinue
+                0x0000000000000462                menuQuit
+                0x0000000000000492                sort_function
+                0x0000000000000497                menuReset
+                0x00000000000004c7                screen_drawpixel
+                0x0000000000000500                screen_showchar
+                0x0000000000000598                print_string
+                0x0000000000000601                print_string_video
+                0x0000000000000672                screen_showitem
+                0x000000000000078b                screen_flip
+                0x000000000000079f                screen_prepback
+                0x000000000000080c                screen_prepbackground
+                0x0000000000000830                screen_showmenu
+                0x000000000000090d                screen_waitkey
+                0x000000000000093d                screen_waitkeyarelease
+                0x0000000000000965                screen_showmainmenu
+                0x0000000000000d7e                screen_showkeymenu
+                0x0000000000000d91                system_is_load_state
+                0x0000000000000df9                findNextFilename
+                0x000000000000104a                menuSaveBmp
+                0x0000000000001069                strcmp_function
+                0x00000000000010ce                load_file
+                0x00000000000018ce                menuFileBrowse
+                0x0000000000001918                menuSaveState
+                0x0000000000001a72                menuLoadState
+                0x0000000000001be0                system_loadcfg
+                0x0000000000001d09                system_savecfg
+                0x0000000000001d59                screen_showtopmenu
+ .text          0x0000000000001db0       0x4c sdl/hack.o
+                0x0000000000001db0                hack_period
+ .text          0x0000000000001dfc     0xc944 emu/cpu/nec.o
+                0x000000000000e28e                nec_reset
+                0x000000000000e367                nec_exit
+                0x000000000000e368                nec_int
+                0x000000000000e4a0                nec_get_reg
+                0x000000000000e5e2                nec_set_reg
+                0x000000000000e6e8                nec_execute
+ .text          0x000000000000e740     0x14d0 emu/WS.o
+                0x000000000000e8f6                ComEEP
+                0x000000000000ea60                ReadMem
+                0x000000000000ea7a                WriteMem
+                0x000000000000f28f                WriteIO
+                0x000000000000f2a7                ReadIO
+                0x000000000000f3da                WsReset
+                0x000000000000f86e                WsRomPatch
+                0x000000000000f907                Interrupt
+                0x000000000000fb52                WsRun
+                0x000000000000fbbd                WsCpyPdata
+                0x000000000000fbe0                Sleep
+                0x000000000000fbe1                SetHVMode
+                0x000000000000fbeb                WsInit
+                0x000000000000fbfb                WsDeInit
+ .text          0x000000000000fc10      0x7b4 emu/WSApu.o
+                0x000000000000fc10                apuBufLen
+                0x000000000000fc27                mixaudioCallback
+                0x000000000000fcb6                apuWaveCreate
+                0x000000000000fcd9                apuWaveDel
+                0x000000000000fcec                apuWaveClear
+                0x000000000000fced                apuEnd
+                0x000000000000fd06                apuMrand
+                0x000000000000fd9f                apuInit
+                0x000000000000fe4e                apuSetPData
+                0x000000000000fe70                apuVoice
+                0x000000000000ff8b                ws_apuhVoice
+                0x000000000001001c                ws_apuVoice
+                0x00000000000100f2                apuSweep
+                0x0000000000010130                apuShiftReg
+                0x0000000000010150                WsWaveSet
+                0x000000000001036a                apuWaveSet
+                0x00000000000103b7                apuStartupSound
+ .text          0x00000000000103c4     0x10f4 emu/WSFileio.o
+                0x00000000000103c4                WsSetPdata
+                0x0000000000010443                WsCreate
+                0x000000000001095e                WsRelease
+                0x0000000000010a3b                WsLoadIEep
+                0x0000000000010afb                WsSaveIEep
+                0x0000000000010b46                WsLoadState
+                0x0000000000011091                WsSaveState
+ .text          0x00000000000114b8      0x13c emu/WSInput.o
+                0x00000000000114b8                WsInputGetState
+ .text          0x00000000000115f4     0x19a8 emu/WSRender.o
+                0x00000000000115f4                SetPalette
+                0x0000000000011634                RefreshLine
+                0x0000000000012ec2                RenderSegment
+                0x0000000000012f75                RenderSleep
+ .text          0x0000000000012f9c      0xd5c /home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o)
+                0x000000000001301a                SDL_SetColorKey
+                0x00000000000130f9                SDL_SetAlpha
+                0x0000000000013216                SDL_SetClipRect
+                0x0000000000013268                SDL_GetClipRect
+                0x0000000000013286                SDL_LowerBlit
+                0x00000000000132f3                SDL_UpperBlit
+                0x0000000000013493                SDL_LockSurface
+                0x00000000000134f1                SDL_UnlockSurface
+                0x000000000001353d                SDL_FillRect
+                0x0000000000013774                SDL_FreeSurface
+                0x0000000000013834                SDL_CreateRGBSurface
+                0x0000000000013a12                SDL_CreateRGBSurfaceFrom
+                0x0000000000013a95                SDL_ConvertSurface
+ .text          0x0000000000013cf8     0x19fc /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o)
+                0x0000000000013d3c                SDL_VideoDriverName
+                0x0000000000013d7a                SDL_GetVideoSurface
+                0x0000000000013d92                SDL_GetVideoInfo
+                0x0000000000013da7                SDL_ListModes
+                0x0000000000013ddd                SDL_VideoModeOK
+                0x0000000000013eb2                SDL_DisplayFormat
+                0x0000000000013f07                SDL_DisplayFormatAlpha
+                0x0000000000013fea                SDL_UpdateRects
+                0x00000000000141cc                SDL_UpdateRect
+                0x00000000000143ba                SDL_Flip
+                0x00000000000144ae                SDL_SetPalette
+                0x000000000001462a                SDL_SetColors
+                0x000000000001465a                SDL_GL_LoadLibrary
+                0x000000000001468f                SDL_GL_GetProcAddress
+                0x00000000000146d1                SDL_GL_SetAttribute
+                0x0000000000014761                SDL_GL_GetAttribute
+                0x00000000000147a0                SDL_GL_SwapBuffers
+                0x00000000000147be                SDL_GL_UpdateRectsLock
+                0x00000000000147c3                SDL_GL_UpdateRects
+                0x00000000000147c8                SDL_GL_Lock
+                0x00000000000147cd                SDL_GL_Unlock
+                0x00000000000147d2                SDL_WM_SetCaption
+                0x000000000001489c                SDL_WM_GetCaption
+                0x00000000000148ca                SDL_WM_SetIcon
+                0x0000000000014ae6                SDL_WM_GrabInput
+                0x0000000000014b32                SDL_SetVideoMode
+                0x000000000001520c                SDL_VideoQuit
+                0x000000000001535a                SDL_VideoInit
+                0x00000000000155f3                SDL_WM_IconifyWindow
+                0x0000000000015613                SDL_WM_ToggleFullScreen
+                0x00000000000156c7                SDL_GetWMInfo
+ .text          0x00000000000156f4      0x198 /home/hatsune/menuetos/lib/libSDL.a(SDL.o)
+                0x00000000000156f4                SDL_InitSubSystem
+                0x00000000000157c8                SDL_Init
+                0x0000000000015801                SDL_QuitSubSystem
+                0x0000000000015852                SDL_WasInit
+                0x000000000001586a                SDL_Quit
+                0x0000000000015882                SDL_Linked_Version
+ .text          0x000000000001588c      0x4c8 /home/hatsune/menuetos/lib/libSDL.a(SDL_error.o)
+                0x000000000001588c                SDL_printf
+                0x00000000000158df                SDL_GetErrorMsgUNICODE
+                0x0000000000015b4f                SDL_GetErrorMsg
+                0x0000000000015bb8                SDL_GetError
+                0x0000000000015bd4                SDL_SetError
+                0x0000000000015cfd                SDL_ClearError
+                0x0000000000015d0c                SDL_Error
+ .text          0x0000000000015d54      0xfd4 /home/hatsune/menuetos/lib/libSDL.a(SDL_cursor.o)
+                0x0000000000015d54                SDL_GetCursor
+                0x0000000000015d5e                SDL_WarpMouse
+                0x0000000000015dd8                SDL_CursorPaletteChanged
+                0x0000000000015de7                SDL_MouseRect
+                0x0000000000015e77                SDL_DrawCursorNoLock
+                0x000000000001650e                SDL_DrawCursor
+                0x0000000000016596                SDL_EraseCursorNoLock
+                0x00000000000166dc                SDL_EraseCursor
+                0x0000000000016764                SDL_SetCursor
+                0x00000000000168d3                SDL_FreeCursor
+                0x0000000000016950                SDL_CursorQuit
+                0x00000000000169c0                SDL_CreateCursor
+                0x0000000000016b4c                SDL_CursorInit
+                0x0000000000016bba                SDL_ShowCursor
+                0x0000000000016c44                SDL_MoveCursor
+                0x0000000000016ce4                SDL_ResetCursor
+ .text          0x0000000000016d28      0xafc /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o)
+                0x0000000000016f87                SDL_AudioInit
+                0x0000000000016fd3                SDL_AudioQuit
+                0x0000000000016fd8                SDL_AudioDriverName
+                0x000000000001700e                SDL_OpenAudio
+                0x0000000000017747                SDL_CloseAudio
+                0x00000000000177a0                SDL_PauseAudio
+                0x00000000000177e2                SDL_LockAudio
+                0x0000000000017814                SDL_UnlockAudio
+ .text          0x0000000000017824      0x320 /home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o)
+                0x0000000000017a55                SDL_AllocRW
+                0x0000000000017a7f                SDL_RWFromFP
+                0x0000000000017ab7                SDL_RWFromFile
+                0x0000000000017afd                SDL_RWFromMem
+                0x0000000000017b39                SDL_FreeRW
+ .text          0x0000000000017b44      0xa60 /home/hatsune/menuetos/lib/libSDL.a(SDL_bmp.o)
+                0x0000000000017b44                SDL_LoadBMP_RW
+                0x00000000000180ce                SDL_SaveBMP_RW
+ .text          0x00000000000185a4      0x6d8 /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o)
+                0x0000000000018644                SDL_Lock_EventThread
+                0x0000000000018686                SDL_Unlock_EventThread
+                0x00000000000186b1                SDL_EventThreadID
+                0x00000000000186bb                SDL_StopEventLoop
+                0x0000000000018728                SDL_StartEventLoop
+                0x000000000001882f                SDL_PeepEvents
+                0x0000000000018a66                SDL_PumpEvents
+                0x0000000000018a90                SDL_PollEvent
+                0x0000000000018ac0                SDL_WaitEvent
+                0x0000000000018b0e                SDL_PushEvent
+                0x0000000000018b39                SDL_SetEventFilter
+                0x0000000000018b5d                SDL_GetEventFilter
+                0x0000000000018b67                SDL_EventState
+                0x0000000000018c1a                SDL_PrivateSysWMEvent
+ .text          0x0000000000018c7c      0xc68 /home/hatsune/menuetos/lib/libSDL.a(SDL_keyboard.o)
+                0x0000000000018c7c                SDL_EnableUNICODE
+                0x0000000000018c93                SDL_GetKeyState
+                0x0000000000018caa                SDL_GetModState
+                0x0000000000018cb4                SDL_SetModState
+                0x0000000000018cc1                SDL_GetKeyName
+                0x0000000000018ce7                SDL_PrivateKeyboard
+                0x0000000000018ed0                SDL_ResetKeyboard
+                0x0000000000018f2b                SDL_CheckKeyRepeat
+                0x0000000000018f30                SDL_EnableKeyRepeat
+                0x0000000000018f7e                SDL_KeyboardInit
+ .text          0x00000000000198e4       0x58 /home/hatsune/menuetos/lib/libSDL.a(SDL_systimer.o)
+                0x00000000000198e4                SDL_StartTicks
+                0x00000000000198fc                SDL_GetTicks
+                0x0000000000019918                SDL_Delay
+                0x0000000000019921                SDL_SYS_TimerInit
+                0x0000000000019928                SDL_SYS_TimerQuit
+                0x000000000001992d                SDL_SYS_StartTimer
+                0x0000000000019934                SDL_SYS_StopTimer
+ .text          0x000000000001993c       0x98 /home/hatsune/menuetos/lib/libSDL.a(SDL_sysmutex.o)
+                0x000000000001993c                SDL_CreateMutex
+                0x0000000000019995                SDL_DestroyMutex
+                0x00000000000199c5                SDL_mutexP
+                0x00000000000199cc                SDL_mutexV
+ .text          0x00000000000199d4      0x28c /home/hatsune/menuetos/lib/libSDL.a(SDL_syscond.o)
+                0x00000000000199d4                SDL_DestroyCond
+                0x0000000000019a21                SDL_CreateCond
+                0x0000000000019a9c                SDL_CondSignal
+                0x0000000000019b05                SDL_CondBroadcast
+                0x0000000000019b87                SDL_CondWaitTimeout
+                0x0000000000019c3c                SDL_CondWait
+ .text          0x0000000000019c60     0x3858 /home/hatsune/menuetos/lib/libSDL.a(SDL_RLEaccel.o)
+                0x000000000001a15a                SDL_RLEBlit
+                0x000000000001c129                SDL_RLEAlphaBlit
+                0x000000000001ca71                SDL_UnRLESurface
+                0x000000000001cc82                SDL_RLESurface
+ .text          0x000000000001d4b8      0xc4c /home/hatsune/menuetos/lib/libSDL.a(SDL_pixels.o)
+                0x000000000001d4b8                SDL_FreeFormat
+                0x000000000001d4f8                SDL_AllocFormat
+                0x000000000001d7f3                SDL_DitherColors
+                0x000000000001d860                SDL_CalculatePitch
+                0x000000000001d897                SDL_FindColor
+                0x000000000001da0b                SDL_MapRGB
+                0x000000000001da73                SDL_MapRGBA
+                0x000000000001daf1                SDL_GetRGBA
+                0x000000000001dbdc                SDL_GetRGB
+                0x000000000001dc92                SDL_ApplyGamma
+                0x000000000001dce5                SDL_InvalidateMap
+                0x000000000001dd1c                SDL_FormatChanged
+                0x000000000001dd2e                SDL_ReallocFormat
+                0x000000000001dd7f                SDL_MapSurface
+                0x000000000001e04e                SDL_FreeBlitMap
+                0x000000000001e086                SDL_AllocBlitMap
+ .text          0x000000000001e104      0x6d8 /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o)
+                0x000000000001e11d                MenuetOS_SetColors
+                0x000000000001e124                MenuetOS_SetCaption
+                0x000000000001e194                KolibriOS_FreeWMCursor
+                0x000000000001e1fa                KolibriOS_ShowWMCursor
+                0x000000000001e3fe                MenuetOS_VideoQuit
+                0x000000000001e4a6                KolibriOS_CheckMouseMode
+                0x000000000001e509                KolibriOS_CreateWMCursor
+                0x000000000001e603                get_skinh
+                0x000000000001e616                MenuetOS_SDL_RepaintWnd
+                0x000000000001e6d5                MenuetOS_SetVideoMode
+                0x000000000001e7d7                MenuetOS_FinalQuit
+ .text          0x000000000001e7dc       0xc8 /home/hatsune/menuetos/lib/libSDL.a(SDL_resize.o)
+                0x000000000001e7dc                SDL_PrivateResize
+ .text          0x000000000001e8a4      0x400 /home/hatsune/menuetos/lib/libSDL.a(SDL_mouse.o)
+                0x000000000001e8ef                SDL_MouseInit
+                0x000000000001e921                SDL_GetMouseState
+                0x000000000001e94b                SDL_GetRelativeMouseState
+                0x000000000001e987                SDL_PrivateMouseMotion
+                0x000000000001eb1a                SDL_PrivateMouseButton
+ .text          0x000000000001eca4      0x170 /home/hatsune/menuetos/lib/libSDL.a(SDL_getenv.o)
+                0x000000000001eca4                SDL_putenv
+                0x000000000001ed9d                SDL_getenv
+ .text          0x000000000001ee14      0x3dc /home/hatsune/menuetos/lib/libSDL.a(SDL_timer.o)
+                0x000000000001ee1d                SDL_SetTimerThreaded
+                0x000000000001ee49                SDL_ThreadedTimerCheck
+                0x000000000001ef41                SDL_AddTimer
+                0x000000000001f007                SDL_RemoveTimer
+                0x000000000001f07a                SDL_SetTimer
+                0x000000000001f13f                SDL_TimerInit
+                0x000000000001f19b                SDL_TimerQuit
+ .text          0x000000000001f1f0       0x30 /home/hatsune/menuetos/lib/libSDL.a(SDL_fatal.o)
+                0x000000000001f1f0                SDL_printf_error
+                0x000000000001f214                SDL_InstallParachute
+                0x000000000001f219                SDL_UninstallParachute
+ .text          0x000000000001f220       0xbf /home/hatsune/menuetos/lib/libSDL.a(init.o)
+                0x000000000001f220                InitSound@4
+                0x000000000001f284                CreateBuffer@12
+                0x000000000001f2b4                DestroyBuffer@4
+ *fill*         0x000000000001f2df        0x1 
+ .text          0x000000000001f2e0       0x64 /home/hatsune/menuetos/lib/libSDL.a(sndgetsize.o)
+                0x000000000001f2e0                GetBufferSize@8
+                0x000000000001f310                GetBufferFree@8
+ *fill*         0x000000000001f344        0xc 
+ .text          0x000000000001f350       0x57 /home/hatsune/menuetos/lib/libSDL.a(setbuf.o)
+                0x000000000001f350                SetBuffer@16
+                0x000000000001f37c                PlayBuffer@8
+ *fill*         0x000000000001f3a7        0x9 
+ .text          0x000000000001f3b0       0x2b /home/hatsune/menuetos/lib/libSDL.a(stopbuf.o)
+                0x000000000001f3b0                StopBuffer@4
+ *fill*         0x000000000001f3db        0x1 
+ .text          0x000000000001f3dc      0x270 /home/hatsune/menuetos/lib/libSDL.a(SDL_endian.o)
+                0x000000000001f3e3                SDL_ReadLE16
+                0x000000000001f40f                SDL_ReadBE16
+                0x000000000001f43d                SDL_ReadLE32
+                0x000000000001f468                SDL_ReadBE32
+                0x000000000001f497                SDL_ReadLE64
+                0x000000000001f4c5                SDL_ReadBE64
+                0x000000000001f50a                SDL_WriteLE16
+                0x000000000001f539                SDL_WriteBE16
+                0x000000000001f56a                SDL_WriteLE32
+                0x000000000001f592                SDL_WriteBE32
+                0x000000000001f5ca                SDL_WriteLE64
+                0x000000000001f5fe                SDL_WriteBE64
+ .text          0x000000000001f64c       0x30 /home/hatsune/menuetos/lib/libSDL.a(SDL_systhread.o)
+                0x000000000001f64c                SDL_SYS_CreateThread
+                0x000000000001f663                SDL_SYS_SetupThread
+                0x000000000001f668                SDL_ThreadID
+                0x000000000001f66f                SDL_SYS_WaitThread
+                0x000000000001f674                SDL_SYS_KillThread
+ .text          0x000000000001f67c      0x384 /home/hatsune/menuetos/lib/libSDL.a(SDL_thread.o)
+                0x000000000001f6de                SDL_ThreadsInit
+                0x000000000001f70e                SDL_ThreadsQuit
+                0x000000000001f731                SDL_GetErrBuf
+                0x000000000001f798                SDL_RunThread
+                0x000000000001f7dc                SDL_CreateThread
+                0x000000000001f97f                SDL_WaitThread
+                0x000000000001f9be                SDL_GetThreadID
+                0x000000000001f9d2                SDL_KillThread
+ .text          0x000000000001fa00       0xc0 /home/hatsune/menuetos/lib/libSDL.a(SDL_active.o)
+                0x000000000001fa00                SDL_AppActiveInit
+                0x000000000001fa0e                SDL_GetAppState
+                0x000000000001fa18                SDL_PrivateAppActive
+ .text          0x000000000001fac0       0x4c /home/hatsune/menuetos/lib/libSDL.a(SDL_quit.o)
+                0x000000000001fac0                SDL_QuitInit
+                0x000000000001fac7                SDL_PrivateQuit
+ .text          0x000000000001fb0c       0x80 /home/hatsune/menuetos/lib/libSDL.a(SDL_syssem.o)
+                0x000000000001fb0c                SDL_CreateSemaphore
+                0x000000000001fb22                SDL_DestroySemaphore
+                0x000000000001fb27                SDL_SemTryWait
+                0x000000000001fb3e                SDL_SemWaitTimeout
+                0x000000000001fb55                SDL_SemWait
+                0x000000000001fb6c                SDL_SemValue
+                0x000000000001fb73                SDL_SemPost
+ .text          0x000000000001fb8c      0x4e0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o)
+                0x000000000001fe8a                SDL_CalculateBlit
+ .text          0x000000000002006c      0x2dc /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o)
+                0x000000000002006c                MenuetOS_InitOSKeymap
+                0x0000000000020084                MenuetOS_PumpEvents
+ .text          0x0000000000020348      0xb00 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_0.o)
+                0x0000000000020de4                SDL_CalculateBlit0
+ .text          0x0000000000020e48     0x4db8 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_N.o)
+                0x0000000000025a99                SDL_CalculateBlitN
+ .text          0x0000000000025c00     0x1f20 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_1.o)
+                0x0000000000027abc                SDL_CalculateBlit1
+ .text          0x0000000000027b20     0x4118 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_A.o)
+                0x000000000002baa7                SDL_CalculateAlphaBlit
+ .text          0x000000000002bc38        0x0 /home/hatsune/menuetos/lib/libc.a(param.o)
+ .text          0x000000000002bc38       0x40 /home/hatsune/menuetos/lib/libc.a(crt1.o)
+                0x000000000002bc38                __crt1_startup
+ .text          0x000000000002bc78        0x4 /home/hatsune/menuetos/lib/libc.a(stderr.o)
+ .text          0x000000000002bc7c       0x3c /home/hatsune/menuetos/lib/libc.a(_main.o)
+                0x000000000002bc7c                __main
+ .text          0x000000000002bcb8       0xe8 /home/hatsune/menuetos/lib/libc.a(gettimeo.o)
+                0x000000000002bcb8                gettimeofday
+ .text          0x000000000002bda0       0x3c /home/hatsune/menuetos/lib/libc.a(sprintf.o)
+                0x000000000002bda0                sprintf
+ .text          0x000000000002bddc       0x3c /home/hatsune/menuetos/lib/libc.a(atexit.o)
+                0x000000000002bddc                atexit
+ .text          0x000000000002be18       0x98 /home/hatsune/menuetos/lib/libc.a(fprintf.o)
+                0x000000000002be18                fprintf
+ .text          0x000000000002beb0       0x24 /home/hatsune/menuetos/lib/libc.a(exit.o)
+                0x000000000002beb0                exit
+ .text          0x000000000002bed4       0x5c /home/hatsune/menuetos/lib/libc.a(getcwd.o)
+                0x000000000002bed4                getcwd
+                0x000000000002bf26                __libc_set_cwd
+ .text          0x000000000002bf30       0x1c /home/hatsune/menuetos/lib/libc.a(strcpy.o)
+                0x000000000002bf30                strcpy
+ .text          0x000000000002bf4c       0x18 /home/hatsune/menuetos/lib/libc.a(strlen.o)
+                0x000000000002bf4c                strlen
+ .text          0x000000000002bf64       0xb4 /home/hatsune/menuetos/lib/libc.a(fflush.o)
+                0x000000000002bf64                fflush
+ .text          0x000000000002c018       0x48 /home/hatsune/menuetos/lib/libc.a(usleep.o)
+                0x000000000002c018                usleep
+ .text          0x000000000002c060       0x20 /home/hatsune/menuetos/lib/libc.a(strcmp.o)
+                0x000000000002c060                strcmp
+ .text          0x000000000002c080       0x2c /home/hatsune/menuetos/lib/libc.a(memcpy.o)
+                0x000000000002c080                memcpy
+ .text          0x000000000002c0ac       0x24 /home/hatsune/menuetos/lib/libc.a(strrchr.o)
+                0x000000000002c0ac                strrchr
+ .text          0x000000000002c0d0       0x1c /home/hatsune/menuetos/lib/libc.a(open.o)
+                0x000000000002c0d0                open
+ .text          0x000000000002c0ec        0xc /home/hatsune/menuetos/lib/libc.a(close.o)
+                0x000000000002c0ec                close
+ .text          0x000000000002c0f8       0x10 /home/hatsune/menuetos/lib/libc.a(toupper.o)
+                0x000000000002c0f8                toupper
+ .text          0x000000000002c108       0x18 /home/hatsune/menuetos/lib/libc.a(chdir.o)
+                0x000000000002c108                chdir
+ .text          0x000000000002c120       0x98 /home/hatsune/menuetos/lib/libc.a(opendir.o)
+                0x000000000002c120                opendir
+ .text          0x000000000002c1b8       0x54 /home/hatsune/menuetos/lib/libc.a(readdir.o)
+                0x000000000002c1b8                readdir
+ .text          0x000000000002c20c      0x2bc /home/hatsune/menuetos/lib/libc.a(qsort.o)
+                0x000000000002c3b4                qsort
+ .text          0x000000000002c4c8      0x26c /home/hatsune/menuetos/lib/libc.a(stat.o)
+                0x000000000002c4c8                stat
+ .text          0x000000000002c734       0x18 /home/hatsune/menuetos/lib/libc.a(closedir.o)
+                0x000000000002c734                closedir
+ .text          0x000000000002c74c       0x24 /home/hatsune/menuetos/lib/libc.a(strncpy.o)
+                0x000000000002c74c                strncpy
+ .text          0x000000000002c770        0xc /home/hatsune/menuetos/lib/libc.a(read.o)
+                0x000000000002c770                read
+ .text          0x000000000002c77c        0xc /home/hatsune/menuetos/lib/libc.a(write.o)
+                0x000000000002c77c                write
+ .text          0x000000000002c788       0x40 /home/hatsune/menuetos/lib/libc.a(memset.o)
+                0x000000000002c788                memset
+ .text          0x000000000002c7c8       0x34 /home/hatsune/menuetos/lib/libc.a(printf.o)
+                0x000000000002c7c8                printf
+ .text          0x000000000002c7fc       0x38 /home/hatsune/menuetos/lib/libc.a(time.o)
+                0x000000000002c7fc                time
+ .text          0x000000000002c834      0xe54 /home/hatsune/menuetos/lib/libc.a(ctime.o)
+                0x000000000002d0c2                tzsetwall
+                0x000000000002d0ec                tzset
+                0x000000000002d4c4                localtime
+                0x000000000002d4ec                gmtime
+                0x000000000002d542                asctime
+                0x000000000002d5a9                ctime
+                0x000000000002d5c0                mktime
+ .text          0x000000000002d688      0x384 /home/hatsune/menuetos/lib/libc.a(malloc.o)
+                0x000000000002d755                malloc
+                0x000000000002d90b                free
+                0x000000000002d9a9                realloc
+ .text          0x000000000002da0c      0x138 /home/hatsune/menuetos/lib/libc.a(fopen.o)
+                0x000000000002da0c                fopen
+ .text          0x000000000002db44       0xd0 /home/hatsune/menuetos/lib/libc.a(fseek.o)
+                0x000000000002db44                fseek
+ .text          0x000000000002dc14       0x94 /home/hatsune/menuetos/lib/libc.a(fread.o)
+                0x000000000002dc14                fread
+ .text          0x000000000002dca8       0xb4 /home/hatsune/menuetos/lib/libc.a(fclose.o)
+                0x000000000002dca8                fclose
+ .text          0x000000000002dd5c       0xec /home/hatsune/menuetos/lib/libc.a(fwrite.o)
+                0x000000000002dd5c                fwrite
+ .text          0x000000000002de48       0x28 /home/hatsune/menuetos/lib/libc.a(strncmp.o)
+                0x000000000002de48                strncmp
+ .text          0x000000000002de70       0x3c /home/hatsune/menuetos/lib/libc.a(vsprintf.o)
+                0x000000000002de70                vsprintf
+ .text          0x000000000002deac        0xc /home/hatsune/menuetos/lib/libc.a(exit.o)
+                0x000000000002deac                __menuet__sys_exit
+ .text          0x000000000002deb8       0x24 /home/hatsune/menuetos/lib/libc.a(delay.o)
+                0x000000000002deb8                __menuet__delay100
+                0x000000000002dec9                __menuet(int, double, long,...)
+ .text          0x000000000002dedc       0x10 /home/hatsune/menuetos/lib/libc.a(ferror.o)
+                0x000000000002dedc                ferror
+ .text          0x000000000002deec       0xf8 /home/hatsune/menuetos/lib/libc.a(ftell.o)
+                0x000000000002deec                ftell
+ .text          0x000000000002dfe4       0x30 /home/hatsune/menuetos/lib/libc.a(memcmp.o)
+                0x000000000002dfe4                memcmp
+ .text          0x000000000002e014       0x2c /home/hatsune/menuetos/lib/libc.a(image.o)
+                0x000000000002e014                __menuet__putimage
+ .text          0x000000000002e040       0x44 /home/hatsune/menuetos/lib/libc.a(window.o)
+                0x000000000002e040                __menuet__define_window
+                0x000000000002e072                __menuet__window_redraw
+ .text          0x000000000002e084       0x2c /home/hatsune/menuetos/lib/libc.a(event.o)
+                0x000000000002e084                __menuet__wait_for_event
+                0x000000000002e090                __menuet__check_for_event
+                0x000000000002e09c                __menuet__set_bitfield_for_wanted_events
+ .text          0x000000000002e0b0       0x90 /home/hatsune/menuetos/lib/libc.a(debug.o)
+                0x000000000002e0b0                __libclog_vprintf
+                0x000000000002e114                __libclog_printf
+ .text          0x000000000002e140       0x18 /home/hatsune/menuetos/lib/libc.a(keyb.o)
+                0x000000000002e140                __menuet__getkey
+ .text          0x000000000002e158       0x4c /home/hatsune/menuetos/lib/libc.a(button.o)
+                0x000000000002e158                __menuet__make_button
+                0x000000000002e188                __menuet__get_button_id
+ .text          0x000000000002e1a4      0x15c /home/hatsune/menuetos/lib/libc.a(brk.o)
+                0x000000000002e1a4                init_brk
+                0x000000000002e1f8                sbrk
+ .text          0x000000000002e300      0x140 /home/hatsune/menuetos/lib/libc.a(crt0.o)
+                0x000000000002e383                _exit
+                0x000000000002e38d                __crt0_setup_arguments
+ .text          0x000000000002e440       0x78 /home/hatsune/menuetos/lib/libc.a(emu_init.o)
+                0x000000000002e440                dosemu_inithandles
+                0x000000000002e485                init_dir_stack
+ .text          0x000000000002e4b8       0x40 /home/hatsune/menuetos/lib/libc.a(stdiohk.o)
+                0x000000000002e4b8                __stdio_cleanup_proc
+ .text          0x000000000002e4f8        0xc /home/hatsune/menuetos/lib/libc.a(clock.o)
+                0x000000000002e4f8                __menuet__getsystemclock
+ .text          0x000000000002e504     0x13f8 /home/hatsune/menuetos/lib/libc.a(doprnt.o)
+                0x000000000002e632                _doprnt
+ .text          0x000000000002f8fc       0x6c /home/hatsune/menuetos/lib/libc.a(chkstk.o)
+                0x000000000002f8fc                __chkstk
+                0x000000000002f8fc                _alloca
+                0x000000000002f926                __chkstk_ms
+ .text          0x000000000002f968       0xe4 /home/hatsune/menuetos/lib/libc.a(curdir.o)
+                0x000000000002fa03                __get_curdir
+                0x000000000002fa0d                __chdir
+                0x000000000002fa1e                __libc_combine_path
+ .text          0x000000000002fa4c      0x444 /home/hatsune/menuetos/lib/libc.a(dosemu.o)
+                0x000000000002fa4c                dosemu_file_exists
+                0x000000000002fa9b                dosemu_createtrunc
+                0x000000000002fae9                dosemu_getiostruct
+                0x000000000002fb12                dosemu_allochandle
+                0x000000000002fb31                dosemu_freehandle
+                0x000000000002fb4d                dosemu_fileread
+                0x000000000002fba4                dosemu_filewrite
+                0x000000000002fc06                dosemu_iosize
+                0x000000000002fc22                dosemu_filesize
+                0x000000000002fc2b                dosemu_open
+                0x000000000002fd1c                dosemu_tell
+                0x000000000002fd39                dosemu_lseek
+                0x000000000002fd89                dosemu_read
+                0x000000000002fdb8                dosemu_write
+                0x000000000002fde7                dosemu_close
+                0x000000000002fe0e                _dosemu_flush
+                0x000000000002fe13                dosemu_truncate
+ .text          0x000000000002fe90       0x14 /home/hatsune/menuetos/lib/libc.a(clock.o)
+                0x000000000002fe90                clock
+ .text          0x000000000002fea4        0x0 /home/hatsune/menuetos/lib/libc.a(ct_upper.o)
+ .text          0x000000000002fea4       0x68 /home/hatsune/menuetos/lib/libc.a(fixpath.o)
+                0x000000000002fea4                fix_slashes
+                0x000000000002fee7                _fixpath
+ .text          0x000000000002ff0c       0x24 /home/hatsune/menuetos/lib/libc.a(systree.o)
+                0x000000000002ff0c                __kolibri__system_tree_access
+                0x000000000002ff1d                __kolibri__system_tree_access2
+ .text          0x000000000002ff30        0xc /home/hatsune/menuetos/lib/libc.a(errno.o)
+                0x000000000002ff30                __isatty
+ .text          0x000000000002ff3c        0x4 /home/hatsune/menuetos/lib/libc.a(stdout.o)
+ .text          0x000000000002ff40        0x0 /home/hatsune/menuetos/lib/libc.a(ct_flags.o)
+ .text          0x000000000002ff40        0xc /home/hatsune/menuetos/lib/libc.a(getenv.o)
+                0x000000000002ff40                getenv
+ .text          0x000000000002ff4c        0x0 /home/hatsune/menuetos/lib/libc.a(fmode.o)
+ .text          0x000000000002ff4c       0xa0 /home/hatsune/menuetos/lib/libc.a(allocfil.o)
+                0x000000000002ff50                __alloc_file
+ .text          0x000000000002ffec        0xc /home/hatsune/menuetos/lib/libc.a(lseek.o)
+                0x000000000002ffec                lseek
+ .text          0x000000000002fff8      0x148 /home/hatsune/menuetos/lib/libc.a(filbuf.o)
+                0x000000000002fffc                _filbuf
+ .text          0x0000000000030140       0x90 /home/hatsune/menuetos/lib/libc.a(remove.o)
+                0x0000000000030140                remove
+ .text          0x00000000000301d0      0x14c /home/hatsune/menuetos/lib/libc.a(flsbuf.o)
+                0x00000000000301d0                _flsbuf
+ .text          0x000000000003031c       0x14 /home/hatsune/menuetos/lib/libc.a(dosio.o)
+                0x000000000003031c                __file_handle_set
+ .text          0x0000000000030330       0x38 /home/hatsune/menuetos/lib/libc.a(fwalk.o)
+                0x0000000000030330                _fwalk
+ .text          0x0000000000030368       0x2c /home/hatsune/menuetos/lib/libc.a(modfl.o)
+                0x0000000000030368                __modfl
+ .text          0x0000000000030394        0xc /home/hatsune/menuetos/lib/libc.a(lconv.o)
+                0x0000000000030394                localeconv
+ .text          0x00000000000303a0       0x24 /home/hatsune/menuetos/lib/libc.a(memchr.o)
+                0x00000000000303a0                memchr
+ .text          0x00000000000303c4        0xc /home/hatsune/menuetos/lib/libc.a(putc.o)
+                0x00000000000303c4                putc
+ .text          0x00000000000303d0       0x10 /home/hatsune/menuetos/lib/libc.a(env.o)
+                0x00000000000303d0                __libc_putenv
+                0x00000000000303d8                __libc_getenv
+ .text          0x00000000000303e0        0x0 /home/hatsune/menuetos/lib/libc.a(frlist.o)
+ .text          0x00000000000303e0        0x4 /home/hatsune/menuetos/lib/libc.a(stdin.o)
+ .text          0x00000000000303e4       0xbc /home/hatsune/menuetos/lib/libc.a(fputc.o)
+                0x00000000000303e4                fputc
+ .text          0x00000000000304a0        0x0 /home/hatsune/menuetos/lib/libc.a(hooks.o)
+ *(.fixup)
+ *(.gnu.warning)
+ *(.gnu.linkonce.t*)
+ *(.const)
+ *(.ro*)
+ *(.gnu.linkonce.r*)
+                0x00000000000304a0                ecode = .
+                0x00000000000304a0                _ecode = .
+
+.text.startup   0x00000000000304a0      0x1e0
+ .text.startup  0x00000000000304a0      0x1d8 sdl/main_od.o
+                0x00000000000304a0                main
+
+.rdata          0x0000000000030680     0x5380
+ .rdata         0x0000000000030680       0x84 sdl/main_od.o
+ .rdata         0x0000000000030704      0x8a0 sdl/menu.o
+ .rdata         0x0000000000030fa4      0x384 emu/cpu/nec.o
+ .rdata         0x0000000000031328       0xd0 emu/WS.o
+ .rdata         0x00000000000313f8       0xd8 emu/WSFileio.o
+ .rdata         0x00000000000314d0       0x10 emu/WSInput.o
+                0x00000000000314d0                keyCoresp
+ .rdata         0x00000000000314e0       0x58 emu/WSRender.o
+ .rdata         0x0000000000031538       0x68 /home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o)
+ .rdata         0x00000000000315a0      0x1d8 /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o)
+ .rdata         0x0000000000031778       0x68 /home/hatsune/menuetos/lib/libSDL.a(SDL.o)
+ .rdata         0x00000000000317e0       0x94 /home/hatsune/menuetos/lib/libSDL.a(SDL_error.o)
+ .rdata         0x0000000000031874       0x2c /home/hatsune/menuetos/lib/libSDL.a(SDL_cursor.o)
+ .rdata         0x00000000000318a0      0x194 /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o)
+ .rdata         0x0000000000031a34       0x2c /home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o)
+ .rdata         0x0000000000031a60       0xa0 /home/hatsune/menuetos/lib/libSDL.a(SDL_bmp.o)
+ .rdata         0x0000000000031b00       0x1c /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o)
+ .rdata         0x0000000000031b1c      0x624 /home/hatsune/menuetos/lib/libSDL.a(SDL_keyboard.o)
+ .rdata         0x0000000000032140       0x24 /home/hatsune/menuetos/lib/libSDL.a(SDL_syscond.o)
+ .rdata         0x0000000000032164       0x10 /home/hatsune/menuetos/lib/libSDL.a(SDL_RLEaccel.o)
+ .rdata         0x0000000000032174       0x20 /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o)
+ .rdata         0x0000000000032194       0xa0 /home/hatsune/menuetos/lib/libSDL.a(SDL_timer.o)
+ .rdata         0x0000000000032234       0x2c /home/hatsune/menuetos/lib/libSDL.a(SDL_systhread.o)
+ .rdata         0x0000000000032260       0x28 /home/hatsune/menuetos/lib/libSDL.a(SDL_syssem.o)
+ .rdata         0x0000000000032288       0x20 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o)
+ .rdata         0x00000000000322a8      0x61c /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o)
+ .rdata         0x00000000000328c4       0x28 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_0.o)
+ .rdata         0x00000000000328ec     0x2350 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_N.o)
+ .rdata         0x0000000000034c3c      0x140 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_1.o)
+ .rdata         0x0000000000034d7c       0x1c /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_A.o)
+ .rdata         0x0000000000034d98       0xcc /home/hatsune/menuetos/lib/libc.a(ctime.o)
+ *fill*         0x0000000000034e64        0xc 
+ .rdata         0x0000000000034e70      0x1c0 /home/hatsune/menuetos/lib/libc.a(doprnt.o)
+ .rdata$zzz     0x0000000000035030       0x14 sdl/main_od.o
+ .rdata$zzz     0x0000000000035044       0x14 sdl/menu.o
+ .rdata$zzz     0x0000000000035058       0x14 sdl/hack.o
+ .rdata$zzz     0x000000000003506c       0x14 emu/cpu/nec.o
+ .rdata$zzz     0x0000000000035080       0x14 emu/WS.o
+ .rdata$zzz     0x0000000000035094       0x14 emu/WSApu.o
+ .rdata$zzz     0x00000000000350a8       0x14 emu/WSFileio.o
+ .rdata$zzz     0x00000000000350bc       0x14 emu/WSInput.o
+ .rdata$zzz     0x00000000000350d0       0x14 emu/WSRender.o
+ .rdata$zzz     0x00000000000350e4       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o)
+ .rdata$zzz     0x00000000000350f8       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o)
+ .rdata$zzz     0x000000000003510c       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL.o)
+ .rdata$zzz     0x0000000000035120       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_error.o)
+ .rdata$zzz     0x0000000000035134       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_cursor.o)
+ .rdata$zzz     0x0000000000035148       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o)
+ .rdata$zzz     0x000000000003515c       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o)
+ .rdata$zzz     0x0000000000035170       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_bmp.o)
+ .rdata$zzz     0x0000000000035184       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o)
+ .rdata$zzz     0x0000000000035198       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_keyboard.o)
+ .rdata$zzz     0x00000000000351ac       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_systimer.o)
+ .rdata$zzz     0x00000000000351c0       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_sysmutex.o)
+ .rdata$zzz     0x00000000000351d4       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_syscond.o)
+ .rdata$zzz     0x00000000000351e8       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_RLEaccel.o)
+ .rdata$zzz     0x00000000000351fc       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_pixels.o)
+ .rdata$zzz     0x0000000000035210       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o)
+ .rdata$zzz     0x0000000000035224       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_resize.o)
+ .rdata$zzz     0x0000000000035238       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_mouse.o)
+ .rdata$zzz     0x000000000003524c       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_getenv.o)
+ .rdata$zzz     0x0000000000035260       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_timer.o)
+ .rdata$zzz     0x0000000000035274       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_fatal.o)
+ .rdata$zzz     0x0000000000035288       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_endian.o)
+ .rdata$zzz     0x000000000003529c       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_systhread.o)
+ .rdata$zzz     0x00000000000352b0       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_thread.o)
+ .rdata$zzz     0x00000000000352c4       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_active.o)
+ .rdata$zzz     0x00000000000352d8       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_quit.o)
+ .rdata$zzz     0x00000000000352ec       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_syssem.o)
+ .rdata$zzz     0x0000000000035300       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o)
+ .rdata$zzz     0x0000000000035314       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o)
+ .rdata$zzz     0x0000000000035328       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_0.o)
+ .rdata$zzz     0x000000000003533c       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_N.o)
+ .rdata$zzz     0x0000000000035350       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_1.o)
+ .rdata$zzz     0x0000000000035364       0x14 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_A.o)
+ .rdata$zzz     0x0000000000035378       0x14 /home/hatsune/menuetos/lib/libc.a(param.o)
+ .rdata$zzz     0x000000000003538c       0x14 /home/hatsune/menuetos/lib/libc.a(crt1.o)
+ .rdata$zzz     0x00000000000353a0       0x14 /home/hatsune/menuetos/lib/libc.a(stderr.o)
+ .rdata$zzz     0x00000000000353b4       0x14 /home/hatsune/menuetos/lib/libc.a(_main.o)
+ .rdata$zzz     0x00000000000353c8       0x14 /home/hatsune/menuetos/lib/libc.a(gettimeo.o)
+ .rdata$zzz     0x00000000000353dc       0x14 /home/hatsune/menuetos/lib/libc.a(sprintf.o)
+ .rdata$zzz     0x00000000000353f0       0x14 /home/hatsune/menuetos/lib/libc.a(atexit.o)
+ .rdata$zzz     0x0000000000035404       0x14 /home/hatsune/menuetos/lib/libc.a(fprintf.o)
+ .rdata$zzz     0x0000000000035418       0x14 /home/hatsune/menuetos/lib/libc.a(exit.o)
+ .rdata$zzz     0x000000000003542c       0x14 /home/hatsune/menuetos/lib/libc.a(getcwd.o)
+ .rdata$zzz     0x0000000000035440       0x14 /home/hatsune/menuetos/lib/libc.a(strcpy.o)
+ .rdata$zzz     0x0000000000035454       0x14 /home/hatsune/menuetos/lib/libc.a(strlen.o)
+ .rdata$zzz     0x0000000000035468       0x14 /home/hatsune/menuetos/lib/libc.a(fflush.o)
+ .rdata$zzz     0x000000000003547c       0x14 /home/hatsune/menuetos/lib/libc.a(usleep.o)
+ .rdata$zzz     0x0000000000035490       0x14 /home/hatsune/menuetos/lib/libc.a(strcmp.o)
+ .rdata$zzz     0x00000000000354a4       0x14 /home/hatsune/menuetos/lib/libc.a(memcpy.o)
+ .rdata$zzz     0x00000000000354b8       0x14 /home/hatsune/menuetos/lib/libc.a(strrchr.o)
+ .rdata$zzz     0x00000000000354cc       0x14 /home/hatsune/menuetos/lib/libc.a(open.o)
+ .rdata$zzz     0x00000000000354e0       0x14 /home/hatsune/menuetos/lib/libc.a(close.o)
+ .rdata$zzz     0x00000000000354f4       0x14 /home/hatsune/menuetos/lib/libc.a(toupper.o)
+ .rdata$zzz     0x0000000000035508       0x14 /home/hatsune/menuetos/lib/libc.a(chdir.o)
+ .rdata$zzz     0x000000000003551c       0x14 /home/hatsune/menuetos/lib/libc.a(opendir.o)
+ .rdata$zzz     0x0000000000035530       0x14 /home/hatsune/menuetos/lib/libc.a(readdir.o)
+ .rdata$zzz     0x0000000000035544       0x14 /home/hatsune/menuetos/lib/libc.a(qsort.o)
+ .rdata$zzz     0x0000000000035558       0x14 /home/hatsune/menuetos/lib/libc.a(stat.o)
+ .rdata$zzz     0x000000000003556c       0x14 /home/hatsune/menuetos/lib/libc.a(closedir.o)
+ .rdata$zzz     0x0000000000035580       0x14 /home/hatsune/menuetos/lib/libc.a(strncpy.o)
+ .rdata$zzz     0x0000000000035594       0x14 /home/hatsune/menuetos/lib/libc.a(read.o)
+ .rdata$zzz     0x00000000000355a8       0x14 /home/hatsune/menuetos/lib/libc.a(write.o)
+ .rdata$zzz     0x00000000000355bc       0x14 /home/hatsune/menuetos/lib/libc.a(printf.o)
+ .rdata$zzz     0x00000000000355d0       0x14 /home/hatsune/menuetos/lib/libc.a(time.o)
+ .rdata$zzz     0x00000000000355e4       0x14 /home/hatsune/menuetos/lib/libc.a(ctime.o)
+ .rdata$zzz     0x00000000000355f8       0x14 /home/hatsune/menuetos/lib/libc.a(malloc.o)
+ .rdata$zzz     0x000000000003560c       0x14 /home/hatsune/menuetos/lib/libc.a(fopen.o)
+ .rdata$zzz     0x0000000000035620       0x14 /home/hatsune/menuetos/lib/libc.a(fseek.o)
+ .rdata$zzz     0x0000000000035634       0x14 /home/hatsune/menuetos/lib/libc.a(fread.o)
+ .rdata$zzz     0x0000000000035648       0x14 /home/hatsune/menuetos/lib/libc.a(fclose.o)
+ .rdata$zzz     0x000000000003565c       0x14 /home/hatsune/menuetos/lib/libc.a(fwrite.o)
+ .rdata$zzz     0x0000000000035670       0x14 /home/hatsune/menuetos/lib/libc.a(strncmp.o)
+ .rdata$zzz     0x0000000000035684       0x14 /home/hatsune/menuetos/lib/libc.a(vsprintf.o)
+ .rdata$zzz     0x0000000000035698       0x14 /home/hatsune/menuetos/lib/libc.a(exit.o)
+ .rdata$zzz     0x00000000000356ac       0x14 /home/hatsune/menuetos/lib/libc.a(delay.o)
+ .rdata$zzz     0x00000000000356c0       0x14 /home/hatsune/menuetos/lib/libc.a(ferror.o)
+ .rdata$zzz     0x00000000000356d4       0x14 /home/hatsune/menuetos/lib/libc.a(ftell.o)
+ .rdata$zzz     0x00000000000356e8       0x14 /home/hatsune/menuetos/lib/libc.a(memcmp.o)
+ .rdata$zzz     0x00000000000356fc       0x14 /home/hatsune/menuetos/lib/libc.a(image.o)
+ .rdata$zzz     0x0000000000035710       0x14 /home/hatsune/menuetos/lib/libc.a(window.o)
+ .rdata$zzz     0x0000000000035724       0x14 /home/hatsune/menuetos/lib/libc.a(event.o)
+ .rdata$zzz     0x0000000000035738       0x14 /home/hatsune/menuetos/lib/libc.a(debug.o)
+ .rdata$zzz     0x000000000003574c       0x14 /home/hatsune/menuetos/lib/libc.a(keyb.o)
+ .rdata$zzz     0x0000000000035760       0x14 /home/hatsune/menuetos/lib/libc.a(button.o)
+ .rdata$zzz     0x0000000000035774       0x14 /home/hatsune/menuetos/lib/libc.a(brk.o)
+ .rdata$zzz     0x0000000000035788       0x14 /home/hatsune/menuetos/lib/libc.a(crt0.o)
+ .rdata$zzz     0x000000000003579c       0x14 /home/hatsune/menuetos/lib/libc.a(emu_init.o)
+ .rdata$zzz     0x00000000000357b0       0x14 /home/hatsune/menuetos/lib/libc.a(stdiohk.o)
+ .rdata$zzz     0x00000000000357c4       0x14 /home/hatsune/menuetos/lib/libc.a(clock.o)
+ .rdata$zzz     0x00000000000357d8       0x14 /home/hatsune/menuetos/lib/libc.a(doprnt.o)
+ .rdata$zzz     0x00000000000357ec       0x14 /home/hatsune/menuetos/lib/libc.a(curdir.o)
+ .rdata$zzz     0x0000000000035800       0x14 /home/hatsune/menuetos/lib/libc.a(dosemu.o)
+ .rdata$zzz     0x0000000000035814       0x14 /home/hatsune/menuetos/lib/libc.a(clock.o)
+ .rdata$zzz     0x0000000000035828       0x14 /home/hatsune/menuetos/lib/libc.a(ct_upper.o)
+ .rdata$zzz     0x000000000003583c       0x14 /home/hatsune/menuetos/lib/libc.a(fixpath.o)
+ .rdata$zzz     0x0000000000035850       0x14 /home/hatsune/menuetos/lib/libc.a(systree.o)
+ .rdata$zzz     0x0000000000035864       0x14 /home/hatsune/menuetos/lib/libc.a(errno.o)
+ .rdata$zzz     0x0000000000035878       0x14 /home/hatsune/menuetos/lib/libc.a(stdout.o)
+ .rdata$zzz     0x000000000003588c       0x14 /home/hatsune/menuetos/lib/libc.a(ct_flags.o)
+ .rdata$zzz     0x00000000000358a0       0x14 /home/hatsune/menuetos/lib/libc.a(getenv.o)
+ .rdata$zzz     0x00000000000358b4       0x14 /home/hatsune/menuetos/lib/libc.a(fmode.o)
+ .rdata$zzz     0x00000000000358c8       0x14 /home/hatsune/menuetos/lib/libc.a(allocfil.o)
+ .rdata$zzz     0x00000000000358dc       0x14 /home/hatsune/menuetos/lib/libc.a(lseek.o)
+ .rdata$zzz     0x00000000000358f0       0x14 /home/hatsune/menuetos/lib/libc.a(filbuf.o)
+ .rdata$zzz     0x0000000000035904       0x14 /home/hatsune/menuetos/lib/libc.a(remove.o)
+ .rdata$zzz     0x0000000000035918       0x14 /home/hatsune/menuetos/lib/libc.a(flsbuf.o)
+ .rdata$zzz     0x000000000003592c       0x14 /home/hatsune/menuetos/lib/libc.a(dosio.o)
+ .rdata$zzz     0x0000000000035940       0x14 /home/hatsune/menuetos/lib/libc.a(fwalk.o)
+ .rdata$zzz     0x0000000000035954       0x14 /home/hatsune/menuetos/lib/libc.a(lconv.o)
+ .rdata$zzz     0x0000000000035968       0x14 /home/hatsune/menuetos/lib/libc.a(memchr.o)
+ .rdata$zzz     0x000000000003597c       0x14 /home/hatsune/menuetos/lib/libc.a(putc.o)
+ .rdata$zzz     0x0000000000035990       0x14 /home/hatsune/menuetos/lib/libc.a(env.o)
+ .rdata$zzz     0x00000000000359a4       0x14 /home/hatsune/menuetos/lib/libc.a(frlist.o)
+ .rdata$zzz     0x00000000000359b8       0x14 /home/hatsune/menuetos/lib/libc.a(stdin.o)
+ .rdata$zzz     0x00000000000359cc       0x14 /home/hatsune/menuetos/lib/libc.a(fputc.o)
+ .rdata$zzz     0x00000000000359e0       0x14 /home/hatsune/menuetos/lib/libc.a(hooks.o)
+
+.data           0x0000000000035a00    0x7c8a0
+                0x0000000000035a00                djgpp_first_ctor = .
+ *(.ctor)
+ *(.ctors)
+                0x0000000000035a00                djgpp_last_ctor = .
+                0x0000000000035a00                djgpp_first_dtor = .
+ *(.dtor)
+ *(.dtors)
+                0x0000000000035a00                djgpp_last_dtor = .
+ *(.gcc_exc*)
+                0x0000000000035a00                __EH_FRAME_BEGIN__ = .
+ *(.eh_fram*)
+ .eh_frame      0x0000000000035a00       0xf0 sdl/main_od.o
+ .eh_frame      0x0000000000035af0      0x51c sdl/menu.o
+ .eh_frame      0x000000000003600c       0x44 sdl/hack.o
+ .eh_frame      0x0000000000036050     0x2430 emu/cpu/nec.o
+ .eh_frame      0x0000000000038480      0x23c emu/WS.o
+ .eh_frame      0x00000000000386bc      0x260 emu/WSApu.o
+ .eh_frame      0x000000000003891c      0x13c emu/WSFileio.o
+ .eh_frame      0x0000000000038a58       0x3c emu/WSInput.o
+ .eh_frame      0x0000000000038a94       0xc4 emu/WSRender.o
+ .eh_frame      0x0000000000038b58      0x280 /home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o)
+ .eh_frame      0x0000000000038dd8      0x514 /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o)
+ .eh_frame      0x00000000000392ec       0xe8 /home/hatsune/menuetos/lib/libSDL.a(SDL.o)
+ .eh_frame      0x00000000000393d4      0x130 /home/hatsune/menuetos/lib/libSDL.a(SDL_error.o)
+ .eh_frame      0x0000000000039504      0x2ac /home/hatsune/menuetos/lib/libSDL.a(SDL_cursor.o)
+ .eh_frame      0x00000000000397b0      0x158 /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o)
+ .eh_frame      0x0000000000039908      0x208 /home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o)
+ .eh_frame      0x0000000000039b10       0x78 /home/hatsune/menuetos/lib/libSDL.a(SDL_bmp.o)
+ .eh_frame      0x0000000000039b88      0x228 /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o)
+ .eh_frame      0x0000000000039db0      0x174 /home/hatsune/menuetos/lib/libSDL.a(SDL_keyboard.o)
+ .eh_frame      0x0000000000039f24      0x100 /home/hatsune/menuetos/lib/libSDL.a(SDL_systimer.o)
+ .eh_frame      0x000000000003a024       0xac /home/hatsune/menuetos/lib/libSDL.a(SDL_sysmutex.o)
+ .eh_frame      0x000000000003a0d0      0x108 /home/hatsune/menuetos/lib/libSDL.a(SDL_syscond.o)
+ .eh_frame      0x000000000003a1d8      0x2a0 /home/hatsune/menuetos/lib/libSDL.a(SDL_RLEaccel.o)
+ .eh_frame      0x000000000003a478      0x328 /home/hatsune/menuetos/lib/libSDL.a(SDL_pixels.o)
+ .eh_frame      0x000000000003a7a0      0x348 /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o)
+ .eh_frame      0x000000000003aae8       0x40 /home/hatsune/menuetos/lib/libSDL.a(SDL_resize.o)
+ .eh_frame      0x000000000003ab28      0x104 /home/hatsune/menuetos/lib/libSDL.a(SDL_mouse.o)
+ .eh_frame      0x000000000003ac2c       0x70 /home/hatsune/menuetos/lib/libSDL.a(SDL_getenv.o)
+ .eh_frame      0x000000000003ac9c      0x150 /home/hatsune/menuetos/lib/libSDL.a(SDL_timer.o)
+ .eh_frame      0x000000000003adec       0x74 /home/hatsune/menuetos/lib/libSDL.a(SDL_fatal.o)
+ .eh_frame      0x000000000003ae60      0x1d0 /home/hatsune/menuetos/lib/libSDL.a(SDL_endian.o)
+ .eh_frame      0x000000000003b030       0xb8 /home/hatsune/menuetos/lib/libSDL.a(SDL_systhread.o)
+ .eh_frame      0x000000000003b0e8      0x190 /home/hatsune/menuetos/lib/libSDL.a(SDL_thread.o)
+ .eh_frame      0x000000000003b278       0x84 /home/hatsune/menuetos/lib/libSDL.a(SDL_active.o)
+ .eh_frame      0x000000000003b2fc       0x60 /home/hatsune/menuetos/lib/libSDL.a(SDL_quit.o)
+ .eh_frame      0x000000000003b35c       0xf8 /home/hatsune/menuetos/lib/libSDL.a(SDL_syssem.o)
+ .eh_frame      0x000000000003b454       0xd0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o)
+ .eh_frame      0x000000000003b524       0x6c /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o)
+ .eh_frame      0x000000000003b590      0x218 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_0.o)
+ .eh_frame      0x000000000003b7a8      0x314 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_N.o)
+ .eh_frame      0x000000000003babc      0x218 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_1.o)
+ .eh_frame      0x000000000003bcd4      0x2d0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_A.o)
+ .eh_frame      0x000000000003bfa4       0x34 /home/hatsune/menuetos/lib/libc.a(crt1.o)
+ .eh_frame      0x000000000003bfd8       0x40 /home/hatsune/menuetos/lib/libc.a(_main.o)
+ .eh_frame      0x000000000003c018       0x44 /home/hatsune/menuetos/lib/libc.a(gettimeo.o)
+ .eh_frame      0x000000000003c05c       0x38 /home/hatsune/menuetos/lib/libc.a(sprintf.o)
+ .eh_frame      0x000000000003c094       0x3c /home/hatsune/menuetos/lib/libc.a(atexit.o)
+ .eh_frame      0x000000000003c0d0       0x40 /home/hatsune/menuetos/lib/libc.a(fprintf.o)
+ .eh_frame      0x000000000003c110       0x34 /home/hatsune/menuetos/lib/libc.a(exit.o)
+ .eh_frame      0x000000000003c144       0x60 /home/hatsune/menuetos/lib/libc.a(getcwd.o)
+ .eh_frame      0x000000000003c1a4       0x40 /home/hatsune/menuetos/lib/libc.a(strcpy.o)
+ .eh_frame      0x000000000003c1e4       0x3c /home/hatsune/menuetos/lib/libc.a(strlen.o)
+ .eh_frame      0x000000000003c220       0x54 /home/hatsune/menuetos/lib/libc.a(fflush.o)
+ .eh_frame      0x000000000003c274       0x40 /home/hatsune/menuetos/lib/libc.a(usleep.o)
+ .eh_frame      0x000000000003c2b4       0x40 /home/hatsune/menuetos/lib/libc.a(strcmp.o)
+ .eh_frame      0x000000000003c2f4       0x40 /home/hatsune/menuetos/lib/libc.a(memcpy.o)
+ .eh_frame      0x000000000003c334       0x3c /home/hatsune/menuetos/lib/libc.a(strrchr.o)
+ .eh_frame      0x000000000003c370       0x38 /home/hatsune/menuetos/lib/libc.a(open.o)
+ .eh_frame      0x000000000003c3a8       0x38 /home/hatsune/menuetos/lib/libc.a(close.o)
+ .eh_frame      0x000000000003c3e0       0x38 /home/hatsune/menuetos/lib/libc.a(toupper.o)
+ .eh_frame      0x000000000003c418       0x38 /home/hatsune/menuetos/lib/libc.a(chdir.o)
+ .eh_frame      0x000000000003c450       0x3c /home/hatsune/menuetos/lib/libc.a(opendir.o)
+ .eh_frame      0x000000000003c48c       0x40 /home/hatsune/menuetos/lib/libc.a(readdir.o)
+ .eh_frame      0x000000000003c4cc       0x78 /home/hatsune/menuetos/lib/libc.a(qsort.o)
+ .eh_frame      0x000000000003c544       0x48 /home/hatsune/menuetos/lib/libc.a(stat.o)
+ .eh_frame      0x000000000003c58c       0x38 /home/hatsune/menuetos/lib/libc.a(closedir.o)
+ .eh_frame      0x000000000003c5c4       0x40 /home/hatsune/menuetos/lib/libc.a(strncpy.o)
+ .eh_frame      0x000000000003c604       0x38 /home/hatsune/menuetos/lib/libc.a(read.o)
+ .eh_frame      0x000000000003c63c       0x38 /home/hatsune/menuetos/lib/libc.a(write.o)
+ .eh_frame      0x000000000003c674       0x38 /home/hatsune/menuetos/lib/libc.a(printf.o)
+ .eh_frame      0x000000000003c6ac       0x3c /home/hatsune/menuetos/lib/libc.a(time.o)
+ .eh_frame      0x000000000003c6e8      0x344 /home/hatsune/menuetos/lib/libc.a(ctime.o)
+ .eh_frame      0x000000000003ca2c      0x140 /home/hatsune/menuetos/lib/libc.a(malloc.o)
+ .eh_frame      0x000000000003cb6c       0x48 /home/hatsune/menuetos/lib/libc.a(fopen.o)
+ .eh_frame      0x000000000003cbb4       0x54 /home/hatsune/menuetos/lib/libc.a(fseek.o)
+ .eh_frame      0x000000000003cc08       0x44 /home/hatsune/menuetos/lib/libc.a(fread.o)
+ .eh_frame      0x000000000003cc4c       0x40 /home/hatsune/menuetos/lib/libc.a(fclose.o)
+ .eh_frame      0x000000000003cc8c       0x44 /home/hatsune/menuetos/lib/libc.a(fwrite.o)
+ .eh_frame      0x000000000003ccd0       0x40 /home/hatsune/menuetos/lib/libc.a(strncmp.o)
+ .eh_frame      0x000000000003cd10       0x38 /home/hatsune/menuetos/lib/libc.a(vsprintf.o)
+ .eh_frame      0x000000000003cd48       0x38 /home/hatsune/menuetos/lib/libc.a(exit.o)
+ .eh_frame      0x000000000003cd80       0x60 /home/hatsune/menuetos/lib/libc.a(delay.o)
+ .eh_frame      0x000000000003cde0       0x38 /home/hatsune/menuetos/lib/libc.a(ferror.o)
+ .eh_frame      0x000000000003ce18       0x44 /home/hatsune/menuetos/lib/libc.a(ftell.o)
+ .eh_frame      0x000000000003ce5c       0x3c /home/hatsune/menuetos/lib/libc.a(memcmp.o)
+ .eh_frame      0x000000000003ce98       0x3c /home/hatsune/menuetos/lib/libc.a(image.o)
+ .eh_frame      0x000000000003ced4       0x68 /home/hatsune/menuetos/lib/libc.a(window.o)
+ .eh_frame      0x000000000003cf3c       0x7c /home/hatsune/menuetos/lib/libc.a(event.o)
+ .eh_frame      0x000000000003cfb8       0x68 /home/hatsune/menuetos/lib/libc.a(debug.o)
+ .eh_frame      0x000000000003d020       0x38 /home/hatsune/menuetos/lib/libc.a(keyb.o)
+ .eh_frame      0x000000000003d058       0x60 /home/hatsune/menuetos/lib/libc.a(button.o)
+ .eh_frame      0x000000000003d0b8       0x68 /home/hatsune/menuetos/lib/libc.a(brk.o)
+ .eh_frame      0x000000000003d120       0x9c /home/hatsune/menuetos/lib/libc.a(crt0.o)
+ .eh_frame      0x000000000003d1bc       0x58 /home/hatsune/menuetos/lib/libc.a(emu_init.o)
+ .eh_frame      0x000000000003d214       0x68 /home/hatsune/menuetos/lib/libc.a(stdiohk.o)
+ .eh_frame      0x000000000003d27c       0x38 /home/hatsune/menuetos/lib/libc.a(clock.o)
+ .eh_frame      0x000000000003d2b4       0x98 /home/hatsune/menuetos/lib/libc.a(doprnt.o)
+ .eh_frame      0x000000000003d34c       0xa4 /home/hatsune/menuetos/lib/libc.a(curdir.o)
+ .eh_frame      0x000000000003d3f0      0x298 /home/hatsune/menuetos/lib/libc.a(dosemu.o)
+ .eh_frame      0x000000000003d688       0x3c /home/hatsune/menuetos/lib/libc.a(clock.o)
+ .eh_frame      0x000000000003d6c4       0x64 /home/hatsune/menuetos/lib/libc.a(fixpath.o)
+ .eh_frame      0x000000000003d728       0x60 /home/hatsune/menuetos/lib/libc.a(systree.o)
+ .eh_frame      0x000000000003d788       0x38 /home/hatsune/menuetos/lib/libc.a(errno.o)
+ .eh_frame      0x000000000003d7c0       0x38 /home/hatsune/menuetos/lib/libc.a(getenv.o)
+ .eh_frame      0x000000000003d7f8       0x48 /home/hatsune/menuetos/lib/libc.a(allocfil.o)
+ .eh_frame      0x000000000003d840       0x38 /home/hatsune/menuetos/lib/libc.a(lseek.o)
+ .eh_frame      0x000000000003d878       0x44 /home/hatsune/menuetos/lib/libc.a(filbuf.o)
+ .eh_frame      0x000000000003d8bc       0x3c /home/hatsune/menuetos/lib/libc.a(remove.o)
+ .eh_frame      0x000000000003d8f8       0x48 /home/hatsune/menuetos/lib/libc.a(flsbuf.o)
+ .eh_frame      0x000000000003d940       0x38 /home/hatsune/menuetos/lib/libc.a(dosio.o)
+ .eh_frame      0x000000000003d978       0x40 /home/hatsune/menuetos/lib/libc.a(fwalk.o)
+ .eh_frame      0x000000000003d9b8       0x38 /home/hatsune/menuetos/lib/libc.a(lconv.o)
+ .eh_frame      0x000000000003d9f0       0x3c /home/hatsune/menuetos/lib/libc.a(memchr.o)
+ .eh_frame      0x000000000003da2c       0x38 /home/hatsune/menuetos/lib/libc.a(putc.o)
+ .eh_frame      0x000000000003da64       0x58 /home/hatsune/menuetos/lib/libc.a(env.o)
+ .eh_frame      0x000000000003dabc       0x4c /home/hatsune/menuetos/lib/libc.a(fputc.o)
+                0x000000000003db08                __EH_FRAME_END__ = .
+                0x000000000003db08        0x4 LONG 0x0
+ *(.gnu.linkonce.d*)
+ *(.rodata)
+ *(.rodata.*)
+ *(.data)
+ .data          0x000000000003db0c      0x404 sdl/main_od.o
+                0x000000000003db0c                crc_table
+                0x000000000003df0c                FPS
+ .data          0x000000000003df10    0x713fc sdl/menu.o
+                0x000000000003df10                file_ext
+                0x000000000003df28                mnuConfigMenu
+                0x000000000003df34                ConfigMenuItems
+                0x000000000003e054                mnuMainMenu
+                0x000000000003e060                MainMenuItems
+                0x000000000003e160                mnuButtons
+                0x000000000003e1d0                mnuRatio
+                0x000000000003e1f0                mnuYesNo
+                0x000000000003e210                OSWAN_SKIN
+                0x0000000000063a9c                OSWAN_LOAD
+                0x0000000000076ad4                OSWAN_BACKGROUND
+ .data          0x00000000000af30c      0x600 sdl/hack.o
+                0x00000000000af30c                tableau_games
+ .data          0x00000000000af90c      0x420 emu/cpu/nec.o
+                0x00000000000af92c                nec_instruction
+ .data          0x00000000000afd2c     0x1104 emu/WS.o
+                0x00000000000afe70                WriteMemFnTable
+ .data          0x00000000000b0e30       0xdc emu/WSApu.o
+                0x00000000000b0ef0                Sound
+ .data          0x00000000000b0f0c        0x0 emu/WSFileio.o
+ .data          0x00000000000b0f0c        0x0 emu/WSInput.o
+ .data          0x00000000000b0f0c      0x90c emu/WSRender.o
+                0x00000000000b0f0c                Layer
+ .data          0x00000000000b1818        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o)
+ .data          0x00000000000b1818       0x20 /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o)
+ .data          0x00000000000b1838        0x4 /home/hatsune/menuetos/lib/libSDL.a(SDL.o)
+ .data          0x00000000000b183c        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_error.o)
+ .data          0x00000000000b183c       0x44 /home/hatsune/menuetos/lib/libSDL.a(SDL_cursor.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_bmp.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_keyboard.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_systimer.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_sysmutex.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_syscond.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_RLEaccel.o)
+ .data          0x00000000000b1880        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_pixels.o)
+ .data          0x00000000000b1880       0x24 /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o)
+                0x00000000000b1880                mosvideo_bootstrab
+                0x00000000000b1890                def_title
+ .data          0x00000000000b18a4        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_resize.o)
+ .data          0x00000000000b18a4        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_mouse.o)
+ .data          0x00000000000b18a4        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_getenv.o)
+ .data          0x00000000000b18a4        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_timer.o)
+ .data          0x00000000000b18a4        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_fatal.o)
+ *fill*         0x00000000000b18a4        0xc 
+ .data          0x00000000000b18b0       0x17 /home/hatsune/menuetos/lib/libSDL.a(init.o)
+                0x00000000000b18b0                hSound
+                0x00000000000b18b4                hrdwSound
+ *fill*         0x00000000000b18c7        0x1 
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_endian.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_systhread.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_thread.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_active.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_quit.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_syssem.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_0.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_N.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_1.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_A.o)
+ .data          0x00000000000b18c8        0x0 /home/hatsune/menuetos/lib/libc.a(param.o)
+ .data          0x00000000000b18c8        0x4 /home/hatsune/menuetos/lib/libc.a(crt1.o)
+                0x00000000000b18c8                __bss_count
+ .data          0x00000000000b18cc       0x24 /home/hatsune/menuetos/lib/libc.a(stderr.o)
+                0x00000000000b18cc                __dj_stderr
+ .data          0x00000000000b18f0        0x4 /home/hatsune/menuetos/lib/libc.a(_main.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(gettimeo.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(sprintf.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(atexit.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(fprintf.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(exit.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(getcwd.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(strcpy.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(strlen.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(fflush.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(usleep.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(strcmp.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(memcpy.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(strrchr.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(open.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(close.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(toupper.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(chdir.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(opendir.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(readdir.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(qsort.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(stat.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(closedir.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(strncpy.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(read.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(write.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(memset.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(printf.o)
+ .data          0x00000000000b18f4        0x0 /home/hatsune/menuetos/lib/libc.a(time.o)
+ .data          0x00000000000b18f4      0x5a0 /home/hatsune/menuetos/lib/libc.a(ctime.o)
+                0x00000000000b18f4                tzname
+                0x00000000000b1900                _posixrules_data
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(malloc.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(fopen.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(fseek.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(fread.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(fclose.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(fwrite.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(strncmp.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(vsprintf.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(exit.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(delay.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(ferror.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(ftell.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(memcmp.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(image.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(window.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(event.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(debug.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(keyb.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(button.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(brk.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(crt0.o)
+ .data          0x00000000000b1e94        0x0 /home/hatsune/menuetos/lib/libc.a(emu_init.o)
+ .data          0x00000000000b1e94        0x4 /home/hatsune/menuetos/lib/libc.a(stdiohk.o)
+                0x00000000000b1e94                __stdio_cleanup_hook
+ .data          0x00000000000b1e98        0x0 /home/hatsune/menuetos/lib/libc.a(clock.o)
+ .data          0x00000000000b1e98        0x8 /home/hatsune/menuetos/lib/libc.a(doprnt.o)
+ .data          0x00000000000b1ea0        0x0 /home/hatsune/menuetos/lib/libc.a(chkstk.o)
+ .data          0x00000000000b1ea0        0x0 /home/hatsune/menuetos/lib/libc.a(curdir.o)
+ .data          0x00000000000b1ea0        0x0 /home/hatsune/menuetos/lib/libc.a(dosemu.o)
+ .data          0x00000000000b1ea0        0x0 /home/hatsune/menuetos/lib/libc.a(clock.o)
+ .data          0x00000000000b1ea0      0x104 /home/hatsune/menuetos/lib/libc.a(ct_upper.o)
+                0x00000000000b1ea0                __dj_ctype_toupper
+ .data          0x00000000000b1fa4        0x0 /home/hatsune/menuetos/lib/libc.a(fixpath.o)
+ .data          0x00000000000b1fa4        0x0 /home/hatsune/menuetos/lib/libc.a(systree.o)
+ .data          0x00000000000b1fa4        0x0 /home/hatsune/menuetos/lib/libc.a(errno.o)
+ .data          0x00000000000b1fa4       0x24 /home/hatsune/menuetos/lib/libc.a(stdout.o)
+                0x00000000000b1fa4                __dj_stdout
+ .data          0x00000000000b1fc8      0x204 /home/hatsune/menuetos/lib/libc.a(ct_flags.o)
+                0x00000000000b1fc8                __dj_ctype_flags
+ .data          0x00000000000b21cc        0x0 /home/hatsune/menuetos/lib/libc.a(getenv.o)
+ .data          0x00000000000b21cc        0x4 /home/hatsune/menuetos/lib/libc.a(fmode.o)
+                0x00000000000b21cc                _fmode
+ .data          0x00000000000b21d0        0x0 /home/hatsune/menuetos/lib/libc.a(allocfil.o)
+ .data          0x00000000000b21d0        0x0 /home/hatsune/menuetos/lib/libc.a(lseek.o)
+ .data          0x00000000000b21d0        0x0 /home/hatsune/menuetos/lib/libc.a(filbuf.o)
+ .data          0x00000000000b21d0        0x0 /home/hatsune/menuetos/lib/libc.a(remove.o)
+ .data          0x00000000000b21d0        0x0 /home/hatsune/menuetos/lib/libc.a(flsbuf.o)
+ .data          0x00000000000b21d0       0x18 /home/hatsune/menuetos/lib/libc.a(dosio.o)
+                0x00000000000b21d0                __file_handle_modes
+ .data          0x00000000000b21e8        0x0 /home/hatsune/menuetos/lib/libc.a(fwalk.o)
+ .data          0x00000000000b21e8        0x0 /home/hatsune/menuetos/lib/libc.a(modfl.o)
+ .data          0x00000000000b21e8       0x34 /home/hatsune/menuetos/lib/libc.a(lconv.o)
+ .data          0x00000000000b221c        0x0 /home/hatsune/menuetos/lib/libc.a(memchr.o)
+ .data          0x00000000000b221c        0x0 /home/hatsune/menuetos/lib/libc.a(putc.o)
+ .data          0x00000000000b221c        0x0 /home/hatsune/menuetos/lib/libc.a(env.o)
+ .data          0x00000000000b221c       0x5c /home/hatsune/menuetos/lib/libc.a(frlist.o)
+                0x00000000000b221c                __file_rec_list
+ .data          0x00000000000b2278       0x24 /home/hatsune/menuetos/lib/libc.a(stdin.o)
+                0x00000000000b2278                __dj_stdin
+ .data          0x00000000000b229c        0x0 /home/hatsune/menuetos/lib/libc.a(fputc.o)
+ .data          0x00000000000b229c        0x0 /home/hatsune/menuetos/lib/libc.a(hooks.o)
+                0x00000000000b229c                edata = .
+                0x00000000000b229c                _edata = .
+                0x00000000000b229c                bss = .
+
+.bss            0x00000000000b22a0   0x16152c
+ *(.bss)
+ .bss           0x00000000000b22a0    0x10000 /home/hatsune/menuetos/stub/crt0.o
+ .bss           0x00000000000c22a0      0xa98 sdl/main_od.o
+                0x00000000000c22a0                event
+                0x00000000000c22b4                actualScreen
+                0x00000000000c22b8                pastFPS
+                0x00000000000c22bc                wait
+                0x00000000000c22c0                currentTick
+                0x00000000000c22c4                newTick
+                0x00000000000c22c8                lastTick
+                0x00000000000c22cc                nextTick
+                0x00000000000c22d0                current_conf_app
+                0x00000000000c26d0                gameName
+                0x00000000000c28d0                GameConf
+                0x00000000000c2d0c                gameCRC
+                0x00000000000c2d10                interval
+                0x00000000000c2d14                m_Flag
+ .bss           0x00000000000c2d38    0x20820 sdl/menu.o
+                0x00000000000c2d38                filedir_list
+                0x00000000000e3538                gameMenu
+ .bss           0x00000000000e3558        0x4 sdl/hack.o
+                0x00000000000e3558                game_choosen
+ .bss           0x00000000000e355c     0x1168 emu/cpu/nec.o
+                0x00000000000e355c                seg_prefix
+                0x00000000000e3560                nec_ICount
+                0x00000000000e3564                ModRM
+ .bss           0x00000000000e46c4    0x20a20 emu/WS.o
+                0x00000000000e46c4                FrameSkip
+                0x00000000000e46c8                CartKind
+                0x00000000000e46cc                sCEep
+                0x00000000000e46d4                sIEep
+                0x00000000000e46dc                IEep
+                0x00000000000e475c                RAMSize
+                0x00000000000e4760                RAMBanks
+                0x00000000000e4764                RAMMap
+                0x00000000000e4b64                ROMBanks
+                0x00000000000e4b68                ROMMap
+                0x00000000000e4f68                MemDummy
+                0x00000000000f4f68                IO
+                0x00000000000f5068                IRAM
+                0x0000000000105068                Page
+                0x00000000001050a8                Run
+ .bss           0x00000000001050e4    0xc812c emu/WSApu.o
+                0x00000000001050e4                sound_cv
+                0x00000000001050e8                sound_mutex
+                0x00000000001050ec                Noise
+                0x00000000001050f4                Swp
+                0x0000000000105104                VoiceOn
+                0x0000000000105108                Ch
+                0x0000000000105148                WaveMap
+                0x000000000010514c                mywaveinfo
+ .bss           0x00000000001cd210      0x404 emu/WSFileio.o
+                0x00000000001cd210                result
+ .bss           0x00000000001cd614        0x0 emu/WSInput.o
+ .bss           0x00000000001cd614    0x2ec4c emu/WSRender.o
+                0x00000000001cd614                Segment
+                0x00000000001cd640                SegmentBuffer
+                0x00000000001d6640                FrameBuffer
+                0x00000000001fbe40                MonoColor
+                0x00000000001fbe50                Palette
+                0x00000000001fc050                SprTMap
+                0x00000000001fc250                SprETMap
+                0x00000000001fc254                SprTTMap
+                0x00000000001fc258                Scr2TMap
+                0x00000000001fc25c                Scr1TMap
+ .bss           0x00000000001fc260        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_surface.o)
+ .bss           0x00000000001fc260        0x4 /home/hatsune/menuetos/lib/libSDL.a(SDL_video.o)
+                0x00000000001fc260                current_video
+ .bss           0x00000000001fc264        0x8 /home/hatsune/menuetos/lib/libSDL.a(SDL.o)
+ *fill*         0x00000000001fc26c        0x4 
+ .bss           0x00000000001fc270      0xb08 /home/hatsune/menuetos/lib/libSDL.a(SDL_error.o)
+ .bss           0x00000000001fcd78       0x18 /home/hatsune/menuetos/lib/libSDL.a(SDL_cursor.o)
+                0x00000000001fcd78                SDL_cursorlock
+                0x00000000001fcd7c                SDL_cursor
+                0x00000000001fcd80                SDL_cursorstate
+ .bss           0x00000000001fcd90     0xa438 /home/hatsune/menuetos/lib/libSDL.a(SDL_kolibri_audio.o)
+ .bss           0x00000000002071c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_rwops.o)
+ .bss           0x00000000002071c8        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_bmp.o)
+ .bss           0x00000000002071c8      0xe4c /home/hatsune/menuetos/lib/libSDL.a(SDL_events.o)
+                0x00000000002071c8                SDL_ProcessEvents
+                0x00000000002071e8                SDL_EventOK
+ .bss           0x0000000000208014      0x678 /home/hatsune/menuetos/lib/libSDL.a(SDL_keyboard.o)
+                0x0000000000208014                SDL_KeyRepeat
+                0x0000000000208038                SDL_TranslateUNICODE
+ .bss           0x000000000020868c        0x4 /home/hatsune/menuetos/lib/libSDL.a(SDL_systimer.o)
+ .bss           0x0000000000208690        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_sysmutex.o)
+ .bss           0x0000000000208690        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_syscond.o)
+ .bss           0x0000000000208690        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_RLEaccel.o)
+ .bss           0x0000000000208690        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_pixels.o)
+ .bss           0x0000000000208690       0x10 /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetvideo.o)
+ .bss           0x00000000002086a0        0x8 /home/hatsune/menuetos/lib/libSDL.a(SDL_resize.o)
+ .bss           0x00000000002086a8        0xc /home/hatsune/menuetos/lib/libSDL.a(SDL_mouse.o)
+ .bss           0x00000000002086b4        0x4 /home/hatsune/menuetos/lib/libSDL.a(SDL_getenv.o)
+ .bss           0x00000000002086b8       0x24 /home/hatsune/menuetos/lib/libSDL.a(SDL_timer.o)
+                0x00000000002086b8                SDL_alarm_callback
+                0x00000000002086bc                SDL_alarm_interval
+                0x00000000002086c0                SDL_timer_running
+                0x00000000002086c4                SDL_timer_started
+ .bss           0x00000000002086dc        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_fatal.o)
+ .bss           0x00000000002086dc        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_endian.o)
+ .bss           0x00000000002086dc        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_systhread.o)
+ *fill*         0x00000000002086dc        0x4 
+ .bss           0x00000000002086e0      0x320 /home/hatsune/menuetos/lib/libSDL.a(SDL_thread.o)
+                0x00000000002086e0                _creating_thread_lock
+ .bss           0x0000000000208a00        0x4 /home/hatsune/menuetos/lib/libSDL.a(SDL_active.o)
+ .bss           0x0000000000208a04        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_quit.o)
+ .bss           0x0000000000208a04        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_syssem.o)
+ .bss           0x0000000000208a04        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit.o)
+ .bss           0x0000000000208a04        0xc /home/hatsune/menuetos/lib/libSDL.a(SDL_menuetevents.o)
+ .bss           0x0000000000208a10        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_0.o)
+ .bss           0x0000000000208a10        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_N.o)
+ .bss           0x0000000000208a10        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_1.o)
+ .bss           0x0000000000208a10        0x0 /home/hatsune/menuetos/lib/libSDL.a(SDL_blit_A.o)
+ .bss           0x0000000000208a10      0x800 /home/hatsune/menuetos/lib/libc.a(param.o)
+                0x0000000000208a10                __menuet__app_path_area
+                0x0000000000208e10                __menuet__app_param_area
+ .bss           0x0000000000209210       0x14 /home/hatsune/menuetos/lib/libc.a(crt1.o)
+                0x0000000000209210                __dos_argv0
+                0x0000000000209214                __crt0_argv
+                0x0000000000209218                __crt0_argc
+                0x000000000020921c                _crt0_startup_flags
+                0x0000000000209220                environ
+ .bss           0x0000000000209224        0x0 /home/hatsune/menuetos/lib/libc.a(stderr.o)
+ .bss           0x0000000000209224        0x0 /home/hatsune/menuetos/lib/libc.a(_main.o)
+ .bss           0x0000000000209224        0x0 /home/hatsune/menuetos/lib/libc.a(gettimeo.o)
+ .bss           0x0000000000209224        0x0 /home/hatsune/menuetos/lib/libc.a(sprintf.o)
+ .bss           0x0000000000209224        0x0 /home/hatsune/menuetos/lib/libc.a(atexit.o)
+ .bss           0x0000000000209224        0x0 /home/hatsune/menuetos/lib/libc.a(fprintf.o)
+ .bss           0x0000000000209224        0x8 /home/hatsune/menuetos/lib/libc.a(exit.o)
+                0x0000000000209224                keypress_at_exit
+                0x0000000000209228                __atexit_ptr
+ .bss           0x000000000020922c        0x4 /home/hatsune/menuetos/lib/libc.a(getcwd.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(strcpy.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(strlen.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(fflush.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(usleep.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(strcmp.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(memcpy.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(strrchr.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(open.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(close.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(toupper.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(chdir.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(opendir.o)
+ .bss           0x0000000000209230        0x0 /home/hatsune/menuetos/lib/libc.a(readdir.o)
+ .bss           0x0000000000209230       0x10 /home/hatsune/menuetos/lib/libc.a(qsort.o)
+ .bss           0x0000000000209240        0x0 /home/hatsune/menuetos/lib/libc.a(stat.o)
+ .bss           0x0000000000209240        0x0 /home/hatsune/menuetos/lib/libc.a(closedir.o)
+ .bss           0x0000000000209240        0x0 /home/hatsune/menuetos/lib/libc.a(strncpy.o)
+ .bss           0x0000000000209240        0x0 /home/hatsune/menuetos/lib/libc.a(read.o)
+ .bss           0x0000000000209240        0x0 /home/hatsune/menuetos/lib/libc.a(write.o)
+ .bss           0x0000000000209240        0x0 /home/hatsune/menuetos/lib/libc.a(memset.o)
+ .bss           0x0000000000209240        0x0 /home/hatsune/menuetos/lib/libc.a(printf.o)
+ .bss           0x0000000000209240        0x0 /home/hatsune/menuetos/lib/libc.a(time.o)
+ .bss           0x0000000000209240     0x13dc /home/hatsune/menuetos/lib/libc.a(ctime.o)
+ .bss           0x000000000020a61c       0x84 /home/hatsune/menuetos/lib/libc.a(malloc.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(fopen.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(fseek.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(fread.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(fclose.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(fwrite.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(strncmp.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(vsprintf.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(exit.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(delay.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(ferror.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(ftell.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(memcmp.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(image.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(window.o)
+ .bss           0x000000000020a6a0        0x0 /home/hatsune/menuetos/lib/libc.a(event.o)
+ .bss           0x000000000020a6a0      0x400 /home/hatsune/menuetos/lib/libc.a(debug.o)
+ .bss           0x000000000020aaa0        0x0 /home/hatsune/menuetos/lib/libc.a(keyb.o)
+ .bss           0x000000000020aaa0        0x0 /home/hatsune/menuetos/lib/libc.a(button.o)
+ .bss           0x000000000020aaa0       0x18 /home/hatsune/menuetos/lib/libc.a(brk.o)
+ .bss           0x000000000020aab8        0x0 /home/hatsune/menuetos/lib/libc.a(crt0.o)
+ .bss           0x000000000020aab8     0x8800 /home/hatsune/menuetos/lib/libc.a(emu_init.o)
+                0x000000000020aab8                __curdir_buf
+                0x000000000020aeb8                _io_handles
+ .bss           0x00000000002132b8        0x0 /home/hatsune/menuetos/lib/libc.a(stdiohk.o)
+ .bss           0x00000000002132b8        0x0 /home/hatsune/menuetos/lib/libc.a(clock.o)
+ .bss           0x00000000002132b8        0x4 /home/hatsune/menuetos/lib/libc.a(doprnt.o)
+ .bss           0x00000000002132bc        0x0 /home/hatsune/menuetos/lib/libc.a(chkstk.o)
+ .bss           0x00000000002132bc      0x400 /home/hatsune/menuetos/lib/libc.a(curdir.o)
+ .bss           0x00000000002136bc      0x100 /home/hatsune/menuetos/lib/libc.a(dosemu.o)
+ .bss           0x00000000002137bc        0x0 /home/hatsune/menuetos/lib/libc.a(clock.o)
+ .bss           0x00000000002137bc        0x0 /home/hatsune/menuetos/lib/libc.a(ct_upper.o)
+ .bss           0x00000000002137bc        0x0 /home/hatsune/menuetos/lib/libc.a(fixpath.o)
+ .bss           0x00000000002137bc        0x0 /home/hatsune/menuetos/lib/libc.a(systree.o)
+ .bss           0x00000000002137bc        0x4 /home/hatsune/menuetos/lib/libc.a(errno.o)
+                0x00000000002137bc                errno
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(stdout.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(ct_flags.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(getenv.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(fmode.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(allocfil.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(lseek.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(filbuf.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(remove.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(flsbuf.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(dosio.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(fwalk.o)
+ .bss           0x00000000002137c0        0x0 /home/hatsune/menuetos/lib/libc.a(modfl.o)
+ .bss           0x00000000002137c0        0x4 /home/hatsune/menuetos/lib/libc.a(lconv.o)
+ .bss           0x00000000002137c4        0x0 /home/hatsune/menuetos/lib/libc.a(memchr.o)
+ .bss           0x00000000002137c4        0x0 /home/hatsune/menuetos/lib/libc.a(putc.o)
+ .bss           0x00000000002137c4        0x0 /home/hatsune/menuetos/lib/libc.a(env.o)
+ .bss           0x00000000002137c4        0x0 /home/hatsune/menuetos/lib/libc.a(frlist.o)
+ .bss           0x00000000002137c4        0x0 /home/hatsune/menuetos/lib/libc.a(stdin.o)
+ .bss           0x00000000002137c4        0x0 /home/hatsune/menuetos/lib/libc.a(fputc.o)
+ .bss           0x00000000002137c4        0x8 /home/hatsune/menuetos/lib/libc.a(hooks.o)
+                0x00000000002137c4                __libc_write_termios_hook
+                0x00000000002137c8                __libc_read_termios_hook
+                0x00000000002137cc                end = .
+                0x00000000002137cc                _end = .
+                0x00000000002137cc                ___memsize = .
+
+/DISCARD/
+ *(.debug$S)
+ *(.debug$T)
+ *(.debug$F)
+ *(.drectve)
+ *(.note.GNU-stack)
+ *(.eh_frame)
+ *(.comment)
+ *(.debug_abbrev)
+ *(.debug_info)
+ *(.debug_line)
+ *(.debug_frame)
+ *(.debug_loc)
+ *(.debug_pubnames)
+ *(.debug_aranges)
+ *(.debug_ranges)
+LOAD /home/hatsune/menuetos/stub/crt0.o
+LOAD sdl/main_od.o
+LOAD sdl/menu.o
+LOAD sdl/hack.o
+LOAD emu/cpu/nec.o
+LOAD emu/WS.o
+LOAD emu/WSApu.o
+LOAD emu/WSFileio.o
+LOAD emu/WSInput.o
+LOAD emu/WSRender.o
+LOAD /home/hatsune/menuetos/lib/libSDL.a
+LOAD /home/hatsune/menuetos/lib/libc.a
+OUTPUT(oswan pei-i386)

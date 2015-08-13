@@ -44,8 +44,8 @@ int WsInputGetState(int mode)
 					m_Flag = GF_MAINUI;
 			}
 			
-			else if ( (keys[PAD_START] == SDL_PRESSED) )  { button |=  keyCoresp[GameConf.OD_Joy[10]]; } // START -> START 
-			else if ( (keys[PAD_SELECT] == SDL_PRESSED) ) { button |=  keyCoresp[GameConf.OD_Joy[11]]; } // SELECT -> START 
+			else if (keys[PAD_START] == SDL_PRESSED)  { button |=  keyCoresp[GameConf.OD_Joy[10]]; } // START -> START 
+			else if (keys[PAD_SELECT] == SDL_PRESSED) { button |=  keyCoresp[GameConf.OD_Joy[11]]; } // SELECT -> START 
 			
 			break;
 		case 1: // Screen landscape
@@ -68,8 +68,8 @@ int WsInputGetState(int mode)
 					m_Flag = GF_MAINUI;
 			}
 			
-			else if ( (keys[PAD_START] == SDL_PRESSED) )  { button |=  keyCoresp[GameConf.OD_Joy[10]]; } // START -> START 
-			else if ( (keys[PAD_SELECT] == SDL_PRESSED) ) { button |=  keyCoresp[GameConf.OD_Joy[11]]; } // SELECT -> START 
+			else if (keys[PAD_START] == SDL_PRESSED)  { button |=  keyCoresp[GameConf.OD_Joy[10]]; } // START -> START 
+			else if (keys[PAD_SELECT] == SDL_PRESSED) { button |=  keyCoresp[GameConf.OD_Joy[11]]; } // SELECT -> START 
 			
 			break;
 		/*case 1: 

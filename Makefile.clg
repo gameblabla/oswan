@@ -1,7 +1,7 @@
-CC = gcc
+CC = clang-3.6
 
-CFLAGS = -O2 -Wall ${DEFINES} 
-DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS
+CFLAGS = -O1 -Wall -Werror ${DEFINES} 
+DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DLAYERS
 LDFLAGS = -Wl,--as-needed `sdl-config --cflags --libs` -lSDLmain -lSDL 
 OUTPUT = oswan
 
@@ -17,5 +17,3 @@ clean:
 	rm sdl/*.o
 	rm ${OUTPUT}
 
-install:
-	mv $(OUTPUT) /usr/bin/$(OUTPUT)

@@ -189,7 +189,7 @@ void initSDL(void) {
     fmt.freq = 44100;  
     fmt.format = AUDIO_S16;
     fmt.channels = 1;
-    fmt.samples = 44100/60;
+    fmt.samples = 1024;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
 

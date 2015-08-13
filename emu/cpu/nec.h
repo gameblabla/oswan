@@ -4,6 +4,8 @@
 typedef enum { ES, CS, SS, DS } SREGS;
 typedef enum { AW, CW, DW, BW, SP, BP, IX, IY } WREGS;
 
+unsigned int ModRM;
+
 #define NEC_NMI_INT_VECTOR 2
 
 /* Cpu types, steps of 8 to help the cycle count calculation */
@@ -102,7 +104,7 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 #define PEEKOP(addr) ((BYTE)cpu_readop(addr))
 
 /*#define GetModRM UINT32 ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)*/
-#define GetModRM unsigned int ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)
+#define GetModRM ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)
 
 /* Cycle count macros:
 	CLK  - cycle count is the same on all processors

@@ -655,7 +655,7 @@ int system_is_load_state(void) {
 
 // find a filename for bmp or state saving 
 void findNextFilename(char *szFileFormat, char *szFilename) {
-#ifdef DREAMCAST
+#if defined(DREAMCAST) || defined(KOLIBRI)
 	int uBcl;
 #else
 	uint32_t uBcl;
@@ -844,7 +844,7 @@ signed int load_file(char **wildcards, char *result) {
 							print_buffer[CHARLEN-1] = ']';
 					}
 					print_buffer[CHARLEN] = 0;
-					if((current_filedir_number == current_filedir_selection)) {
+					if(current_filedir_number == current_filedir_selection) {
 						print_string(print_buffer, COLOR_ACTIVE_ITEM, COLOR_BG, 4, 10*3+((i + 2) * 8));
 					} else {
 						print_string(print_buffer, COLOR_INACTIVE_ITEM, COLOR_BG, 4,10*3+ ((i + 2) * 8));

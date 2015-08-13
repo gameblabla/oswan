@@ -38,7 +38,7 @@ static char* IEepPath = "./ossav.tns";
 static char* IEepPath = "./oswan.dat";
 #endif
 
-int result = NULL;
+int result;
 
 int WsSetPdata(void)
 {

@@ -3,9 +3,6 @@ $Date: 2009-10-30 05:26:46 +0100 (ven., 30 oct. 2009) $
 $Rev: 71 $
 */
 
-#ifndef WSAPU_H_
-#define WSWAPU_H_
-
 typedef struct sound {
     int on;
     int freq;
@@ -44,5 +41,3 @@ void apuSweep(void);
 WORD apuShiftReg(void);
 void apuWaveSet(void);
 void apuStartupSound(void);
-
-#endif

@@ -1,8 +1,8 @@
-CC = gcc
+CC = mipsel-linux-gcc
 
-CFLAGS = -O2 -Wall ${DEFINES} 
-DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS
-LDFLAGS = -Wl,--as-needed `sdl-config --cflags --libs` -lSDLmain -lSDL 
+CFLAGS = -O3 -fomit-frame-pointer -mips32r2 -Wall ${DEFINES} 
+DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSWITCHING_GRAPHICS
+LDFLAGS = -lSDL -lm  -Wl,--as-needed
 OUTPUT = oswan
 
 SOURCES = sdl/main_od.c sdl/menu.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
