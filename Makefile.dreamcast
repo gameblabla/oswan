@@ -7,7 +7,7 @@ DEFINES = -DSOUND_ON -DSMOOTH -DDREAMCAST -DLAYERS -DSPEEDHACKS
 LDFLAGS = -flto -Wl,--as-needed -Wl,--gc-sections -lSDL -lm
 OUTPUT = oswan.elf
 
-SOURCES = sdl/main_od.c sdl/menu.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
+SOURCES = sdl/main_od.c sdl/menu.c sdl/drawing.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
 OBJS = ${SOURCES:.c=.o}
 
 KOS_CFLAGS+=-DNO_FNMATCH

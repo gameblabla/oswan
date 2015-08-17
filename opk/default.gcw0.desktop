@@ -6,4 +6,3 @@ Exec=oswan
 Icon=icon
 Terminal=false
 Categories=emulators;
-X-OD-NeedsDownscaling=true

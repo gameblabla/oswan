@@ -207,13 +207,23 @@ MENUITEM MainMenuItems[] = {
 	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
 	{"Continue", NULL, 0, NULL, &menuContinue},
 	{"Reset", NULL, 0, NULL, &menuReset},
+#ifndef GCW_LOWERRES
 	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
+#endif
 	{"Button Settings", NULL, 0, NULL, &screen_showkeymenu},
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 	{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
-MENU mnuMainMenu = { 8, 0, (MENUITEM *) &MainMenuItems };
+
+
+MENU mnuMainMenu = { 
+#ifdef GCW_LOWERRES
+	7,
+#else
+	8, 
+#endif
+	0, (MENUITEM *) &MainMenuItems };
 
 MENUITEM ConfigMenuItems[] = {
 	{"Button A: ", (int *) &GameConf.OD_Joy[4], 6, (char *)  &mnuButtons, NULL},
@@ -227,72 +237,6 @@ MENUITEM ConfigMenuItems[] = {
 	{"Return to menu", NULL, 0, NULL, &menuReturn},
 };
 MENU mnuConfigMenu = { 9, 0, (MENUITEM *) &ConfigMenuItems };
-
-//----------------------------------------------------------------------------------------------------
-
-void screen_drawpixel(SDL_Surface *s, unsigned int x, unsigned int y, unsigned int color) {
-#ifdef NSPIRE
-	nSDL_SetPixel(s,x,y,color);
-#else
-	unsigned int bpp, ofs;
-
-	bpp = s->format->BytesPerPixel;
-	ofs = s->pitch*y + x*bpp;
-
-	memcpy(s->pixels + ofs, &color, bpp);
-#endif
-}
-
-/*
- * This is not used anywhere
- * 
-static void SDL_DrawLine(SDL_Surface *s, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, unsigned int color) {
-#ifdef NSPIRE
-	unsigned int dx = abs(x2-x1);
-	unsigned int dy = abs(y2-y1);
-	unsigned int sx = (x1 < x2)?1:-1;
-	unsigned int sy = (y1 < y2)?1:-1;
-	unsigned int err = dx-dy;
-	unsigned int e2;
-
-	while (!(x1 == x2 && y1 == y2))
-	{
-		screen_drawpixel(s,x1,y1,color);
-		e2 = 2*err;
-		if (e2 > -dy)
-		{		 
-			err = err - dy;
-			x1 = x1 + sx;
-		}
-		if (e2 < dx)
-		{		 
-			err = err + dx;
-			y1 = y1 + sy;
-		}
-	}
-#else
-	unsigned int x = x2 - x1;
-	unsigned int y = y2 - y1;
-	unsigned int i;
-	const unsigned int length = sqrt( x*x + y*y );
-
-	unsigned int addx = x / length;
-	unsigned int addy = y / length;
-
-	x = x1;
-	y = y1;
-
-	for(i = 0; i < length; i += 1)
-	{
-	  screen_drawpixel(s,x,y,color);
-	  x += addx;
-	  y += addy;
-	}
-#endif
-}
-*/
-
-
 
 //----------------------------------------------------------------------------------------------------
 // Prints char on a given surface
@@ -576,12 +520,14 @@ void screen_showmainmenu(MENU *menu) {
 
 
 // Menu function that runs keys configuration
-void screen_showkeymenu(void) {
+void screen_showkeymenu(void) 
+{
 	screen_showmainmenu(&mnuConfigMenu);
 }
 
 // Menu function that runs main top menu
-void screen_showtopmenu(void) {
+void screen_showtopmenu(void) 
+{
 	
 #ifdef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio)
@@ -592,6 +538,7 @@ void screen_showtopmenu(void) {
 #else
 		actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE );
 #endif
+		SDL_FillRect(actualScreen, NULL, 0);
 		SDL_Flip(actualScreen);
 	}
 #endif
@@ -607,7 +554,6 @@ void screen_showtopmenu(void) {
 
 	// save actual config
 	system_savecfg(current_conf_app);
-
 	
 #ifdef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio)
@@ -618,6 +564,7 @@ void screen_showtopmenu(void) {
 #else
 		actualScreen = SDL_SetVideoMode(224, 144, 16, SDL_SWSURFACE );
 #endif
+		SDL_FillRect(actualScreen, NULL, 0);
 		SDL_Flip(actualScreen);
 	}
 #else
@@ -1077,11 +1024,13 @@ void menuReturn(void) {
 }
 
 
-void system_loadcfg(char *cfg_name) {
+void system_loadcfg(char *cfg_name) 
+{
   int fd;
 
   fd = open(cfg_name, O_RDONLY | O_BINARY);
-  if (fd >= 0) {
+  if (fd >= 0) 
+  {
 	read(fd, &GameConf, sizeof(GameConf));
     close(fd);
 #ifndef SWITCHING_GRAPHICS
@@ -1092,7 +1041,8 @@ void system_loadcfg(char *cfg_name) {
 	}
 #endif
   }
-  else {
+  else 
+  {
 	  // UP  DOWN  LEFT RIGHT  A  B  X  Y  R  L  START  SELECT
 	  //  0,    1,    2,    3, 4, 5, 4, 5, 4, 5,     6,      6
 		GameConf.OD_Joy[ 0] = 0;  GameConf.OD_Joy[ 1] = 1;
@@ -1107,6 +1057,9 @@ void system_loadcfg(char *cfg_name) {
 		GameConf.m_DisplayFPS=1; // 0 = no
 		getcwd(GameConf.current_dir_rom, MAX__PATH);
 	}
+#ifdef GCW_LOWERRES
+		GameConf.m_ScreenRatio=0;
+#endif
 }
 
 void system_savecfg(char *cfg_name) {

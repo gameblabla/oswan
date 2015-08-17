@@ -11,6 +11,17 @@
 
 #include <SDL/SDL.h>
 
+#ifdef GCW
+	#define HOME_SUPPORT
+	#define GCW_LOWERRES
+#endif
+
+#ifdef GCW_LOWERRES
+	#ifndef SWITCHING_GRAPHICS
+		#define SWITCHING_GRAPHICS
+	#endif
+#endif
+
 #ifdef NSPIRE
 	#define PAD_UP		SDLK_UP
 	#define PAD_LEFT	SDLK_LEFT
@@ -29,6 +40,26 @@
 	#define PAD_SELECT		SDLK_LSHIFT
 	
 	#define PAD_QUIT		SDLK_ESCAPE
+
+#elif defined(GCW)
+	#define PAD_UP		SDLK_UP
+	#define PAD_LEFT	SDLK_LEFT
+	#define PAD_RIGHT	SDLK_RIGHT
+	#define PAD_DOWN	SDLK_DOWN
+	
+	#define PAD_A		SDLK_LCTRL
+	#define PAD_B		SDLK_TAB
+	#define PAD_X		SDLK_LSHIFT
+	#define PAD_Y		SDLK_SPACE
+
+	#define PAD_L		SDLK_TAB
+	#define PAD_R		SDLK_BACKSPACE
+	
+	#define PAD_START		SDLK_RETURN
+	#define PAD_SELECT		0
+	
+	#define PAD_QUIT		SDLK_ESCAPE
+
 #else
 	#define PAD_UP		SDLK_UP
 	#define PAD_LEFT	SDLK_LEFT

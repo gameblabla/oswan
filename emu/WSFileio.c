@@ -53,7 +53,6 @@ int WsSetPdata(void)
         //ErrorMsg(ERR_MALLOC);
         return 0;
     }
-    WsCpyPdata(ROMMap[0xFF] + 0xF080);
     WsReset();
     SetHVMode(0);
     return 1;
@@ -264,7 +263,9 @@ int WsCreate(char *CartName)
     }
     WsReset();
 	SetHVMode(buf[6] & 1); // 0:â° 1:èc
+#ifdef SPEEDHACKS
     gameCRC = crc32(0, buf, sizeof(fp));
+#endif
     /*printf("gameCRC = %d \n", gameCRC);*/
     
 	return 1;

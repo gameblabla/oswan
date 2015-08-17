@@ -6,7 +6,7 @@ DEFINES = -DNSPIRE -DSPEEDHACKS -DSWITCHING_GRAPHICS
 LDFLAGS =
 OUTPUT = oswan
 
-SOURCES = sdl/main_od.c sdl/menu.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
+SOURCES = sdl/main_od.c sdl/menu.c sdl/drawing.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
 OBJS = ${SOURCES:.c=.o}
 
 all : ${OUTPUT} gen mkprg

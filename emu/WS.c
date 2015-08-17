@@ -11,7 +11,6 @@ $Rev: 71 $
 #include "WS.h"
 #include "WSApu.h"
 #include "WSInput.h"
-#include "WSPdata.h"
 #include "WSFileio.h"
 #include "cpu/necintrf.h"
 
@@ -1016,11 +1015,6 @@ int WsRun(void)
 #define POS_X (88)
 #define POS_Y (32)
 #define NAME_Y (96)
-
-void WsCpyPdata(BYTE* dst)
-{
-	memcpy(dst, pdata, size_pdata);
-}
 
 void Sleep(int ticks)
 {

@@ -39,7 +39,7 @@
 #define BOOLEAN signed int
 
 /* Disabled through defined, might be faster*/
-/*
+#if defined(BETTER_CPU) 
 #define THROUGH                 \
     if(nec_ICount<0){           \
         if(seg_prefix)          \
@@ -47,7 +47,7 @@
         else                    \
             I.ip-=(UINT16)2;    \
         break;}
-*/
+#endif
 
 #include "nec.h"
 #include "necintrf.h"
@@ -147,7 +147,6 @@ void nec_exit (void)
 
 void nec_int(DWORD wektor)
 {
-  
     DWORD dest_seg, dest_off;
 
     if(I.IF)
@@ -380,20 +379,20 @@ OP( 0x64, i_repnc  ) {  UINT32 next = FETCHOP;  UINT16 c = I.regs.w[CW];
     }
 
     switch(next) {
-        case 0x6c:  CLK(2); if (c) do { i_insb();  c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0x6d:  CLK(2); if (c) do { i_insw();  c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0x6e:  CLK(2); if (c) do { i_outsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0x6f:  CLK(2); if (c) do { i_outsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xa4:  CLK(2); if (c) do { i_movsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xa5:  CLK(2); if (c) do { i_movsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xa6:  CLK(2); if (c) do { i_cmpsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xa7:  CLK(2); if (c) do { i_cmpsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xaa:  CLK(2); if (c) do { i_stosb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xab:  CLK(2); if (c) do { i_stosw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xac:  CLK(2); if (c) do { i_lodsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xad:  CLK(2); if (c) do { i_lodsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xae:  CLK(2); if (c) do { i_scasb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-        case 0xaf:  CLK(2); if (c) do { i_scasw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0x6c:  CLK(5); if (c) do { i_insb();  c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0x6d:  CLK(5); if (c) do { i_insw();  c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0x6e:  CLK(5); if (c) do { i_outsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0x6f:  CLK(5); if (c) do { i_outsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xa4:  CLK(5); if (c) do { i_movsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xa5:  CLK(5); if (c) do { i_movsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xa6:  CLK(5); if (c) do { i_cmpsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xa7:  CLK(5); if (c) do { i_cmpsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xaa:  CLK(5); if (c) do { i_stosb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xab:  CLK(5); if (c) do { i_stosw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xac:  CLK(5); if (c) do { i_lodsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xad:  CLK(5); if (c) do { i_lodsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xae:  CLK(5); if (c) do { i_scasb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
+        case 0xaf:  CLK(5); if (c) do { i_scasw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
         default:        nec_instruction[next]();
     }
     seg_prefix=FALSE;
@@ -408,20 +407,20 @@ OP( 0x65, i_repc  ) {   UINT32 next = FETCHOP;  UINT16 c = I.regs.w[CW];
     }
 
     switch(next) {
-        case 0x6c:  CLK(2); if (c) do { i_insb();  c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0x6d:  CLK(2); if (c) do { i_insw();  c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0x6e:  CLK(2); if (c) do { i_outsb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0x6f:  CLK(2); if (c) do { i_outsw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xa4:  CLK(2); if (c) do { i_movsb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xa5:  CLK(2); if (c) do { i_movsw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xa6:  CLK(2); if (c) do { i_cmpsb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xa7:  CLK(2); if (c) do { i_cmpsw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xaa:  CLK(2); if (c) do { i_stosb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xab:  CLK(2); if (c) do { i_stosw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xac:  CLK(2); if (c) do { i_lodsb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xad:  CLK(2); if (c) do { i_lodsw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xae:  CLK(2); if (c) do { i_scasb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
-        case 0xaf:  CLK(2); if (c) do { i_scasw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0x6c:  CLK(5); if (c) do { i_insb();  c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0x6d:  CLK(5); if (c) do { i_insw();  c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0x6e:  CLK(5); if (c) do { i_outsb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0x6f:  CLK(5); if (c) do { i_outsw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xa4:  CLK(5); if (c) do { i_movsb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xa5:  CLK(5); if (c) do { i_movsw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xa6:  CLK(5); if (c) do { i_cmpsb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xa7:  CLK(5); if (c) do { i_cmpsw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xaa:  CLK(5); if (c) do { i_stosb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xab:  CLK(5); if (c) do { i_stosw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xac:  CLK(5); if (c) do { i_lodsb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xad:  CLK(5); if (c) do { i_lodsw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xae:  CLK(5); if (c) do { i_scasb(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
+        case 0xaf:  CLK(5); if (c) do { i_scasw(); c--; } while (c>0 && CF);    I.regs.w[CW]=c; break;
         default:    nec_instruction[next]();
     }
     seg_prefix=FALSE;
@@ -632,13 +631,17 @@ OP( 0xc5, i_lds_dw   ) { GetModRM; WORD tmp = GetRMWord(ModRM); RegWord(ModRM)=t
 OP( 0xc6, i_mov_bd8  ) { GetModRM; PutImmRMByte(ModRM); CLK(1); }
 OP( 0xc7, i_mov_wd16 ) { GetModRM; PutImmRMWord(ModRM); CLK(1); }
 
+// NEC calls it "PREPARE"
 OP( 0xc8, i_enter ) {
     UINT32 nb = FETCH;
     UINT32 i,level;
 
     CLK(19);
     nb += FETCH << 8;
+    
     level = FETCH;
+    level &= 0x1F; // Only lower 5 bits are valid on V30MZ
+    
     PUSH(I.regs.w[BP]);
     I.regs.w[BP]=I.regs.w[SP];
     I.regs.w[SP] -= nb;

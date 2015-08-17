@@ -5,6 +5,7 @@
 *.cfg
 *.map
 *.opk
+*.wsc
 ./oswan
 /opk/oswan
 sdl/*.o
@@ -17,3 +18,7 @@ snapshot/
 oswan-nspire/
 SDL2_branch/
 ./sdl/data/fireworks/
+fork/
+oswan_svn/
+opk/
+screenshots/

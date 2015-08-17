@@ -2,6 +2,7 @@
 
 #include "shared.h"
 #include "hack.h"
+#include "drawing.h"
 
 unsigned int m_Flag;
 unsigned int interval;
@@ -11,6 +12,9 @@ gamecfg GameConf;
 char gameName[512];
 char current_conf_app[MAX__PATH];
 
+void exit_oswan();
+extern int FrameSkip;
+extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 unsigned long nextTick, lastTick = 0, newTick, currentTick, wait;
 int FPS = 60; 
 int pastFPS = 0; 
@@ -22,95 +26,23 @@ int pastFPS = 0;
 #endif
 SDL_Event event;
 
-void exit_oswan();
-
-unsigned long SDL_UXTimerRead(void) {
+unsigned long SDL_UXTimerRead(void) 
+{
 	struct timeval tval; // timing
   
   	gettimeofday(&tval, 0);
 	return (((tval.tv_sec*1000000) + (tval.tv_usec )));
 }
 
-extern int FrameSkip;
-
-void graphics_paint(void) {
-	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
-	unsigned int W,H,ix,iy,x,y, xfp,yfp;
-	static char buffer[32];
-
+void graphics_paint(void) 
+{
 	if(SDL_MUSTLOCK(actualScreen)) SDL_LockSurface(actualScreen);
-	
-	if (GameConf.m_ScreenRatio)  // Fullscreen
-	{
-		x=0;
-		y=0; 
-		W=320;
-		H=240;
-		ix=(SYSVID_WIDTH<<16)/W;
-		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = 300;yfp = 1;
 
-		do   
-		{
-			unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-			W=320; x=0;
-			do {
-				*buffer_scr++=buffer_mem[x>>16];
-				x+=ix;
-			} while (--W);
-			y+=iy;
-		} while (--H);
-	}
-	else // 1x Size
-	{ 
-#ifdef SWITCHING_GRAPHICS
-		x=0;
-		y=0; 
-		W=SYSVID_WIDTH;
-		H=SYSVID_HEIGHT;
-		ix=(SYSVID_WIDTH<<16)/W;
-		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = (x+SYSVID_WIDTH)-20;yfp = y+1;
-		
-		buffer_scr += (y)*224;
-		buffer_scr += (x);
-		do   
-		{
-			unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-			W=224; x=0;
-			do 
-			{
-				*buffer_scr++=buffer_mem[x>>16];
-				x+=ix;
-			} while (--W);
-			y+=iy;
-			buffer_scr += actualScreen->pitch - 224 - SYSVID_WIDTH;
-		} while (--H);
+#ifdef GCW_LOWERRES
+	gcw_screen_draw();
 #else
-		x=((actualScreen->w - SYSVID_WIDTH)/2);
-		y=((actualScreen->h - SYSVID_HEIGHT)/2); 
-		W=SYSVID_WIDTH;
-		H=SYSVID_HEIGHT;
-		ix=(SYSVID_WIDTH<<16)/W;
-		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = (x+SYSVID_WIDTH)-20;yfp = y+1;
-		
-		buffer_scr += (y)*320;
-		buffer_scr += (x);
-		do   
-		{
-			unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-			W=SYSVID_WIDTH; x=((actualScreen->w - SYSVID_WIDTH)/2);
-			do 
-			{
-				*buffer_scr++=buffer_mem[x>>16];
-				x+=ix;
-			} while (--W);
-			y+=iy;
-			buffer_scr += actualScreen->pitch - 320 - SYSVID_WIDTH;
-		} while (--H);
+	screen_draw();
 #endif
-	}
 	
 #if !defined(SMOOTH)
 	pastFPS++;
@@ -126,19 +58,12 @@ void graphics_paint(void) {
 	else if (FrameSkip>4) FrameSkip=4;
 #endif
 
-	if (GameConf.m_DisplayFPS) {
-		sprintf(buffer,"%02d",FPS);
-		print_string_video(xfp,yfp,buffer);
-	}
-
-		
 	if (SDL_MUSTLOCK(actualScreen)) SDL_UnlockSurface(actualScreen);
 	SDL_Flip(actualScreen);
 }
 
-extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
-
-void initSDL(void) {
+void initSDL(void) 
+{
 	
 #ifndef SOUND_ON
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -157,7 +82,7 @@ void initSDL(void) {
 #elif defined(GCW)
 	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE | SDL_TRIPLEBUF );
 #else
-	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE | SDL_FULLSCREEN );
+	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE );
 #endif
 	if(actualScreen == NULL) {
 		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
@@ -204,8 +129,13 @@ void initSDL(void) {
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
 	double period;
+	
+#ifdef HOME_SUPPORT
+	char home_path[256];
+#endif
 	
 #ifdef NSPIRE
 	enable_relative_paths(argv);
@@ -215,8 +145,15 @@ int main(int argc, char *argv[]) {
 	getcwd(current_conf_app, MAX__PATH);
 #ifdef NSPIRE
 	sprintf(current_conf_app,"%s/oswan.cfg.tns",current_conf_app);
+#elif defined(HOME_SUPPORT)
+	snprintf(current_conf_app, sizeof(home_path), "%s/.oswan/oswan.cfg", getenv("HOME"));
 #else
 	sprintf(current_conf_app,"%s//oswan.cfg",current_conf_app);
+#endif
+
+#ifdef HOME_SUPPORT
+	snprintf(home_path, sizeof(home_path), "%s/.oswan", getenv("HOME"));
+	mkdir(home_path, 0755);
 #endif
 	
 	// Init graphics & sound
@@ -260,7 +197,6 @@ int main(int argc, char *argv[]) {
 
 					m_Flag = GF_GAMERUNNING;
 					hack_period();
-					/*gameCRC = crc32(0, ws_game_rom, ws_game_romSize);*/
 
 #ifndef NSPIRE
 					// Init timing
@@ -331,6 +267,7 @@ void exit_oswan()
 	exit(0);
 }
 
+#ifdef SPEEDHACKS
 
 #define DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
 #define DO2(buf)  DO1(buf); DO1(buf);
@@ -404,3 +341,5 @@ unsigned long crc32 (unsigned int crc, const unsigned char *buf, unsigned int le
   } while (--len);
   return crc ^ 0xffffffffL;
 }
+
+#endif
