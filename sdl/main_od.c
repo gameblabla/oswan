@@ -13,11 +13,14 @@ char gameName[512];
 char current_conf_app[MAX__PATH];
 
 void exit_oswan();
-extern int FrameSkip;
 extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 unsigned long nextTick, lastTick = 0, newTick, currentTick, wait;
 int FPS = 60; 
 int pastFPS = 0; 
+
+#ifdef SWITCHING_GRAPHICS
+	extern void screen_prepbackground(void);
+#endif
 
 #ifdef LAYERS
 	SDL_Surface *actualScreen, *layer, *layerback, *layerbackgrey;
@@ -38,13 +41,9 @@ void graphics_paint(void)
 {
 	if(SDL_MUSTLOCK(actualScreen)) SDL_LockSurface(actualScreen);
 
-#ifdef GCW_LOWERRES
-	gcw_screen_draw();
-#else
 	screen_draw();
-#endif
 	
-#if !defined(SMOOTH)
+#if defined(SMOOTH)
 	pastFPS++;
 	newTick = SDL_UXTimerRead();
 	if ((newTick-lastTick)>1000000) {
@@ -52,10 +51,6 @@ void graphics_paint(void)
 		pastFPS = 0;
 		lastTick = newTick;
 	}
-
-	FrameSkip = 60 - FPS;
-	if (FrameSkip<0) FrameSkip = 0;
-	else if (FrameSkip>4) FrameSkip=4;
 #endif
 
 	if (SDL_MUSTLOCK(actualScreen)) SDL_UnlockSurface(actualScreen);
@@ -64,15 +59,11 @@ void graphics_paint(void)
 
 void initSDL(void) 
 {
-	
-#ifndef SOUND_ON
-	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-#else
-	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0) {
+	SDL_Init(SDL_INIT_VIDEO);
+#ifdef SOUND_ON
+	SDL_Init(SDL_INIT_AUDIO);
 #endif
-		fprintf(stderr, "Couldn't initialize SDL: %s\n",SDL_GetError());
-		exit(1);
-	}
+
 #ifndef NSPIRE
 	atexit(SDL_Quit);
 #endif
@@ -133,27 +124,25 @@ int main(int argc, char *argv[])
 {
 	double period;
 	
-#ifdef HOME_SUPPORT
-	char home_path[256];
-#endif
-	
 #ifdef NSPIRE
 	enable_relative_paths(argv);
 #endif
 	
-	// Get init file directory & name
+#ifdef JOYSTICK
+	SDL_Init(SDL_INIT_JOYSTICK);
+	SDL_JoystickEventState(SDL_ENABLE);
+#endif
+	
 	getcwd(current_conf_app, MAX__PATH);
 #ifdef NSPIRE
-	sprintf(current_conf_app,"%s/oswan.cfg.tns",current_conf_app);
+	sprintf(current_conf_app,"/documents/ndless/oswan.cfg.tns");
 #elif defined(HOME_SUPPORT)
+	char home_path[256];
 	snprintf(current_conf_app, sizeof(home_path), "%s/.oswan/oswan.cfg", getenv("HOME"));
+	snprintf(home_path, sizeof(home_path), "%s/.oswan", getenv("HOME"));
+	mkdir(home_path, 0755);	
 #else
 	sprintf(current_conf_app,"%s//oswan.cfg",current_conf_app);
-#endif
-
-#ifdef HOME_SUPPORT
-	snprintf(home_path, sizeof(home_path), "%s/.oswan", getenv("HOME"));
-	mkdir(home_path, 0755);
 #endif
 	
 	// Init graphics & sound
@@ -168,11 +157,17 @@ int main(int argc, char *argv[])
 	strcpy(gameName,"");
 	if(argc > 1) 
 	{
+#ifdef SWITCHING_GRAPHICS
+		if (actualScreen) SDL_FreeSurface(actualScreen);
+		actualScreen = SDL_SetVideoMode(224, 144, 16, SDL_SWSURFACE );
+		screen_prepbackground();
+#endif
 		strcpy(gameName,argv[1]);
 		m_Flag = GF_GAMEINIT;
 	}
 
-	while (m_Flag != GF_GAMEQUIT) {
+	while (m_Flag != GF_GAMEQUIT) 
+	{
 		switch (m_Flag) 
 		{
 			case GF_MAINUI:
@@ -180,12 +175,13 @@ int main(int argc, char *argv[])
 				SDL_PauseAudio(1);
 #endif
 				screen_showtopmenu();
-				if (cartridge_IsLoaded()) {
+				if (cartridge_IsLoaded()) 
+				{
 #ifdef SOUND_ON
-					SDL_PauseAudio(0);
+				SDL_PauseAudio(0);
 #endif
 #ifndef NSPIRE
-					nextTick = SDL_UXTimerRead() + interval;
+				nextTick = SDL_UXTimerRead() + interval;
 #endif
 				}
 				break;
@@ -194,10 +190,8 @@ int main(int argc, char *argv[])
 				if (WsCreate(gameName)) 
 				{
 					WsInit();
-
 					m_Flag = GF_GAMERUNNING;
 					hack_period();
-
 #ifndef NSPIRE
 					// Init timing
 					period = 1.0 / 60;
@@ -205,7 +199,6 @@ int main(int argc, char *argv[])
 					interval = (int) period;
 					nextTick = SDL_UXTimerRead() + interval;
 #endif
-
 #ifdef SOUND_ON
 					SDL_PauseAudio(0);
 #endif
@@ -258,10 +251,10 @@ void exit_oswan()
 		
 		// Free memory
 		
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);	
+		
 	#ifdef SOUND_ON
-		SDL_QuitSubSystem(SDL_INIT_VIDEO|SDL_INIT_AUDIO);
-	#else
-		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	SDL_QuitSubSystem(SDL_INIT_AUDIO);
 	#endif
 	
 	exit(0);

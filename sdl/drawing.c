@@ -1,39 +1,6 @@
 #include "drawing.h"
 
-#ifdef GCW_LOWERRES
-void gcw_screen_draw(void)
-{
-	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
-	unsigned int W,H,ix,iy,x,y, xfp,yfp;
-	static char buffer[32];
-	x=0;
-	y=0; 
-	W=320;
-	H=240;
-	ix=(SYSVID_WIDTH<<16)/W;
-	iy=(SYSVID_HEIGHT<<16)/H;
-	xfp = 300;yfp = 1;
 
-	do   
-	{
-		unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-		W=320; x=0;
-		do {
-			*buffer_scr++=buffer_mem[x>>16];
-			x+=ix;
-		} while (--W);
-		y+=iy;
-	} while (--H);
-	
-	if (GameConf.m_DisplayFPS) 
-	{
-		sprintf(buffer,"%02d",FPS);
-		print_string_video(xfp,yfp,buffer);
-	}
-}
-#endif
-
-#if !defined(GCW_LOWERRES)
 void screen_draw(void)
 {
 	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
@@ -117,4 +84,3 @@ void screen_draw(void)
 		print_string_video(xfp,yfp,buffer);
 	}
 }
-#endif

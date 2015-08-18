@@ -12,8 +12,12 @@
 #include <SDL/SDL.h>
 
 #ifdef GCW
-	#define HOME_SUPPORT
-	#define GCW_LOWERRES
+	#ifndef HOME_SUPPORT
+		#define HOME_SUPPORT
+	#endif
+	#ifndef JOYSTICK
+		#define JOYSTICK
+	#endif
 #endif
 
 #ifdef NSPIRE
@@ -21,40 +25,32 @@
 	#define PAD_LEFT	SDLK_LEFT
 	#define PAD_RIGHT	SDLK_RIGHT
 	#define PAD_DOWN	SDLK_DOWN
+
+	#define PAD_XUP		SDLK_UP
+	#define PAD_XLEFT	SDLK_LEFT
+	#define PAD_XRIGHT	SDLK_RIGHT
+	#define PAD_XDOWN	SDLK_DOWN
+	
+	#define PAD_YUP		SDLK_UP_
+	#define PAD_YLEFT	SDLK_LEFT_
+	#define PAD_YRIGHT	SDLK_RIGHT_
+	#define PAD_YDOWN	SDLK_DOWN_
 	
 	#define PAD_A		SDLK_LCTRL
 	#define PAD_B		SDLK_TAB
-	#define PAD_X		SDLK_BACKSPACE
-	#define PAD_Y		SDLK_MENU
 
-	#define PAD_L		SDLK_PLUS
-	#define PAD_R		SDLK_MINUS
-	
 	#define PAD_START		SDLK_LSHIFT
 	#define PAD_SELECT		SDLK_LSHIFT
 	
 	#define PAD_QUIT		SDLK_ESCAPE
 
 #elif defined(GCW)
-	#define PAD_UP		SDLK_UP
-	#define PAD_LEFT	SDLK_LEFT
-	#define PAD_RIGHT	SDLK_RIGHT
-	#define PAD_DOWN	SDLK_DOWN
-	
-	#define PAD_A		SDLK_LCTRL
-	#define PAD_B		SDLK_TAB
-	#define PAD_X		SDLK_LSHIFT
-	#define PAD_Y		SDLK_SPACE
 
-	#define PAD_L		SDLK_TAB
-	#define PAD_R		SDLK_BACKSPACE
-	
-	#define PAD_START		SDLK_RETURN
-	#define PAD_SELECT		0
-	
-	#define PAD_QUIT		SDLK_ESCAPE
+	#define PAD_XUP		SDLK_UP
+	#define PAD_XLEFT	SDLK_LEFT
+	#define PAD_XRIGHT	SDLK_RIGHT
+	#define PAD_XDOWN	SDLK_DOWN
 
-#else
 	#define PAD_UP		SDLK_UP
 	#define PAD_LEFT	SDLK_LEFT
 	#define PAD_RIGHT	SDLK_RIGHT
@@ -62,14 +58,34 @@
 	
 	#define PAD_A		SDLK_LCTRL
 	#define PAD_B		SDLK_LALT
-	#define PAD_X		SDLK_SPACE
-	#define PAD_Y		SDLK_LSHIFT
-
-	#define PAD_L		SDLK_BACKSPACE
-	#define PAD_R		SDLK_TAB
 	
 	#define PAD_START		SDLK_RETURN
 	#define PAD_SELECT		SDLK_ESCAPE
+	
+	#define PAD_QUIT		SDLK_TAB
+
+#else
+
+	#define PAD_XUP		SDLK_UP
+	#define PAD_XLEFT	SDLK_LEFT
+	#define PAD_XRIGHT	SDLK_RIGHT
+	#define PAD_XDOWN	SDLK_DOWN
+	
+	#define PAD_YUP		SDLK_UP_
+	#define PAD_YLEFT	SDLK_LEFT_
+	#define PAD_YRIGHT	SDLK_RIGHT_
+	#define PAD_YDOWN	SDLK_DOWN_
+	
+	#define PAD_UP		SDLK_UP
+	#define PAD_LEFT	SDLK_LEFT
+	#define PAD_RIGHT	SDLK_RIGHT
+	#define PAD_DOWN	SDLK_DOWN
+	
+	#define PAD_A		SDLK_LCTRL
+	#define PAD_B		SDLK_LALT
+	
+	#define PAD_START		SDLK_RETURN
+	#define PAD_SELECT		SDLK_BACKSPACE
 	
 	#define PAD_QUIT		SDLK_ESCAPE
 #endif

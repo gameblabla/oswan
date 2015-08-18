@@ -207,10 +207,8 @@ MENUITEM MainMenuItems[] = {
 	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
 	{"Continue", NULL, 0, NULL, &menuContinue},
 	{"Reset", NULL, 0, NULL, &menuReset},
-#ifndef GCW_LOWERRES
 	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
-#endif
-	{"Button Settings", NULL, 0, NULL, &screen_showkeymenu},
+	/*{"Button Settings", NULL, 0, NULL, &screen_showkeymenu},*/
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 	{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
@@ -218,11 +216,7 @@ MENUITEM MainMenuItems[] = {
 
 
 MENU mnuMainMenu = { 
-#ifdef GCW_LOWERRES
 	7,
-#else
-	8, 
-#endif
 	0, (MENUITEM *) &MainMenuItems };
 
 MENUITEM ConfigMenuItems[] = {
@@ -313,7 +307,8 @@ void screen_prepback(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize
 }
 
 // draw main emulator design
-void screen_prepbackground(void) {
+void screen_prepbackground(void) 
+{
 	// draw default background
 #ifdef LAYERS
 	screen_prepback(layerbackgrey, OSWAN_BACKGROUND, OSWAN_BACKGROUND_SIZE);
@@ -559,6 +554,7 @@ void screen_showtopmenu(void)
 	if (!GameConf.m_ScreenRatio)
 	{
 		SDL_FreeSurface(actualScreen);
+		screen_prepbackground();
 #ifdef NSPIRE
 		actualScreen = SDL_SetVideoMode(224, 144, has_colors ? 16 : 8, SDL_SWSURFACE ); 
 #else
@@ -677,7 +673,7 @@ int strcmp_function(char *s1, char *s2) {
 
 signed int load_file(char **wildcards, char *result) {
 	unsigned char *keys;
-	unsigned int keya=0, keyb=0, keyup=0, kepufl=8, keydown=0, kepdfl=8, /*keyleft=0, keyright=0,*/ keyr=0, keyl=0;
+	unsigned int keya=0, keyb=0, keyup=0, kepufl=8, keydown=0, kepdfl=8 /*keyleft=0, keyright=0,*/;
 
 	char current_dir_name[MAX__PATH];
 	DIR *current_dir;
@@ -871,32 +867,6 @@ signed int load_file(char **wildcards, char *result) {
 			}
 			else { keydown=0;	kepdfl = 8; }
 
-			// R - arrow down from current screen
-			if (keys[PAD_R] == SDL_PRESSED) { 
-				if (!keyr) {
-					keyr = 1;
-					if ( (current_filedir_selection+FILE_LIST_ROWS) < (num_filedir-1)) {
-						current_filedir_selection+=FILE_LIST_ROWS;
-						//current_filedir_in_scroll=0;
-						current_filedir_scroll_value+=FILE_LIST_ROWS;
-					}
-				}
-			}
-			else keyr = 0;
-
-			// L - arrow up from current screen
-			if (keys[PAD_L] == SDL_PRESSED) { 
-				if (!keyl) {
-					keyl = 1;
-					if (current_filedir_selection> FILE_LIST_ROWS-1) {
-						//current_filedir_in_scroll=0;
-						current_filedir_selection-=FILE_LIST_ROWS-1;
-						current_filedir_scroll_value-=FILE_LIST_ROWS-1;
-					}
-				}
-			}
-			else keyl = 0;
-
 			SDL_Delay(16);
 			screen_flip();
 		}
@@ -1039,6 +1009,8 @@ void system_loadcfg(char *cfg_name)
 		screen_prepback(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
 		SDL_Flip(actualScreen);
 	}
+#else
+		SDL_Flip(actualScreen);
 #endif
   }
   else 
@@ -1057,9 +1029,6 @@ void system_loadcfg(char *cfg_name)
 		GameConf.m_DisplayFPS=1; // 0 = no
 		getcwd(GameConf.current_dir_rom, MAX__PATH);
 	}
-#ifdef GCW_LOWERRES
-		GameConf.m_ScreenRatio=0;
-#endif
 }
 
 void system_savecfg(char *cfg_name) {

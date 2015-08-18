@@ -1,7 +1,7 @@
 CC = mipsel-linux-gcc
 
 CFLAGS = -O2 -fomit-frame-pointer -mips32r2 -Wall ${DEFINES} 
-DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DGCW
+DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DGCW -DJOYSTICK -DHOME_SUPPORT
 LDFLAGS = -lSDL -lm  -Wl,--as-needed -s -flto
 OUTPUT = oswan
 
