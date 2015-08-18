@@ -39,6 +39,7 @@
 #define BOOLEAN signed int
 
 /* Disabled through defined, might be faster*/
+#if defined(BETTER_CPU) 
 #define THROUGH                 \
     if(nec_ICount<0){           \
         if(seg_prefix)          \
@@ -46,8 +47,7 @@
         else                    \
             I.ip-=(UINT16)2;    \
         break;}
-
-#define CHK_ICOUNT(cond) if(nec_ICount < 0 && (cond)) { I.ip -= seg_prefix ? 3 : 2; break;}
+#endif
 
 #include "nec.h"
 #include "necintrf.h"
@@ -731,7 +731,7 @@ OP( 0xd4, i_aam    ) { UINT32 mult=FETCH; mult=0; I.regs.b[AH] = I.regs.b[AL] / 
 OP( 0xd5, i_aad    ) { UINT32 mult=FETCH; mult=0; I.regs.b[AL] = I.regs.b[AH] * 10 + I.regs.b[AL]; I.regs.b[AH] = 0; SetSZPF_Byte(I.regs.b[AL]); CLK(6); }
 OP( 0xd6, i_setalc ) { I.regs.b[AL] = (CF)?0xff:0x00; CLK(3);  } /* nop at V30MZ? */
 OP( 0xd7, i_trans  ) { UINT32 dest = (I.regs.w[BW]+I.regs.b[AL])&0xffff; I.regs.b[AL] = GetMemB(DS, dest); CLK(5); }
-OP( 0xd8, i_fpo    ) { GetModRM; (void)ModRM; CLK(3);     } /* nop at V30MZ? */
+OP( 0xd8, i_fpo    ) { GetModRM; CLK(3);     } /* nop at V30MZ? */
 
 OP( 0xe0, i_loopne ) { INT8 disp = (INT8)FETCH; I.regs.w[CW]--; if (!ZF && I.regs.w[CW]) { I.ip = (WORD)(I.ip+disp);  CLK(6); } else CLK(3); }
 OP( 0xe1, i_loope  ) { INT8 disp = (INT8)FETCH; I.regs.w[CW]--; if ( ZF && I.regs.w[CW]) { I.ip = (WORD)(I.ip+disp);  CLK(6); } else CLK(3); }
@@ -754,7 +754,7 @@ OP( 0xed, i_inaxdx   ) { UINT32 port = I.regs.w[DW];    I.regs.b[AL] = read_port
 OP( 0xee, i_outdxal  ) { write_port(I.regs.w[DW], I.regs.b[AL]); CLK(6);    }
 OP( 0xef, i_outdxax  ) { UINT32 port = I.regs.w[DW];    write_port(port, I.regs.b[AL]); write_port(port+1, I.regs.b[AH]); CLK(6); }
 
-OP( 0xf0, i_lock     ) {  no_interrupt=1; /*CLK(1);*/ nec_instruction[FETCHOP](); }
+OP( 0xf0, i_lock     ) {  no_interrupt=1; DoOP(FETCHOP); /*CLK(1);*/ }
 
 OP( 0xf2, i_repne    ) { UINT32 next = FETCHOP; UINT16 c = I.regs.w[CW];
     switch(next) { /* Segments */
@@ -765,20 +765,30 @@ OP( 0xf2, i_repne    ) { UINT32 next = FETCHOP; UINT16 c = I.regs.w[CW];
     }
 
     switch(next) {
-        case 0x6c:  CLK(2); if (c) do { i_insb();  c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0x6d:  CLK(2); if (c) do { i_insw();  c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0x6e:  CLK(2); if (c) do { i_outsb(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0x6f:  CLK(2); if (c) do { i_outsw(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xa4:  CLK(2); if (c) do { i_movsb(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xa5:  CLK(2); if (c) do { i_movsw(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xa6:  CLK(5); if (c) do { THROUGH; i_cmpsb(); c--; CLK(3); CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
-        case 0xa7:  CLK(5); if (c) do { THROUGH; i_cmpsw(); c--; CLK(3); CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
-        case 0xaa:  CLK(2); if (c) do { i_stosb(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xab:  CLK(2); if (c) do { i_stosw(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xac:  CLK(2); if (c) do { i_lodsb(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xad:  CLK(2); if (c) do { i_lodsw(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xae:  CLK(5); if (c) do { THROUGH; i_scasb(); c--; CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
-        case 0xaf:  CLK(5); if (c) do { THROUGH; i_scasw(); c--; CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0x6c:  CLK(2); if (c) do { i_insb();  c--; } while (c>0);  I.regs.w[CW]=c; break;
+        case 0x6d:  CLK(2); if (c) do { i_insw();  c--; } while (c>0);  I.regs.w[CW]=c; break;
+        case 0x6e:  CLK(2); if (c) do { i_outsb(); c--; } while (c>0);  I.regs.w[CW]=c; break;
+        case 0x6f:  CLK(2); if (c) do { i_outsw(); c--; } while (c>0);  I.regs.w[CW]=c; break;
+        case 0xa4:  CLK(2); if (c) do { i_movsb(); c--; } while (c>0);  I.regs.w[CW]=c; break;
+        case 0xa5:  CLK(2); if (c) do { i_movsw(); c--; } while (c>0);  I.regs.w[CW]=c; break;
+#ifdef THROUGH
+        case 0xa6:  CLK(5); if (c) do { THROUGH; i_cmpsb(); c--; CLK(3); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0xa7:  CLK(5); if (c) do { THROUGH; i_cmpsw(); c--; CLK(3); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+#else
+        case 0xa6:  CLK(5); if (c) do { i_cmpsb(); c--; CLK(3); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0xa7:  CLK(5); if (c) do { i_cmpsw(); c--; CLK(3); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+#endif
+        case 0xaa:  CLK(2); if (c) do { i_stosb(); c--; } while (c>0);  I.regs.w[CW]=c; break;
+        case 0xab:  CLK(2); if (c) do { i_stosw(); c--; } while (c>0);  I.regs.w[CW]=c; break;
+        case 0xac:  CLK(2); if (c) do { i_lodsb(); c--; } while (c>0);  I.regs.w[CW]=c; break;
+        case 0xad:  CLK(2); if (c) do { i_lodsw(); c--; } while (c>0);  I.regs.w[CW]=c; break;
+#ifdef THROUGH
+        case 0xae:  CLK(5); if (c) do { THROUGH; i_scasb(); c--; CLK(5); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0xaf:  CLK(5); if (c) do { THROUGH; i_scasw(); c--; CLK(5); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+#else
+        case 0xae:  CLK(5); if (c) do { i_scasb(); c--; CLK(5); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0xaf:  CLK(5); if (c) do { i_scasw(); c--; CLK(5); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+#endif
         default:        nec_instruction[next]();
     }
     seg_prefix=FALSE;
@@ -792,20 +802,37 @@ OP( 0xf3, i_repe     ) { UINT32 next = FETCHOP; UINT16 c = I.regs.w[CW];
     }
 
     switch(next) {
-        case 0x6c:  CLK(5); if (c) do { THROUGH; i_insb();  c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0x6d:  CLK(5); if (c) do { THROUGH; i_insw();  c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0x6e:  CLK(5); if (c) do { THROUGH; i_outsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0x6f:  CLK(5); if (c) do { THROUGH; i_outsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xa4:  CLK(5); if (c) do { THROUGH; i_movsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xa5:  CLK(5); if (c) do { THROUGH; i_movsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xa6:  CLK(5); if (c) do { THROUGH; i_cmpsb(); c--; CLK( 3); CHK_ICOUNT( c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
-        case 0xa7:  CLK(5); if (c) do { THROUGH; i_cmpsw(); c--; CLK( 3); CHK_ICOUNT( c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
-        case 0xaa:  CLK(5); if (c) do { THROUGH; i_stosb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xab:  CLK(5); if (c) do { THROUGH; i_stosw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xac:  CLK(5); if (c) do { THROUGH; i_lodsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xad:  CLK(5); if (c) do { THROUGH; i_lodsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xae:  CLK(5); if (c) do { THROUGH; i_scasb(); c--; CHK_ICOUNT(c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
-        case 0xaf:  CLK(5); if (c) do { THROUGH; i_scasw(); c--; CHK_ICOUNT(c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+#ifdef THROUGH
+        case 0x6c:  CLK(5); if (c) do { THROUGH; i_insb();  c--; CLK( 0); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6d:  CLK(5); if (c) do { THROUGH; i_insw();  c--; CLK( 0); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6e:  CLK(5); if (c) do { THROUGH; i_outsb(); c--; CLK(-1); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6f:  CLK(5); if (c) do { THROUGH; i_outsw(); c--; CLK(-1); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa4:  CLK(5); if (c) do { THROUGH; i_movsb(); c--; CLK( 2); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa5:  CLK(5); if (c) do { THROUGH; i_movsw(); c--; CLK( 2); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa6:  CLK(5); if (c) do { THROUGH; i_cmpsb(); c--; CLK( 4); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xa7:  CLK(5); if (c) do { THROUGH; i_cmpsw(); c--; CLK( 4); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xaa:  CLK(5); if (c) do { THROUGH; i_stosb(); c--; CLK( 3); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xab:  CLK(5); if (c) do { THROUGH; i_stosw(); c--; CLK( 3); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xac:  CLK(5); if (c) do { THROUGH; i_lodsb(); c--; CLK( 3); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xad:  CLK(5); if (c) do { THROUGH; i_lodsw(); c--; CLK( 3); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xae:  CLK(5); if (c) do { THROUGH; i_scasb(); c--; CLK( 4); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xaf:  CLK(5); if (c) do { THROUGH; i_scasw(); c--; CLK( 4); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+#else
+        case 0x6c:  CLK(5); if (c) do { i_insb();  c--; CLK( 0); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6d:  CLK(5); if (c) do { i_insw();  c--; CLK( 0); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6e:  CLK(5); if (c) do { i_outsb(); c--; CLK(-1); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6f:  CLK(5); if (c) do { i_outsw(); c--; CLK(-1); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa4:  CLK(5); if (c) do { i_movsb(); c--; CLK( 2); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa5:  CLK(5); if (c) do { i_movsw(); c--; CLK( 2); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa6:  CLK(5); if (c) do { i_cmpsb(); c--; CLK( 4); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xa7:  CLK(5); if (c) do { i_cmpsw(); c--; CLK( 4); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xaa:  CLK(5); if (c) do { i_stosb(); c--; CLK( 3); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xab:  CLK(5); if (c) do { i_stosw(); c--; CLK( 3); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xac:  CLK(5); if (c) do { i_lodsb(); c--; CLK( 3); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xad:  CLK(5); if (c) do { i_lodsw(); c--; CLK( 3); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xae:  CLK(5); if (c) do { i_scasb(); c--; CLK( 4); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xaf:  CLK(5); if (c) do { i_scasw(); c--; CLK( 4); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+#endif
         default:     nec_instruction[next]();
     }
     seg_prefix=FALSE;

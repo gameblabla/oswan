@@ -20,9 +20,10 @@ const unsigned short keyCoresp[7] = {
 int WsInputGetState(int mode)
 {
 	int button = 0; // Button state: 0.0.0.0.B.A.START.OPTION  X4.X3.X2.X1.Y4.Y3.Y2.Y1
-	short x_joy = 0, y_joy = 0;
+	
 	
 	#ifdef JOYSTICK
+	short x_joy = 0, y_joy = 0;
 	if (SDL_NumJoysticks() > 0)
 		joy = SDL_JoystickOpen(0);
 		
@@ -51,23 +52,23 @@ int WsInputGetState(int mode)
 
 	#ifdef JOYSTICK
 		if (x_joy > 5000) 
-			button |= keyCoresp[GameConf.OD_Joy[7]];  // Button Y2
+			button |= (1<<2); // RIGHT -> Y1
 		else if (x_joy < -5000) 
-			button |= keyCoresp[GameConf.OD_Joy[9]]; // Button Y4
+			button |= (1<<3); // LEFT -> Y1
 			
 		if (y_joy > 5000) 
-			button |= keyCoresp[GameConf.OD_Joy[8]]; 	// Button Y3
+			button |= (1<<1); // DOWN -> Y1
 		else if (y_joy < -5000) 
-			button |= keyCoresp[GameConf.OD_Joy[6]];  	// Button Y1
+			button |= (1<<0); // UP -> Y1
 	#else
 		if (keys[PAD_YUP] == SDL_PRESSED)    
-			button |= (1<<6); // UP -> Y1
+			button |= (1<<0); // UP -> Y1
 		if (keys[PAD_YRIGHT] == SDL_PRESSED) 
-			button |= (1<<9); // RIGHT -> Y2
+			button |= (1<<2); // RIGHT -> Y2
 		if (keys[PAD_YDOWN] == SDL_PRESSED)  
-			button |= (1<<8); // DOWN -> Y3
+			button |= (1<<1); // DOWN -> Y3
 		if (keys[PAD_YLEFT] == SDL_PRESSED)  
-			button |= (1<<7); // LEFT -> Y4
+			button |= (1<<3); // LEFT -> Y4
 	#endif
 			
 	if (keys[PAD_QUIT] == SDL_PRESSED) 

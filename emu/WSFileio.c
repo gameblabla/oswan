@@ -297,9 +297,11 @@ void WsRelease(void)
                     }
                 }
                 free(RAMMap[i]);
+                RAMMap[i] = NULL;
             }
             fclose(fp);
         }
+        SaveName[0] = '\0';
     }
     for (i = 0xFF; i >= 0; i--)
     {
@@ -310,6 +312,7 @@ void WsRelease(void)
         free(ROMMap[i]);
         ROMMap[i] = MemDummy;
     }
+    StateName[0] = '\0';
 }
 
 void WsLoadIEep(void)

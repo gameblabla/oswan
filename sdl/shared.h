@@ -71,10 +71,10 @@
 	#define PAD_XRIGHT	SDLK_RIGHT
 	#define PAD_XDOWN	SDLK_DOWN
 	
-	#define PAD_YUP		SDLK_UP_
-	#define PAD_YLEFT	SDLK_LEFT_
-	#define PAD_YRIGHT	SDLK_RIGHT_
-	#define PAD_YDOWN	SDLK_DOWN_
+	#define PAD_YUP		SDLK_t
+	#define PAD_YLEFT	SDLK_y
+	#define PAD_YRIGHT	SDLK_u
+	#define PAD_YDOWN	SDLK_i
 	
 	#define PAD_UP		SDLK_UP
 	#define PAD_LEFT	SDLK_LEFT
