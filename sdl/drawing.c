@@ -8,25 +8,21 @@ void gcw_screen_draw(void)
 	static char buffer[32];
 	x=0;
 	y=0; 
-	W=SYSVID_WIDTH;
-	H=SYSVID_HEIGHT;
+	W=320;
+	H=240;
 	ix=(SYSVID_WIDTH<<16)/W;
 	iy=(SYSVID_HEIGHT<<16)/H;
-	xfp = (x+SYSVID_WIDTH)-20;yfp = y+1;
-		
-	buffer_scr += (y)*224;
-	buffer_scr += (x);
+	xfp = 300;yfp = 1;
+
 	do   
 	{
 		unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-		W=224; x=0;
-		do 
-		{
+		W=320; x=0;
+		do {
 			*buffer_scr++=buffer_mem[x>>16];
 			x+=ix;
 		} while (--W);
 		y+=iy;
-		buffer_scr += actualScreen->pitch - 224 - SYSVID_WIDTH;
 	} while (--H);
 	
 	if (GameConf.m_DisplayFPS) 

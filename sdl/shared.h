@@ -16,12 +16,6 @@
 	#define GCW_LOWERRES
 #endif
 
-#ifdef GCW_LOWERRES
-	#ifndef SWITCHING_GRAPHICS
-		#define SWITCHING_GRAPHICS
-	#endif
-#endif
-
 #ifdef NSPIRE
 	#define PAD_UP		SDLK_UP
 	#define PAD_LEFT	SDLK_LEFT
