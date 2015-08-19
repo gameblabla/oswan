@@ -42,9 +42,6 @@ bool gameMenu;
 #endif
 char *file_ext[] = { (char *) ".ws", (char *) ".wsc", (char *) ".WSC", (char *) ".WS", ".tns", NULL };
 
-//---------------------------------------------------------------------------------------
-int system_is_load_state(void);
-
 void menuReset(void);
 void menuQuit(void);
 void menuContinue(void);
@@ -114,7 +111,8 @@ MENU mnuConfigMenu = { 9, 0, (MENUITEM *) &ConfigMenuItems };
 
 //----------------------------------------------------------------------------------------------------
 // Prints char on a given surface
-void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, int fg_color, int bg_color) {
+void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, int fg_color, int bg_color) 
+{
 	unsigned short *dst;
 	int w, h;
 
@@ -133,7 +131,8 @@ void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, int fg_color
 }
 
 // copy-pasted mostly from gpsp emulator by Exophaze. 	thanks for it
-void print_string(const char *s, unsigned short fg_color, unsigned short bg_color, int x, int y) {
+void print_string(const char *s, unsigned short fg_color, unsigned short bg_color, int x, int y) 
+{
 	int i, j = strlen(s);
 	#ifdef LAYERS
 		for(i = 0; i < j; i++, x += 6) screen_showchar(layer, x, y, s[i], fg_color, bg_color);
@@ -142,12 +141,14 @@ void print_string(const char *s, unsigned short fg_color, unsigned short bg_colo
 	#endif
 }
 
-void print_string_video(int x, int y, const char *s) {
+void print_string_video(int x, int y, const char *s) 
+{
 	int i, j = strlen(s);
 	for(i = 0; i < j; i++, x += 8) screen_showchar(actualScreen, x, y, s[i], PIX_TO_RGB(actualScreen->format,255, 0, 0), 0);
 }
 
-void screen_showitem(int x, int y, MENUITEM *m, int fg_color) {
+void screen_showitem(int x, int y, MENUITEM *m, int fg_color) 
+{
 	static char i_str[24];
 
 	// if no parameters, show simple menu item
@@ -165,7 +166,8 @@ void screen_showitem(int x, int y, MENUITEM *m, int fg_color) {
 }
 
 // flip the layer to screen
-void screen_flip(void) {
+void screen_flip(void) 
+{
 #ifdef LAYERS
 	SDL_BlitSurface(layer, 0, actualScreen, 0);
 #endif
@@ -173,7 +175,8 @@ void screen_flip(void) {
 }
 
 // draw default emulator design
-void screen_prepback(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize) {
+void screen_prepback(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize) 
+{
 	// load logo, Convert the image to optimal display format and Free the temporary surface
 	SDL_RWops *rw = SDL_RWFromMem(bmpBuf, bmpSize);
 	SDL_Surface *temp = SDL_LoadBMP_RW(rw, 1);
@@ -300,6 +303,10 @@ void screen_showmainmenu(MENU *menu)
 				if (menu != &mnuMainMenu) 
 				{	
 					gameMenu = false;
+				}
+				else
+				{
+					menuContinue();
 				}
 			}
 		}
@@ -456,28 +463,6 @@ void screen_showtopmenu(void)
 	}
 #endif
 	
-}
-
-//----------------------------------------------------------------------
-int system_is_load_state(void) {
-	char name[512];
-	int fd;
-	int n=0;
-  
-	strcpy(name, gameName);
-#ifdef NSPIRE
-	strcpy(strrchr(name, '.'), ".sta.tns");
-#else
-	strcpy(strrchr(name, '.'), ".sta");
-#endif
-
-	fd = open(name, O_RDONLY | O_BINARY);
-	if (fd >= 0) {
-		n = 1;
-		close(fd);
-	}
-	
-	return (n ? 1 : 0);
 }
 
 // find a filename for bmp or state saving 
