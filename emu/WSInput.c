@@ -19,6 +19,7 @@ const unsigned short keyCoresp[7] = {
 };
 
 extern int stick_swap;
+extern int dpad_abxy_mapped;
 
 int WsInputGetState(int mode)
 {
@@ -39,15 +40,33 @@ int WsInputGetState(int mode)
 	SDL_PollEvent(&event);
 	unsigned char *keys = SDL_GetKeyState(NULL);
 
-	if (keys[PAD_A] == SDL_PRESSED) 
-		button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
-	if (keys[PAD_B] == SDL_PRESSED) 
-		button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
+
+	if (dpad_abxy_mapped == 1)
+	{
+		/* Disable Auto-Fire and map Dpad to ABXY buttons */
 		
-	if (keys[PAD_X]) 
-		button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
-	if (keys[PAD_Y]) 
-		button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
+		if (keys[PAD_A] == SDL_PRESSED) 
+			button |= (1<<6); // DOWN -> X3
+		if (keys[PAD_B] == SDL_PRESSED) 
+			button |= (1<<5); // RIGHT -> X2
+			
+		if (keys[PAD_X]) 
+			button |= (1<<7); // LEFT -> X4
+		if (keys[PAD_Y]) 
+			button |= (1<<4); // UP -> X1
+	}
+	else
+	{
+		if (keys[PAD_A] == SDL_PRESSED) 
+			button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
+		if (keys[PAD_B] == SDL_PRESSED) 
+			button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
+			
+		if (keys[PAD_X]) 
+			button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A (Fire
+		if (keys[PAD_Y]) 
+			button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B (Fire)
+	}
 		
 	// Load
 	if (keys[PAD_L] == SDL_PRESSED) 
@@ -72,8 +91,6 @@ int WsInputGetState(int mode)
 #endif
 		WsLoadState(szFile, 0);
 	}
-
-	printf("stick_swap %d \n", stick_swap);
 
 	#ifdef JOYSTICK
 	

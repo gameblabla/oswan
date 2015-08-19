@@ -72,13 +72,13 @@ typedef struct {
 
 char mnuYesNo[2][16] = {"no", "yes"};
 char mnuRatio[2][16] = { "1x size","Full screen"};
-char mnuYesNo_joy[2][16] = {"no", "yes"};
 
 char mnuButtons[7][16] = {
   "Up","Down","Left","Right","But #1","But #2", "Options"
 };
 
 int stick_swap;
+int dpad_abxy_mapped;
 
 MENUITEM MainMenuItems[] = {
 	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
@@ -86,17 +86,17 @@ MENUITEM MainMenuItems[] = {
 	{"Reset", NULL, 0, NULL, &menuReset},
 	{"Load State", NULL, 0, NULL, &menuLoadState},
 	{"Save State", NULL, 0, NULL, &menuSaveState},
-	/*{"Button Settings", NULL, 0, NULL, &screen_showkeymenu},*/
 	{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
-	{"Swap X1, Y1: ", (int *) &stick_swap, 1, (char *) &mnuYesNo_joy, NULL},
+	{"Swap X1, Y1: ", (int *) &stick_swap, 1, (char *) &mnuYesNo, NULL},
+	{"ABXY is DPAD: ", (int *) &dpad_abxy_mapped, 1, (char *) &mnuYesNo, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
 
 
 MENU mnuMainMenu = { 
-	10,
+	11,
 	0, (MENUITEM *) &MainMenuItems };
 
 MENUITEM ConfigMenuItems[] = {
