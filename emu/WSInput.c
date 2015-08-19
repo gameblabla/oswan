@@ -96,8 +96,8 @@ int WsInputGetState(int mode)
 		m_Flag = GF_MAINUI;
 	}
 			
-	if (keys[PAD_START] == SDL_PRESSED)  { button |=  keyCoresp[GameConf.OD_Joy[10]]; } // START -> START 
-	else if (keys[PAD_SELECT] == SDL_PRESSED) { button |=  keyCoresp[GameConf.OD_Joy[11]]; } // SELECT -> OPTION 
+	if (keys[PAD_START] == SDL_PRESSED)  { button |=  keyCoresp[GameConf.OD_Joy[11]]; } // START -> START 
+	/*if (keys[PAD_SELECT] == SDL_PRESSED) { button |=  keyCoresp[GameConf.OD_Joy[11]]; }*/ // SELECT -> OPTION 
 			
 	return button;
 }
