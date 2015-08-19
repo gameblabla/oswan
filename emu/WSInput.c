@@ -51,14 +51,14 @@ int WsInputGetState(int mode)
 		button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
 
 	#ifdef JOYSTICK
-		if (x_joy > 5000) 
-			button |= (1<<2); // RIGHT -> Y1
-		else if (x_joy < -5000) 
+		if (x_joy > 7500) 
+			button |= (1<<1); // RIGHT -> Y1
+		else if (x_joy < -7500) 
 			button |= (1<<3); // LEFT -> Y1
 			
-		if (y_joy > 5000) 
-			button |= (1<<1); // DOWN -> Y1
-		else if (y_joy < -5000) 
+		if (y_joy > 7500) 
+			button |= (1<<2); // DOWN -> Y1
+		else if (y_joy < -7500) 
 			button |= (1<<0); // UP -> Y1
 	#else
 		if (keys[PAD_YUP] == SDL_PRESSED)    

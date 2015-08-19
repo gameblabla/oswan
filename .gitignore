@@ -13,6 +13,8 @@ emu/cpu/*.o
 DC/
 roms/
 roms/*.wsc
+roms/*.wsc.tns
+roms/*.bmp
 snapshot/
 oswan-nspire/
 SDL2_branch/
