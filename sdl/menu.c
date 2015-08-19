@@ -19,8 +19,7 @@
 extern unsigned int m_Flag;
 
 bool gameMenu;
-char filename_without_extensions[256];
-void get_filename(const char *filename);
+
 
 #ifdef LAYERS
 #define COLOR_BG            PIX_TO_RGB(layer->format,05, 03, 02)
@@ -73,27 +72,31 @@ typedef struct {
 
 char mnuYesNo[2][16] = {"no", "yes"};
 char mnuRatio[2][16] = { "1x size","Full screen"};
+char mnuYesNo_joy[2][16] = {"no", "yes"};
 
 char mnuButtons[7][16] = {
   "Up","Down","Left","Right","But #1","But #2", "Options"
 };
 
+int stick_swap;
+
 MENUITEM MainMenuItems[] = {
 	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
 	{"Continue", NULL, 0, NULL, &menuContinue},
 	{"Reset", NULL, 0, NULL, &menuReset},
-	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
 	{"Load State", NULL, 0, NULL, &menuLoadState},
 	{"Save State", NULL, 0, NULL, &menuSaveState},
 	/*{"Button Settings", NULL, 0, NULL, &screen_showkeymenu},*/
-	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 	{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},
+	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
+	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
+	{"Swap X1, Y1: ", (int *) &stick_swap, 1, (char *) &mnuYesNo_joy, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
 
 
 MENU mnuMainMenu = { 
-	9,
+	10,
 	0, (MENUITEM *) &MainMenuItems };
 
 MENUITEM ConfigMenuItems[] = {
@@ -196,7 +199,8 @@ void screen_prepbackground(void)
 
 // Shows menu items and pointing arrow
 #define SPRX (16)
-void screen_showmenu(MENU *menu) {
+void screen_showmenu(MENU *menu) 
+{
 	int i;
 	MENUITEM *mi = menu->m;
 
@@ -227,15 +231,16 @@ void screen_showmenu(MENU *menu) {
 	{
 		int fg_color;
 		if(menu->itemCur == i) fg_color = COLOR_ACTIVE_ITEM; else fg_color = COLOR_INACTIVE_ITEM;
-		screen_showitem(SPRX+10, 59+i*15, mi, fg_color);
+		screen_showitem(SPRX+10, 44+i*15, mi, fg_color);
 		#ifdef LAYERS
-			if(menu->itemCur == i) print_string("-", fg_color, COLOR_BG, SPRX+10-12, 59+i*15);
+			if(menu->itemCur == i) print_string("-", fg_color, COLOR_BG, SPRX+10-12, 44+i*15);
 		#endif
 	}
 }
 
 // wait for a key
-void screen_waitkey(void) {
+void screen_waitkey(void) 
+{
 	bool akey=false;
 		
 	while (!akey) {
@@ -246,7 +251,8 @@ void screen_waitkey(void) {
 	}
 }
 
-void screen_waitkeyarelease(void) {
+void screen_waitkeyarelease(void) 
+{
 	unsigned char *keys;
 		
 	// wait key release and go in menu
@@ -259,7 +265,8 @@ void screen_waitkeyarelease(void) {
 
 
 // Main function that runs all the stuff
-void screen_showmainmenu(MENU *menu) {
+void screen_showmainmenu(MENU *menu) 
+{
 	unsigned char *keys;
 	MENUITEM *mi;
 	char szVal[100];

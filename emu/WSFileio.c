@@ -348,10 +348,10 @@ void WsSaveIEep(void)
 #define MacroLoadNecRegisterFromFile(F,R) \
 		result = fread(&value, sizeof(unsigned int), 1, fp); \
 	    nec_set_reg(R,value); 
-void WsLoadState(const char *savename, int num)
+int WsLoadState(const char *savename, int num)
 {
     FILE* fp;
-    char buf[128];
+    char buf[256];
 	unsigned int value;
 	int i;
 	
@@ -360,7 +360,7 @@ void WsLoadState(const char *savename, int num)
 	snprintf(buf, sizeof(buf), "%s", savename);
     if ((fp = fopen(buf, "rb")) == NULL)
     {
-		return;
+		return 1;
 	}
 	MacroLoadNecRegisterFromFile(fp,NEC_IP);
 	MacroLoadNecRegisterFromFile(fp,NEC_AW);
@@ -405,16 +405,17 @@ void WsLoadState(const char *savename, int num)
 	}
 	
 	printf("Yes...\n");
+    return 0;
 }
 
 #define MacroStoreNecRegisterToFile(F,R) \
 	    value = nec_get_reg(R); \
 		fwrite(&value, sizeof(unsigned int), 1, fp);
 		
-void WsSaveState(const char *savename, int num)
+int WsSaveState(const char *savename, int num)
 {
     FILE* fp;
-    char buf[128];
+    char buf[256];
 	unsigned int value;
 	int i;
 	
@@ -424,7 +425,7 @@ void WsSaveState(const char *savename, int num)
     if ((fp = fopen(buf, "w+")) == NULL)
     {
 		printf("FAILURE...\n");
-		return;
+		return 1;
 	}
 	MacroStoreNecRegisterToFile(fp,NEC_IP);
 	MacroStoreNecRegisterToFile(fp,NEC_AW);
@@ -461,4 +462,5 @@ void WsSaveState(const char *savename, int num)
     fclose(fp);
     
     printf("Yes...\n");
+    return 0;
 }

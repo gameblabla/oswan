@@ -11,7 +11,7 @@ int WsCreate(char *CartName);
 void WsRelease(void);
 void WsLoadIEep(void);
 void WsSaveIEep(void);
-void WsLoadState(const char *savename, int num);
-void WsSaveState(const char *savename, int num);
+int WsLoadState(const char *savename, int num);
+int WsSaveState(const char *savename, int num);
 
 #endif

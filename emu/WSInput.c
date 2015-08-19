@@ -18,6 +18,8 @@ const unsigned short keyCoresp[7] = {
 	1<<10, 1<<11, 1<<9,
 };
 
+extern int stick_swap;
+
 int WsInputGetState(int mode)
 {
 	char szFile[512];
@@ -36,15 +38,6 @@ int WsInputGetState(int mode)
 		
 	SDL_PollEvent(&event);
 	unsigned char *keys = SDL_GetKeyState(NULL);
-		
-	if (keys[PAD_XUP] == SDL_PRESSED)    
-		button |= (1<<4); // UP -> X1
-	if (keys[PAD_XRIGHT] == SDL_PRESSED) 
-		button |= (1<<5); // RIGHT -> X2
-	if (keys[PAD_XDOWN] == SDL_PRESSED)  
-		button |= (1<<6); // DOWN -> X3
-	if (keys[PAD_XLEFT] == SDL_PRESSED)  
-		button |= (1<<7); // LEFT -> X4
 
 	if (keys[PAD_A] == SDL_PRESSED) 
 		button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
@@ -52,14 +45,19 @@ int WsInputGetState(int mode)
 		button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
 		
 	if (keys[PAD_X]) 
-		button |= (1<<4);
+		button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
 	if (keys[PAD_Y]) 
-		button |= (1<<5);
+		button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
 		
 	// Load
 	if (keys[PAD_L] == SDL_PRESSED) 
 	{
 		strcpy(szFile, gameName);
+#ifdef NSPIRE
+		strcpy(strrchr(szFile, '.'), ".sta.tns");
+#else
+		strcpy(strrchr(szFile, '.'), ".sta");
+#endif
 		WsSaveState(szFile, 0);
 	}
 	
@@ -67,19 +65,60 @@ int WsInputGetState(int mode)
 	if (keys[PAD_R] == SDL_PRESSED) 
 	{
 		strcpy(szFile, gameName);
+#ifdef NSPIRE
+		strcpy(strrchr(szFile, '.'), ".sta.tns");
+#else
+		strcpy(strrchr(szFile, '.'), ".sta");
+#endif
 		WsLoadState(szFile, 0);
 	}
 
+	printf("stick_swap %d \n", stick_swap);
+
 	#ifdef JOYSTICK
-		if (x_joy > 7500) 
-			button |= (1<<1); // RIGHT -> Y1
-		else if (x_joy < -7500) 
-			button |= (1<<3); // LEFT -> Y1
+	
+		if (stick_swap == 0)
+		{	
+			if (keys[PAD_XUP] == SDL_PRESSED)    
+				button |= (1<<4); // UP -> X1
+			if (keys[PAD_XRIGHT] == SDL_PRESSED) 
+				button |= (1<<5); // RIGHT -> X2
+			if (keys[PAD_XDOWN] == SDL_PRESSED)  
+				button |= (1<<6); // DOWN -> X3
+			if (keys[PAD_XLEFT] == SDL_PRESSED)  
+				button |= (1<<7); // LEFT -> X4
 			
-		if (y_joy > 7500) 
-			button |= (1<<2); // DOWN -> Y1
-		else if (y_joy < -7500) 
-			button |= (1<<0); // UP -> Y1
+			if (x_joy > 7500) 
+				button |= (1<<1); // RIGHT -> Y1
+			else if (x_joy < -7500) 
+				button |= (1<<3); // LEFT -> Y1
+				
+			if (y_joy > 7500) 
+				button |= (1<<2); // DOWN -> Y1
+			else if (y_joy < -7500) 
+				button |= (1<<0); // UP -> Y1
+		}
+		else if (stick_swap == 1)
+		{
+			if (keys[PAD_XUP] == SDL_PRESSED)    
+				button |= (1<<2); // UP -> X1
+			if (keys[PAD_XRIGHT] == SDL_PRESSED) 
+				button |= (1<<1); // RIGHT -> X2
+			if (keys[PAD_XDOWN] == SDL_PRESSED)  
+				button |= (1<<0); // DOWN -> X3
+			if (keys[PAD_XLEFT] == SDL_PRESSED)  
+				button |= (1<<3); // LEFT -> X4
+			
+			if (x_joy > 7500) 
+				button |= (1<<5); // RIGHT -> Y1
+			else if (x_joy < -7500) 
+				button |= (1<<7); // LEFT -> Y1
+				
+			if (y_joy > 7500) 
+				button |= (1<<6); // DOWN -> Y1
+			else if (y_joy < -7500) 
+				button |= (1<<4); // UP -> Y1
+		}
 	#else
 		if (keys[PAD_YUP] == SDL_PRESSED)    
 			button |= (1<<0); // UP -> Y1

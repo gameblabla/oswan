@@ -88,7 +88,7 @@
 	#define PAD_START		SDLK_RETURN
 	#define PAD_SELECT		SDLK_ESCAPE
 	
-	#define PAD_QUIT		SDLK_TAB
+	#define PAD_QUIT		SDLK_ESCAPE
 
 #else
 
