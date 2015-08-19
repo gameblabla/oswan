@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -O2 -Wall ${DEFINES} 
+CFLAGS = -O2 -Wall ${DEFINES} -I./emu -I./sdl
 DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS -DHOME_SUPPORT -DBETTER_CPU
 LDFLAGS = -Wl,--as-needed `sdl-config --cflags --libs` -lSDLmain -lSDL 
 OUTPUT = oswan

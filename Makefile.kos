@@ -1,5 +1,5 @@
 OUTFILE = oswan
 OBJS = sdl/main_od.o sdl/menu.o sdl/drawing.o sdl/hack.o emu/cpu/nec.o emu/WS.o emu/WSApu.o emu/WSFileio.o emu/WSInput.o emu/WSRender.o
-CFLAGS = -Os -fomit-frame-pointer -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS -DKOLIBRI
+CFLAGS = -Os -fomit-frame-pointer -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS -DKOLIBRI -I./emu -I./sdl
 LIBS = -lSDL
 include $(MENUETDEV)/makefiles/Makefile_for_program

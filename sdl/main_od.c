@@ -1,3 +1,8 @@
+#ifdef DREAMCAST
+#include <kos.h>
+KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
+#endif
+
 #include  <sys/time.h>
 
 #include "shared.h"

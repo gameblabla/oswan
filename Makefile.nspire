@@ -1,6 +1,6 @@
 CC = nspire-gcc
 
-CFLAGS = -O2 -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -msoft-float
+CFLAGS = -O2 -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -msoft-float -I./emu -I./sdl
 CFLAGS += ${DEFINES} 
 DEFINES = -DNSPIRE -DSPEEDHACKS -DSWITCHING_GRAPHICS
 LDFLAGS =

@@ -585,8 +585,12 @@ signed int load_file(char **wildcards, char *result)
 		current_filedir_number = 0;
 		current_filedir_selection = 0;
 		num_filedir = 0;
-		
+	
+#ifdef DREAMCAST
+		snprintf(current_dir_name, sizeof(current_dir_name), "/cd/");
+#else
 		getcwd(current_dir_name, MAX__PATH);
+#endif
 		current_dir = opendir(current_dir_name);
 		
 		do {
