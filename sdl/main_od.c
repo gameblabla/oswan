@@ -70,10 +70,8 @@ void initSDL(void)
 
 #ifdef NSPIRE
 	actualScreen = SDL_SetVideoMode(320, 240, has_colors ? 16 : 8, SDL_SWSURFACE ); 
-#elif defined(GCW)
-	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE | SDL_TRIPLEBUF );
 #else
-	actualScreen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE );
+	actualScreen = SDL_SetVideoMode(320, 240, BITDEPTH_OSWAN, SDL_SWSURFACE );
 #endif
 	if(actualScreen == NULL) {
 		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
@@ -83,17 +81,17 @@ void initSDL(void)
 
 #if defined(LAYERS)
 	// Init new layer to add background and text
-	layer = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0,0,0,0);
+	layer = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, BITDEPTH_OSWAN, 0,0,0,0);
 	if(layer == NULL) {
 		fprintf(stderr, "Couldn't create surface: %s\n", SDL_GetError());
 		exit(1);
 	}
-	layerback = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0,0,0,0);
+	layerback = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, BITDEPTH_OSWAN, 0,0,0,0);
 	if(layerback == NULL) {
 		fprintf(stderr, "Couldn't create surface: %s\n", SDL_GetError());
 		exit(1);
 	}
-	layerbackgrey = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0,0,0,0);
+	layerbackgrey = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, BITDEPTH_OSWAN, 0,0,0,0);
 	if(layerbackgrey == NULL) {
 		fprintf(stderr, "Couldn't create surface: %s\n", SDL_GetError());
 		exit(1);
@@ -159,8 +157,10 @@ int main(int argc, char *argv[])
 	{
 #ifdef SWITCHING_GRAPHICS
 		if (actualScreen) SDL_FreeSurface(actualScreen);
-		actualScreen = SDL_SetVideoMode(224, 144, 16, SDL_SWSURFACE );
+		actualScreen = SDL_SetVideoMode(224, 144, BITDEPTH_OSWAN, SDL_SWSURFACE );
 		screen_prepbackground();
+		SDL_FillRect(actualScreen, NULL, 0);
+		SDL_Flip(actualScreen);
 #endif
 		strcpy(gameName,argv[1]);
 		m_Flag = GF_GAMEINIT;

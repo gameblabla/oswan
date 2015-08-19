@@ -955,11 +955,7 @@ int WsRun(void)
 	int cycle;
 #endif
     
-#ifdef NSPIRE
-    for(i = 0; i < 159*8; i = i + 1) // 1/75s
-#else
-    for(i = 0; i < 159*8; i = i + 1) // 1/75s
-#endif
+	for(i = 0; i < 159*8; i = i + 1) // 1/75s
     {
 #ifdef SPEEDHACKS
 			nec_execute(period);
@@ -985,30 +981,6 @@ int WsRun(void)
 
     }
 
-/*
-    for(i = 0; i < 159 * 8; i = i + 1) // 1/75s
-    {
-
-			cycle = nec_execute(period);
-			period += IPeriod - cycle;
-
-	
-			if(Interrupt())
-			{
-				iack = IRQACK;
-				for(inum = 7; inum >= 0; inum--)
-				{
-					if(iack & 0x80)
-					{
-						break;
-					}
-					iack <<= 1;
-				}
-				nec_int((inum + IRQBSE) << 2);
-			}
-
-    }
-*/
     return 0;
 }
 
@@ -1042,3 +1014,5 @@ void WsDeInit(void) {
 	apuEnd();
 #endif
 }
+
+

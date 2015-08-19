@@ -2,7 +2,7 @@
 
     NEC V30MZ(V20/V30/V33) emulator
 
-    Small changes made by toshi (Cycle count macros changed  , "THROUGH" macro added)   
+    Small changes made by toshi (Cycle count macros changed)   
 
     Small changes made by dox@space.pl (Corrected bug in NEG instruction , different AUX flag handling in some opcodes) 
 
@@ -37,15 +37,6 @@
 #define INT16 signed short
 #define INT32 signed int
 #define BOOLEAN signed int
-
-/* Disabled through defined, might be faster*/
-#define THROUGH                 \
-    if(nec_ICount<0){           \
-        if(seg_prefix)          \
-            I.ip-=(UINT16)3;    \
-        else                    \
-            I.ip-=(UINT16)2;    \
-        break;}
 
 #define CHK_ICOUNT(cond) if(nec_ICount < 0 && (cond)) { I.ip -= seg_prefix ? 3 : 2; break;}
 
@@ -83,7 +74,6 @@ int nec_ICount;
 
 static nec_Regs I;
 
-static UINT32 cpu_type;
 static UINT32 prefix_base;  /* base address of the latest prefix segment */
 char seg_prefix;        /* prefix segment indicator */
 
@@ -107,14 +97,12 @@ void nec_reset (void *param)
     unsigned int i,j,c;
     BREGS reg_name[8]={ AL, CL, DL, BL, AH, CH, DH, BH };
 
-
     memset( &I, 0, sizeof(I) );
 
     no_interrupt=0;
     I.sregs[CS] = 0xffff;
 
-
-    for (i = 0;i < 256; i++)
+    for (i = 0; i < 256; i++)
     {
         for (j = i, c = 0; j > 0; j >>= 1)
             if (j & 1) c++;
@@ -137,14 +125,6 @@ void nec_reset (void *param)
     }
 }
 
-void nec_exit (void)
-{
-
-}
-
-
-
-
 void nec_int(DWORD wektor)
 {
     DWORD dest_seg, dest_off;
@@ -162,7 +142,7 @@ void nec_int(DWORD wektor)
     }
 }
 
-static void nec_interrupt(unsigned int_num, BOOLEAN md_flag)
+static void nec_interrupt(unsigned int_num)
 {
     UINT32 dest_seg, dest_off;
 
@@ -207,40 +187,6 @@ OP( 0x0b, i_or_r16w  ) { DEF_r16w;  ORW;    RegWord(ModRM)=dst;         CLKM(2,1
 OP( 0x0c, i_or_ald8  ) { DEF_ald8;  ORB;    I.regs.b[AL]=dst;           CLK(1);             }
 OP( 0x0d, i_or_axd16 ) { DEF_axd16; ORW;    I.regs.w[AW]=dst;           CLK(1);             }
 OP( 0x0e, i_push_cs  ) { PUSH(I.sregs[CS]); CLK(2); }
-OP( 0x0f, i_pre_nec  ) { UINT32 ModRM, tmp, tmp2; /* pop cs at V30MZ? */
-    switch (FETCH) {
-        case 0x10 : BITOP_BYTE; CLKS(3,3,4); tmp2 = I.regs.b[CL] & 0x7; I.ZeroVal = (tmp & (1<<tmp2)) ? 1 : 0;  I.CarryVal=I.OverVal=0; break; /* Test */
-        case 0x11 : BITOP_WORD; CLKS(3,3,4); tmp2 = I.regs.b[CL] & 0xf; I.ZeroVal = (tmp & (1<<tmp2)) ? 1 : 0;  I.CarryVal=I.OverVal=0; break; /* Test */
-        case 0x12 : BITOP_BYTE; CLKS(5,5,4); tmp2 = I.regs.b[CL] & 0x7; tmp &= ~(1<<tmp2);  PutbackRMByte(ModRM,tmp);   break; /* Clr */
-        case 0x13 : BITOP_WORD; CLKS(5,5,4); tmp2 = I.regs.b[CL] & 0xf; tmp &= ~(1<<tmp2);  PutbackRMWord(ModRM,tmp);   break; /* Clr */
-        case 0x14 : BITOP_BYTE; CLKS(4,4,4); tmp2 = I.regs.b[CL] & 0x7; tmp |= (1<<tmp2);   PutbackRMByte(ModRM,tmp);   break; /* Set */
-        case 0x15 : BITOP_WORD; CLKS(4,4,4); tmp2 = I.regs.b[CL] & 0xf; tmp |= (1<<tmp2);   PutbackRMWord(ModRM,tmp);   break; /* Set */
-        case 0x16 : BITOP_BYTE; CLKS(4,4,4); tmp2 = I.regs.b[CL] & 0x7; BIT_NOT;            PutbackRMByte(ModRM,tmp);   break; /* Not */
-        case 0x17 : BITOP_WORD; CLKS(4,4,4); tmp2 = I.regs.b[CL] & 0xf; BIT_NOT;            PutbackRMWord(ModRM,tmp);   break; /* Not */
-
-        case 0x18 : BITOP_BYTE; CLKS(4,4,4); tmp2 = (FETCH) & 0x7;  I.ZeroVal = (tmp & (1<<tmp2)) ? 1 : 0;  I.CarryVal=I.OverVal=0; break; /* Test */
-        case 0x19 : BITOP_WORD; CLKS(4,4,4); tmp2 = (FETCH) & 0xf;  I.ZeroVal = (tmp & (1<<tmp2)) ? 1 : 0;  I.CarryVal=I.OverVal=0; break; /* Test */
-        case 0x1a : BITOP_BYTE; CLKS(6,6,4); tmp2 = (FETCH) & 0x7;  tmp &= ~(1<<tmp2);      PutbackRMByte(ModRM,tmp);   break; /* Clr */
-        case 0x1b : BITOP_WORD; CLKS(6,6,4); tmp2 = (FETCH) & 0xf;  tmp &= ~(1<<tmp2);      PutbackRMWord(ModRM,tmp);   break; /* Clr */
-        case 0x1c : BITOP_BYTE; CLKS(5,5,4); tmp2 = (FETCH) & 0x7;  tmp |= (1<<tmp2);       PutbackRMByte(ModRM,tmp);   break; /* Set */
-        case 0x1d : BITOP_WORD; CLKS(5,5,4); tmp2 = (FETCH) & 0xf;  tmp |= (1<<tmp2);       PutbackRMWord(ModRM,tmp);   break; /* Set */
-        case 0x1e : BITOP_BYTE; CLKS(5,5,4); tmp2 = (FETCH) & 0x7;  BIT_NOT;                PutbackRMByte(ModRM,tmp);   break; /* Not */
-        case 0x1f : BITOP_WORD; CLKS(5,5,4); tmp2 = (FETCH) & 0xf;  BIT_NOT;                PutbackRMWord(ModRM,tmp);   break; /* Not */
-
-        case 0x20 : ADD4S; CLKS(7,7,2); break;
-        case 0x22 : SUB4S; CLKS(7,7,2); break;
-        case 0x26 : CMP4S; CLKS(7,7,2); break;
-        case 0x28 : ModRM = FETCH; tmp = GetRMByte(ModRM); tmp <<= 4; tmp |= I.regs.b[AL] & 0xf; I.regs.b[AL] = (I.regs.b[AL] & 0xf0) | ((tmp>>8)&0xf); tmp &= 0xff; PutbackRMByte(ModRM,tmp); CLKM(9,15); break;
-        case 0x2a : ModRM = FETCH; tmp = GetRMByte(ModRM); tmp2 = (I.regs.b[AL] & 0xf)<<4; I.regs.b[AL] = (I.regs.b[AL] & 0xf0) | (tmp&0xf); tmp = tmp2 | (tmp>>4); PutbackRMByte(ModRM,tmp); CLKM(13,19); break;
-        case 0x31 : ModRM = FETCH; ModRM=0; break;
-        case 0x33 : ModRM = FETCH; ModRM=0; break;
-        case 0x92 : CLK(2); break; /* V25/35 FINT */
-        case 0xe0 : ModRM = FETCH; ModRM=0; break;
-        case 0xf0 : ModRM = FETCH; ModRM=0; break;
-        case 0xff : ModRM = FETCH; ModRM=0; break;
-        default:    break;
-    }
-}
 
 OP( 0x10, i_adc_br8  ) { DEF_br8;   src+=CF;    ADDB;   PutbackRMByte(ModRM,dst);   CLKM(3,1);      }
 OP( 0x11, i_adc_wr16 ) { DEF_wr16;  src+=CF;    ADDW;   PutbackRMWord(ModRM,dst);   CLKM(3,1);  }
@@ -363,7 +309,7 @@ OP( 0x62, i_chkind  ) {
     high= GetnextRMWord;
     tmp= RegWord(ModRM);
     if (tmp<low || tmp>high) {
-        nec_interrupt(5,0);
+        nec_interrupt(5);
         CLK(7);
     }
     CLK(13);
@@ -658,9 +604,9 @@ OP( 0xc9, i_leave ) {
 }
 OP( 0xca, i_retf_d16  ) { UINT32 count = FETCH; count += FETCH << 8; POP(I.ip); POP(I.sregs[CS]); I.regs.w[SP]+=count; CLK(9); }
 OP( 0xcb, i_retf      ) { POP(I.ip); POP(I.sregs[CS]); CLK(8); }
-OP( 0xcc, i_int3      ) { nec_interrupt(3,0); CLK(9); }
-OP( 0xcd, i_int       ) { nec_interrupt(FETCH,0); CLK(10); }
-OP( 0xce, i_into      ) { if (OF) { nec_interrupt(4,0); CLK(13); } else CLK(6); }
+OP( 0xcc, i_int3      ) { nec_interrupt(3); CLK(9); }
+OP( 0xcd, i_int       ) { nec_interrupt(FETCH); CLK(10); }
+OP( 0xce, i_into      ) { if (OF) { nec_interrupt(4); CLK(13); } else CLK(6); }
 OP( 0xcf, i_iret      ) { POP(I.ip); POP(I.sregs[CS]); i_popf(); CLK(10); }
 
 OP( 0xd0, i_rotshft_b ) {
@@ -771,14 +717,14 @@ OP( 0xf2, i_repne    ) { UINT32 next = FETCHOP; UINT16 c = I.regs.w[CW];
         case 0x6f:  CLK(2); if (c) do { i_outsw(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
         case 0xa4:  CLK(2); if (c) do { i_movsb(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
         case 0xa5:  CLK(2); if (c) do { i_movsw(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xa6:  CLK(5); if (c) do { THROUGH; i_cmpsb(); c--; CLK(3); CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
-        case 0xa7:  CLK(5); if (c) do { THROUGH; i_cmpsw(); c--; CLK(3); CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0xa6:  CLK(5); if (c) do { i_cmpsb(); c--; CLK(3); CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0xa7:  CLK(5); if (c) do { i_cmpsw(); c--; CLK(3); CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
         case 0xaa:  CLK(2); if (c) do { i_stosb(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
         case 0xab:  CLK(2); if (c) do { i_stosw(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
         case 0xac:  CLK(2); if (c) do { i_lodsb(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
         case 0xad:  CLK(2); if (c) do { i_lodsw(); c--; CHK_ICOUNT(c); } while (c>0);  I.regs.w[CW]=c; break;
-        case 0xae:  CLK(5); if (c) do { THROUGH; i_scasb(); c--; CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
-        case 0xaf:  CLK(5); if (c) do { THROUGH; i_scasw(); c--; CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0xae:  CLK(5); if (c) do { i_scasb(); c--; CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
+        case 0xaf:  CLK(5); if (c) do { i_scasw(); c--; CHK_ICOUNT(c && ZF==0); } while (c>0 && ZF==0);    I.regs.w[CW]=c; break;
         default:        nec_instruction[next]();
     }
     seg_prefix=FALSE;
@@ -792,20 +738,20 @@ OP( 0xf3, i_repe     ) { UINT32 next = FETCHOP; UINT16 c = I.regs.w[CW];
     }
 
     switch(next) {
-        case 0x6c:  CLK(5); if (c) do { THROUGH; i_insb();  c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0x6d:  CLK(5); if (c) do { THROUGH; i_insw();  c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0x6e:  CLK(5); if (c) do { THROUGH; i_outsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0x6f:  CLK(5); if (c) do { THROUGH; i_outsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xa4:  CLK(5); if (c) do { THROUGH; i_movsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xa5:  CLK(5); if (c) do { THROUGH; i_movsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xa6:  CLK(5); if (c) do { THROUGH; i_cmpsb(); c--; CLK( 3); CHK_ICOUNT( c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
-        case 0xa7:  CLK(5); if (c) do { THROUGH; i_cmpsw(); c--; CLK( 3); CHK_ICOUNT( c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
-        case 0xaa:  CLK(5); if (c) do { THROUGH; i_stosb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xab:  CLK(5); if (c) do { THROUGH; i_stosw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xac:  CLK(5); if (c) do { THROUGH; i_lodsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xad:  CLK(5); if (c) do { THROUGH; i_lodsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
-        case 0xae:  CLK(5); if (c) do { THROUGH; i_scasb(); c--; CHK_ICOUNT(c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
-        case 0xaf:  CLK(5); if (c) do { THROUGH; i_scasw(); c--; CHK_ICOUNT(c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0x6c:  CLK(5); if (c) do { i_insb();  c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6d:  CLK(5); if (c) do { i_insw();  c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6e:  CLK(5); if (c) do { i_outsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0x6f:  CLK(5); if (c) do { i_outsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa4:  CLK(5); if (c) do { i_movsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa5:  CLK(5); if (c) do { i_movsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xa6:  CLK(5); if (c) do { i_cmpsb(); c--; CLK( 3); CHK_ICOUNT( c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xa7:  CLK(5); if (c) do { i_cmpsw(); c--; CLK( 3); CHK_ICOUNT( c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xaa:  CLK(5); if (c) do { i_stosb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xab:  CLK(5); if (c) do { i_stosw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xac:  CLK(5); if (c) do { i_lodsb(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xad:  CLK(5); if (c) do { i_lodsw(); c--; CHK_ICOUNT(c); } while (c>0);    I.regs.w[CW]=c; break;
+        case 0xae:  CLK(5); if (c) do { i_scasb(); c--; CHK_ICOUNT(c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
+        case 0xaf:  CLK(5); if (c) do { i_scasw(); c--; CHK_ICOUNT(c && ZF == 1); } while (c>0 && ZF==1);   I.regs.w[CW]=c; break;
         default:     nec_instruction[next]();
     }
     seg_prefix=FALSE;
@@ -827,8 +773,8 @@ OP( 0xf6, i_f6pre ) { UINT32 tmp; UINT32 uresult,uresult2; INT32 result,result2;
         case 0x18: I.CarryVal=(tmp!=0);tmp=(~tmp)+1; SetSZPF_Byte(tmp); PutbackRMByte(ModRM,tmp&0xff); CLKM(3,1); break; /* NEG */
         case 0x20: uresult = I.regs.b[AL]*tmp; I.regs.w[AW]=(WORD)uresult; I.CarryVal=I.OverVal=(I.regs.b[AH]!=0); CLKM(4,3); break; /* MULU */
         case 0x28: result = (INT16)((INT8)I.regs.b[AL])*(INT16)((INT8)tmp); I.regs.w[AW]=(WORD)result; I.CarryVal=I.OverVal=(I.regs.b[AH]!=0); CLKM(4,3); break; /* MUL */
-        case 0x30: if (tmp) { DIVUB; } else nec_interrupt(0,0); CLKM(16,15); break;
-        case 0x38: if (tmp) { DIVB;  } else nec_interrupt(0,0); CLKM(18,17); break;
+        case 0x30: if (tmp) { DIVUB; } else nec_interrupt(0); CLKM(16,15); break;
+        case 0x38: if (tmp) { DIVB;  } else nec_interrupt(0); CLKM(18,17); break;
    }
 }
 
@@ -841,8 +787,8 @@ OP( 0xf7, i_f7pre   ) { UINT32 tmp,tmp2; UINT32 uresult,uresult2; INT32 result,r
         case 0x18: I.CarryVal=(tmp!=0); tmp=(~tmp)+1; SetSZPF_Word(tmp); PutbackRMWord(ModRM,tmp&0xffff); CLKM(3,1); break; /* NEG */
         case 0x20: uresult = I.regs.w[AW]*tmp; I.regs.w[AW]=uresult&0xffff; I.regs.w[DW]=((UINT32)uresult)>>16; I.CarryVal=I.OverVal=(I.regs.w[DW]!=0); CLKM(4,3); break; /* MULU */
         case 0x28: result = (INT32)((INT16)I.regs.w[AW])*(INT32)((INT16)tmp); I.regs.w[AW]=result&0xffff; I.regs.w[DW]=result>>16; I.CarryVal=I.OverVal=(I.regs.w[DW]!=0); CLKM(4,3); break; /* MUL */
-        case 0x30: if (tmp) { DIVUW; } else nec_interrupt(0,0); CLKM(24,23); break;
-        case 0x38: if (tmp) { DIVW;  } else nec_interrupt(0,0); CLKM(25,24); break;
+        case 0x30: if (tmp) { DIVUW; } else nec_interrupt(0); CLKM(24,23); break;
+        case 0x38: if (tmp) { DIVW;  } else nec_interrupt(0); CLKM(25,24); break;
     }
 }
 
@@ -932,23 +878,14 @@ void nec_set_reg(int regnum, unsigned val)
 
 int nec_execute(int cycles)
 {
-    
-
     nec_ICount=cycles;
-//  cpu_type=V30;
 
     while(nec_ICount>0) {
 
         nec_instruction[FETCHOP]();
         nec_ICount++;
     }
-/*
-    while(nec_ICount>=0) {
 
-        nec_instruction[FETCHOP]();
-//      nec_ICount++;
-    }
-*/
     return cycles - nec_ICount;
 }
 

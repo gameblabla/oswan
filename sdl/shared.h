@@ -1,6 +1,10 @@
 #ifndef SHARED_H
 #define SHARED_H
 
+#ifdef NSPIRE
+#include <os.h>
+#endif
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,6 +15,16 @@
 
 #include <SDL/SDL.h>
 
+#ifdef NSPIRE
+	#define BITDEPTH_OSWAN has_colors ? 16 : 8
+#elif defined(GCW0)
+	#define BITDEPTH_OSWAN 16
+#elif defined(DREAMCAST)
+	#define BITDEPTH_OSWAN 16	
+#else
+	#define BITDEPTH_OSWAN 16
+#endif
+	
 #ifdef GCW
 	#ifndef HOME_SUPPORT
 		#define HOME_SUPPORT
@@ -38,6 +52,12 @@
 	
 	#define PAD_A		SDLK_LCTRL
 	#define PAD_B		SDLK_TAB
+	
+	#define PAD_X		SDLK_LSHIFT
+	#define PAD_Y		SDLK_SPACE
+	
+	#define PAD_L		SDLK_s
+	#define PAD_R		SDLK_l
 
 	#define PAD_START		SDLK_LSHIFT
 	#define PAD_SELECT		SDLK_LSHIFT
@@ -58,6 +78,12 @@
 	
 	#define PAD_A		SDLK_LCTRL
 	#define PAD_B		SDLK_LALT
+	
+	#define PAD_X		SDLK_LSHIFT
+	#define PAD_Y		SDLK_SPACE
+	
+	#define PAD_L		SDLK_TAB
+	#define PAD_R		SDLK_BACKSPACE
 	
 	#define PAD_START		SDLK_RETURN
 	#define PAD_SELECT		SDLK_ESCAPE
@@ -83,6 +109,12 @@
 	
 	#define PAD_A		SDLK_LCTRL
 	#define PAD_B		SDLK_LALT
+	
+	#define PAD_X		SDLK_LSHIFT
+	#define PAD_Y		SDLK_SPACE
+	
+	#define PAD_L		SDLK_s
+	#define PAD_R		SDLK_l
 	
 	#define PAD_START		SDLK_RETURN
 	#define PAD_SELECT		SDLK_BACKSPACE

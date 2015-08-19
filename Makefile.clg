@@ -1,8 +1,8 @@
 CC = clang-3.6
 
-CFLAGS = -g -Wall -Werror ${DEFINES} 
-DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DLAYERS -DBETTER_CPU -DJOYSTICK
-LDFLAGS = -Wl,--as-needed `sdl-config --cflags --libs` -lSDLmain -lSDL
+CFLAGS = -O2 -g -Wall -Werror -I./emu -I./sdl ${DEFINES} 
+DEFINES = -DLAYERS -DSMOOTH -DSWITCHING_GRAPHICS -DSOUND_ON -DSOUND_EMULATION -DSWITCHING_GRAPHICS
+LDFLAGS = -lSDLmain -lSDL -Wl,--as-needed
 OUTPUT = oswan
 
 SOURCES = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/drawing.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c 

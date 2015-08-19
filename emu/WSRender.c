@@ -28,11 +28,7 @@ BYTE SprTMap[512];
 
 WORD Palette[16][16];
 WORD MonoColor[8];
-//WORD FrameBuffer[144][LINE_SIZE];
-//WORD* FrameBuffer;
 WORD FrameBuffer[320*240];
-
-
 WORD SegmentBuffer[(LCD_MAIN_H * 4) * (8 * 4)]; // 8 * 144 ÇÃ4î{ÇÃÉTÉCÉYÇ≈ï`âÊ
 int Layer[3] = {1, 1, 1};
 int Segment[11];
@@ -47,6 +43,7 @@ void SetPalette(int addr)
 	r = (color & 0x0F00) << 4;
 	g = (color & 0x00F0) << 3;
 	b = (color & 0x000F) << 1;
+	
     Palette[(addr & 0x1E0) >> 5][(addr & 0x1E) >> 1] = r | g | b;
 }
 

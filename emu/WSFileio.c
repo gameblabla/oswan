@@ -1,7 +1,3 @@
-/*
-$Date: 2009-10-30 05:26:46 +0100 (ven., 30 oct. 2009) $
-$Rev: 71 $
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -262,7 +258,7 @@ int WsCreate(char *CartName)
         SaveName[0] = 0;
     }
     WsReset();
-	SetHVMode(buf[6] & 1); // 0:â° 1:èc
+	SetHVMode(buf[6] & 1);
 #ifdef SPEEDHACKS
     gameCRC = crc32(0, buf, sizeof(fp));
 #endif
@@ -352,14 +348,16 @@ void WsSaveIEep(void)
 #define MacroLoadNecRegisterFromFile(F,R) \
 		result = fread(&value, sizeof(unsigned int), 1, fp); \
 	    nec_set_reg(R,value); 
-void WsLoadState(int num)
+void WsLoadState(const char *savename, int num)
 {
     FILE* fp;
-    char buf[512];
+    char buf[128];
 	unsigned int value;
 	int i;
+	
+	printf("Load SaveState...\n");
 
-	sprintf(buf, "%s.%03d", StateName, num);
+	snprintf(buf, sizeof(buf), "%s", savename);
     if ((fp = fopen(buf, "rb")) == NULL)
     {
 		return;
@@ -405,25 +403,27 @@ void WsLoadState(int num)
 	{
 		WriteIO(i, IO[i]);
 	}
+	
+	printf("Yes...\n");
 }
 
 #define MacroStoreNecRegisterToFile(F,R) \
 	    value = nec_get_reg(R); \
 		fwrite(&value, sizeof(unsigned int), 1, fp);
-void WsSaveState(int num)
+		
+void WsSaveState(const char *savename, int num)
 {
     FILE* fp;
-    char buf[512];
+    char buf[128];
 	unsigned int value;
 	int i;
+	
+	printf("Write SaveState...\n");
 
-	if (StateName[0] == 0)
-	{
-		return;
-	}
-	sprintf(buf, "%s.%03d", StateName, num);
-    if ((fp = fopen(buf, "wb")) == NULL)
+	snprintf(buf, sizeof(buf), "%s", savename);
+    if ((fp = fopen(buf, "w+")) == NULL)
     {
+		printf("FAILURE...\n");
 		return;
 	}
 	MacroStoreNecRegisterToFile(fp,NEC_IP);
@@ -459,4 +459,6 @@ void WsSaveState(int num)
     }
 	fwrite(Palette, sizeof(WORD), 16 * 16, fp);
     fclose(fp);
+    
+    printf("Yes...\n");
 }
