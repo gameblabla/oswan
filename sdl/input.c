@@ -112,11 +112,11 @@ int WsInputGetState(int mode)
 		else 
 		{
 			if (keys[PAD_XUP] == SDL_PRESSED)    
-				button |= (1<<2); // UP -> X1
+				button |= (1<<0); // UP -> X1
 			if (keys[PAD_XRIGHT] == SDL_PRESSED) 
 				button |= (1<<1); // RIGHT -> X2
 			if (keys[PAD_XDOWN] == SDL_PRESSED)  
-				button |= (1<<0); // DOWN -> X3
+				button |= (1<<2); // DOWN -> X3
 			if (keys[PAD_XLEFT] == SDL_PRESSED)  
 				button |= (1<<3); // LEFT -> X4
 			
