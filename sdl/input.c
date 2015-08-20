@@ -44,9 +44,9 @@ int WsInputGetState(int mode)
 			button |= (1<<6); // DOWN -> X3
 		if (keys[PAD_B] == SDL_PRESSED) 
 			button |= (1<<5); // RIGHT -> X2
-		if (keys[PAD_X]) 
+		if (keys[PAD_X]>0) 
 			button |= (1<<7); // LEFT -> X4
-		if (keys[PAD_Y]) 
+		if (keys[PAD_Y]>0) 
 			button |= (1<<4); // UP -> X1
 	}
 	else
@@ -56,9 +56,9 @@ int WsInputGetState(int mode)
 		if (keys[PAD_B] == SDL_PRESSED) 
 			button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
 		
-		if (keys[PAD_X]) 
+		if (keys[PAD_X]>0) 
 			button |= keyCoresp[GameConf.OD_Joy[5]];  // Button A (Fire)
-		if (keys[PAD_Y]) 
+		if (keys[PAD_Y]>0) 
 			button |= keyCoresp[GameConf.OD_Joy[4]];  // Button B (Fire)
 	}
 		
