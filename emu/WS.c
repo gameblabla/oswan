@@ -12,7 +12,6 @@ extern unsigned long SDL_UXTimerRead(void);
 #include "input.h"
 #include "WSApu.h"
 #include "WSFileio.h"
-#include "WSError.h"
 #include "cpu/necintrf.h"
 
 #define IPeriod 32          // HBlank/8 (256/8)
@@ -38,8 +37,9 @@ static WORD HTimer;
 static WORD VTimer;
 static int RtcCount;
 static int RAMEnable;
-static int FrameSkip = 0;
 static int SkipCnt = 0;
+#ifndef SMOOTH
+static int FrameSkip = 0;
 static int TblSkip[5][5] = {
     {1,1,1,1,1},
     {0,1,1,1,1},
@@ -47,11 +47,18 @@ static int TblSkip[5][5] = {
     {0,0,1,0,1},
     {0,0,0,0,1},
 };
-#define MONO(C) 0xF000 | (C)<<8 | (C)<<4 | (C)
+#endif
+
+#define MONO(C) (C)<<12 | (C)<<7 | (C)<<1
 static WORD DefColor[] = {
     MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),
     MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
 };
+/*#define MONO(C) 0xF000 | (C)<<8 | (C)<<4 | (C)
+static WORD DefColor[] = {
+    MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),
+    MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
+};*/
 
 void  ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
 {
@@ -851,7 +858,7 @@ int Interrupt(void)
             *(WORD*)(IO + NCSR) = apuShiftReg();
             break;
         case 4:
-            if(IO[RSTRL] == 140)
+            if(IO[RSTRL] == 142)
             {
                 i = (IO[SPRTAB] & 0x1F) << 9;
                 i += IO[SPRBGN] << 2;
@@ -871,17 +878,28 @@ int Interrupt(void)
                         SkipCnt = 4;
                     }
                 }
+#ifdef SMOOTH
+				if(IO[RSTRL] < 144)
+				{
+					RefreshLine(IO[RSTRL]);
+				}
+				else if(IO[RSTRL] == 144)
+				{
+					graphics_paint();
+				}
+#else
                 if(TblSkip[FrameSkip][SkipCnt])
                 {
                     if(IO[RSTRL] < 144)
                     {
                         RefreshLine(IO[RSTRL]);
                     }
-                    if(IO[RSTRL] == 144)
+                    else if(IO[RSTRL] == 144)
                     {
                         graphics_paint();
                     }
                 }
+#endif
             }
             break;
         case 6:
