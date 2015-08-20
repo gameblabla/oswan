@@ -1,40 +1,36 @@
-/*
-$Date: 2009-10-30 05:26:46 +0100 (ven., 30 oct. 2009) $
-$Rev: 71 $
-*/
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
-//#include "entry.h"
+// SDL drawing screen
+extern void graphics_paint(void);
+extern unsigned long SDL_UXTimerRead(void);
+
 #include "WSRender.h"
 #include "WS.h"
+#include "WSDraw.h"
+#include "input.h"
 #include "WSApu.h"
-#include "WSInput.h"
 #include "WSFileio.h"
+#include "WSError.h"
 #include "cpu/necintrf.h"
-
-#include "../sdl/hack.h"
-
-extern void graphics_paint(void); // SDL drawing of screen
-extern unsigned long SDL_UXTimerRead(void);
 
 #define IPeriod 32          // HBlank/8 (256/8)
 
 int Run;
-BYTE *Page[16];             // ÉoÉìÉNäÑÇËìñÇƒ
-BYTE IRAM[0x10000];         // ì‡ïîRAM 64kB = Page[0]
+BYTE *Page[16];             // „Éê„É≥„ÇØÂâ≤„ÇäÂΩì„Å¶
+BYTE IRAM[0x10000];         // ÂÜÖÈÉ®RAM 64kB = Page[0]
 BYTE IO[0x100];             // IO
-BYTE MemDummy[0x10000];     // É_É~Å[ÉoÉìÉN 64kB
-BYTE *ROMMap[0x100];        // C-ROMÉoÉìÉNÉ}ÉbÉv
-int ROMBanks;               // C-ROMÉoÉìÉNêî
-BYTE *RAMMap[0x100];        // C-RAMÉoÉìÉNÉ}ÉbÉv
-int RAMBanks;               // C-RAMÉoÉìÉNêî
-int RAMSize;                // C-RAMëçóeó 
-WORD IEep[64];              // ì‡ë†EEPROM
-struct EEPROM sIEep;        // EEPROMì«Ç›èëÇ´ópç\ë¢ëÃÅiì‡ë†Åj
-struct EEPROM sCEep;        // EEPROMì«Ç›èëÇ´ópç\ë¢ëÃÅiÉJÅ[ÉgÉäÉbÉWÅj
-int CartKind;               // ÉZÅ[ÉuÉÅÉÇÉäÇÃéÌóﬁÅiCK_EEP = EEPROMÅj
+BYTE MemDummy[0x10000];     // „ÉÄ„Éü„Éº„Éê„É≥„ÇØ 64kB
+BYTE *ROMMap[0x100];        // C-ROM„Éê„É≥„ÇØ„Éû„ÉÉ„Éó
+int ROMBanks;               // C-ROM„Éê„É≥„ÇØÊï∞
+BYTE *RAMMap[0x100];        // C-RAM„Éê„É≥„ÇØ„Éû„ÉÉ„Éó
+int RAMBanks;               // C-RAM„Éê„É≥„ÇØÊï∞
+int RAMSize;                // C-RAMÁ∑èÂÆπÈáè
+WORD IEep[64];              // ÂÜÖËîµEEPROM
+struct EEPROM sIEep;        // EEPROMË™≠„ÅøÊõ∏„ÅçÁî®ÊßãÈÄ†‰ΩìÔºàÂÜÖËîµÔºâ
+struct EEPROM sCEep;        // EEPROMË™≠„ÅøÊõ∏„ÅçÁî®ÊßãÈÄ†‰ΩìÔºà„Ç´„Éº„Éà„É™„ÉÉ„Ç∏Ôºâ
+int CartKind;               // „Çª„Éº„Éñ„É°„É¢„É™„ÅÆÁ®ÆÈ°ûÔºàCK_EEP = EEPROMÔºâ
 
 static int ButtonState = 0x0000;    // Button state: B.A.START.OPTION.X4.X3.X2.X1.Y4.Y3.Y2.Y1
 static int HVMode;
@@ -42,7 +38,7 @@ static WORD HTimer;
 static WORD VTimer;
 static int RtcCount;
 static int RAMEnable;
-int FrameSkip = 0;
+static int FrameSkip = 0;
 static int SkipCnt = 0;
 static int TblSkip[5][5] = {
     {1,1,1,1,1},
@@ -51,16 +47,15 @@ static int TblSkip[5][5] = {
     {0,0,1,0,1},
     {0,0,0,0,1},
 };
-#define MONO(C) (C)<<12 | (C)<<7 | (C)<<1
+#define MONO(C) 0xF000 | (C)<<8 | (C)<<4 | (C)
 static WORD DefColor[] = {
     MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),
     MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
 };
 
-void  ComEEP(struct EEPROM *eeprom, WORD *cmd, WORD *data)
+void  ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
 {
     int i, j, op, addr;
-
     const int tblmask[16][5]=
     {
         {0x0000, 0, 0x0000, 0, 0x0000}, // dummy
@@ -98,44 +93,44 @@ void  ComEEP(struct EEPROM *eeprom, WORD *cmd, WORD *data)
         addr = (*cmd & tblmask[i][2]) >> tblmask[i][3];
         switch(addr)
         {
-        case 0: // èëçûÇ›ã÷é~
+        case 0: // Êõ∏Ëæº„ÅøÁ¶ÅÊ≠¢
             eeprom->we = 0;
             break;
-        case 1: // ëSÉAÉhÉåÉXèëÇ´çûÇ›
+        case 1: // ÂÖ®„Ç¢„Éâ„É¨„ÇπÊõ∏„ÅçËæº„Åø
             for(j = tblmask[i][4]; j >= 0; j--)
             {
                 eeprom->data[j] = *data;
             }
             break;
-        case 2: // É`ÉbÉvè¡ãé
+        case 2: // „ÉÅ„ÉÉ„ÉóÊ∂àÂéª
             if(eeprom->we)
             {
                 memset(eeprom->data, 0xFF, sizeof(eeprom->data)*2);
             }
             break;
-        case 3: // èëÇ´çûÇ›ãñâ¬
+        case 3: // Êõ∏„ÅçËæº„ÅøÂèØËÉΩ
             eeprom->we = 1;
             break;
         }
         *data = 0;
         break;
-    case 1: // èëÇ´çûÇ›
+    case 1: // Êõ∏„ÅçËæº„Åø
         if(eeprom->we)
         {
             addr = *cmd & tblmask[i][4];
             eeprom->data[addr] = *data;
-            if (ROMBanks == 1 && addr == 0x3A) // ÉAÉiÉUÉwÉuÉìÇ‡èëÇ´çûÇÒÇ≈ÇΩ
+            if (ROMBanks == 1 && addr == 0x3A) // „Ç¢„Éä„Ç∂„Éò„Éñ„É≥„ÇÇÊõ∏„ÅçËæº„Çì„Åß„Åü
             {
-                Run = 0; // ÉpÅ[É\ÉiÉãÉfÅ[É^ç≈å„ÇÃèëÇ´çûÇ›Ç»ÇÃÇ≈èIóπ
+                Run = 0; // „Éë„Éº„ÇΩ„Éä„É´„Éá„Éº„ÇøÊúÄÂæå„ÅÆÊõ∏„ÅçËæº„Åø„Å™„ÅÆ„ÅßÁµÇ‰∫Ü
             }
         }
         *data = 0;
         break;
-    case 2: // ì«Ç›èoÇµ
+    case 2: // Ë™≠„ÅøÂá∫„Åó
         addr = *cmd & tblmask[i][4];
         *data = eeprom->data[addr];
         break;
-    case 3: // è¡ãé
+    case 3: // Ê∂àÂéª
         if(eeprom->we)
         {
             addr = *cmd & tblmask[i][4];
@@ -147,23 +142,24 @@ void  ComEEP(struct EEPROM *eeprom, WORD *cmd, WORD *data)
     }
 }
 
-inline BYTE ReadMem(DWORD A)
+BYTE  ReadMem(DWORD A)
 {
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
 
-void WriteMem(DWORD A, BYTE V)
+void  WriteMem(DWORD A, BYTE V)
 {
     (*WriteMemFnTable[(A >> 16) & 0x0F])(A, V);
 }
 
-static void WriteRom(DWORD A, BYTE V)
+typedef void (*WriteMemFn)(DWORD A, BYTE V);
+
+static void  WriteRom(DWORD A, BYTE V)
 {
-	printf("ERR_WRITE_ROM\n");
-	//ErrorMsg(ERR_WRITE_ROM);
+    //ErrorMsg(ERR_WRITE_ROM);
 }
 
-static void WriteIRam(DWORD A, BYTE V)
+static void  WriteIRam(DWORD A, BYTE V)
 {
     IRAM[A & 0xFFFF] = V;
     if((A & 0xFE00) == 0xFE00)
@@ -176,105 +172,109 @@ static void WriteIRam(DWORD A, BYTE V)
     }
 }
 
-#define	FLASH_CMD_ADDR1			0x0AAA
-#define	FLASH_CMD_ADDR2			0x0555
-#define	FLASH_CMD_DATA1			0xAA
-#define	FLASH_CMD_DATA2			0x55
-#define	FLASH_CMD_RESET			0xF0
-#define	FLASH_CMD_ERASE			0x80
-#define	FLASH_CMD_ERASE_CHIP	0x10
-#define	FLASH_CMD_ERASE_SECT	0x30
-#define	FLASH_CMD_CONTINUE_SET	0x20
-#define	FLASH_CMD_CONTINUE_RES1	0x90
-#define	FLASH_CMD_CONTINUE_RES2	0xF0
-#define	FLASH_CMD_CONTINUE_RES3	0x00
-#define	FLASH_CMD_WRITE			0xA0
+#define FLASH_CMD_ADDR1         0x0AAA
+#define FLASH_CMD_ADDR2         0x0555
+#define FLASH_CMD_DATA1         0xAA
+#define FLASH_CMD_DATA2         0x55
+#define FLASH_CMD_RESET         0xF0
+#define FLASH_CMD_ERASE         0x80
+#define FLASH_CMD_ERASE_CHIP    0x10
+#define FLASH_CMD_ERASE_SECT    0x30
+#define FLASH_CMD_CONTINUE_SET  0x20
+#define FLASH_CMD_CONTINUE_RES1 0x90
+#define FLASH_CMD_CONTINUE_RES2 0xF0
+#define FLASH_CMD_CONTINUE_RES3 0x00
+#define FLASH_CMD_WRITE         0xA0
 static void  WriteCRam(DWORD A, BYTE V)
 {
-	static int flashCommand1 = 0;
-	static int flashCommand2 = 0;
-	static int flashWriteSet = 0;
-	static int flashWriteOne = 0;
-	static int flashWriteReset = 0;
-	static int flashWriteEnable = 0;
-	int offset = A & 0xFFFF;
+    static int flashCommand1 = 0;
+    static int flashCommand2 = 0;
+    static int flashWriteSet = 0;
+    static int flashWriteOne = 0;
+    static int flashWriteReset = 0;
+    static int flashWriteEnable = 0;
+    int offset = A & 0xFFFF;
 
-	// WonderWitch
-	// FLASH ROM command sequence
-	if (flashCommand2)
-	{
-		if (offset == FLASH_CMD_ADDR1)
-		{
-			switch (V) {
-			case FLASH_CMD_CONTINUE_SET:
-				flashWriteSet   = 1;
-				flashWriteReset = 0;
-				break;
-			case FLASH_CMD_WRITE:
-				flashWriteOne = 1;
-				break;
-			case FLASH_CMD_RESET:
-				break;
-			case FLASH_CMD_ERASE:
-				break;
-			case FLASH_CMD_ERASE_CHIP:
-				break;
-			case FLASH_CMD_ERASE_SECT:
-				break;
-			}
-		}
-		flashCommand2 = 0;
-	}
-	else if (flashCommand1)
-	{
-		if (offset == FLASH_CMD_ADDR2 && V == FLASH_CMD_DATA2)
-		{
-			flashCommand2 = 1;
-		}
-		flashCommand1 = 0;
-	}
-	else if (offset == FLASH_CMD_ADDR1 && V == FLASH_CMD_DATA1)
-	{
-		flashCommand1 = 1;
-	}
-	if (RAMSize != 0x40000 || BNK1SEL < 8)
-	{
-		// normal sram
-		Page[1][offset] = V;
-	}
-	else if (BNK1SEL >= 8 && BNK1SEL < 15)
-	{
-		// FLASH ROM use SRAM bank(port 0xC1:8-14)(0xC1:15 0xF0000-0xFFFFF are write protected)
-		if (flashWriteEnable || flashWriteOne)
-		{
-			Page[BNK1SEL][offset] = V;
-			flashWriteEnable = 0;
-			flashWriteOne = 0;
-		}
-		else if (flashWriteSet)
-		{
-			switch (V)
-			{
-			case FLASH_CMD_WRITE:
-				flashWriteEnable = 1;
-				flashWriteReset = 0;
-				break;
-			case FLASH_CMD_CONTINUE_RES1:
-				flashWriteReset = 1;
-				break;
-			case FLASH_CMD_CONTINUE_RES2:
-			case FLASH_CMD_CONTINUE_RES3:
-				if (flashWriteReset)
-				{
-					flashWriteSet = 0;
-					flashWriteReset = 0;
-				}
-				break;
-			default:
-				flashWriteReset = 0;
-			}
-		}
-	}
+    if (offset >= RAMSize)
+    {
+        //ErrorMsg(ERR_OVER_RAMSIZE);
+    }
+    // WonderWitch
+    // FLASH ROM command sequence
+    if (flashCommand2)
+    {
+        if (offset == FLASH_CMD_ADDR1)
+        {
+            switch (V) {
+            case FLASH_CMD_CONTINUE_SET:
+                flashWriteSet   = 1;
+                flashWriteReset = 0;
+                break;
+            case FLASH_CMD_WRITE:
+                flashWriteOne = 1;
+                break;
+            case FLASH_CMD_RESET:
+                break;
+            case FLASH_CMD_ERASE:
+                break;
+            case FLASH_CMD_ERASE_CHIP:
+                break;
+            case FLASH_CMD_ERASE_SECT:
+                break;
+            }
+        }
+        flashCommand2 = 0;
+    }
+    else if (flashCommand1)
+    {
+        if (offset == FLASH_CMD_ADDR2 && V == FLASH_CMD_DATA2)
+        {
+            flashCommand2 = 1;
+        }
+        flashCommand1 = 0;
+    }
+    else if (offset == FLASH_CMD_ADDR1 && V == FLASH_CMD_DATA1)
+    {
+        flashCommand1 = 1;
+    }
+    if (RAMSize != 0x40000 || IO[BNK1SLCT] < 8)
+    {
+        // normal sram
+        Page[1][offset] = V;
+    }
+    else if (IO[BNK1SLCT] >= 8 && IO[BNK1SLCT] < 15)
+    {
+        // FLASH ROM use SRAM bank(port 0xC1:8-14)(0xC1:15 0xF0000-0xFFFFF are write protected)
+        if (flashWriteEnable || flashWriteOne)
+        {
+            Page[IO[BNK1SLCT]][offset] = V;
+            flashWriteEnable = 0;
+            flashWriteOne = 0;
+        }
+        else if (flashWriteSet)
+        {
+            switch (V)
+            {
+            case FLASH_CMD_WRITE:
+                flashWriteEnable = 1;
+                flashWriteReset = 0;
+                break;
+            case FLASH_CMD_CONTINUE_RES1:
+                flashWriteReset = 1;
+                break;
+            case FLASH_CMD_CONTINUE_RES2:
+            case FLASH_CMD_CONTINUE_RES3:
+                if (flashWriteReset)
+                {
+                    flashWriteSet = 0;
+                    flashWriteReset = 0;
+                }
+                break;
+            default:
+                flashWriteReset = 0;
+            }
+        }
+    }
 }
 
 void  WriteIO(DWORD A, BYTE V)
@@ -295,12 +295,12 @@ void  WriteIO(DWORD A, BYTE V)
         if (V & 0x01)
         {
             Segment[8] = 1;
-			RenderSleep();
+            RenderSleep();
         }
-		else
-		{
+        else
+        {
             Segment[8] = 0;
-		}
+        }
         if (V & 0x02)
         {
             SetHVMode(1);
@@ -323,32 +323,32 @@ void  WriteIO(DWORD A, BYTE V)
         {
             Segment[2] = 1;
         }
-		else
-		{
+        else
+        {
             Segment[2] = 0;
-		}
+        }
         if (V & 0x10)
         {
             Segment[1] = 1;
         }
-		else
-		{
+        else
+        {
             Segment[1] = 0;
-		}
+        }
         if (V & 0x20)
         {
             Segment[0] = 1;
         }
-		else
-		{
+        else
+        {
             Segment[0] = 0;
-		}
+        }
         break;
     case 0x1C:
     case 0x1D:
     case 0x1E:
     case 0x1F:
-        if(COLCTL & 0x80) break;
+        if(IO[COLCTL] & 0x80) break;
         i = (A - 0x1C) << 1;
         MonoColor[i] = DefColor[V & 0x0F];
         MonoColor[i + 1] = DefColor[(V & 0xF0) >> 4];
@@ -393,7 +393,7 @@ void  WriteIO(DWORD A, BYTE V)
     case 0x3D:
     case 0x3E:
     case 0x3F:
-        if (COLCTL & 0x80) break;
+        if (IO[COLCTL] & 0x80) break;
         i = (A & 0x1E) >> 1;
         j = 0;
         if (A & 0x01) j = 2;
@@ -403,38 +403,38 @@ void  WriteIO(DWORD A, BYTE V)
     case 0x48:
         if(V & 0x80)
         {
-            i = DMASRC;
-            j = DMADST;
-            k = DMACNT;
+            i = *(DWORD*)(IO + DMASRC); // IO[]„Åå4„Éê„Ç§„ÉàÂ¢ÉÁïå„Å´„ÅÇ„Çã„Åì„Å®„ÅåÂøÖË¶Å
+            j = *(WORD*)(IO + DMADST);
+            k = *(WORD*)(IO + DMACNT);
             while(k--)
             {
                 WriteMem(j++, ReadMem(i++));
             }
-            DMACNT = 0;
-            DMASRC = i;
-            DMADST = j;
+            *(WORD*)(IO + DMACNT) = 0;
+            *(DWORD*)(IO + DMASRC) = i; // IO[]„Åå4„Éê„Ç§„ÉàÂ¢ÉÁïå„Å´„ÅÇ„Çã„Åì„Å®„ÅåÂøÖË¶Å
+            *(WORD*)(IO + DMADST) = j;
             V &= 0x7F;
         }
         break;
     case 0x80:
     case 0x81:
         IO[A] = V;
-        Ch[0].freq = *(unsigned short*)(IO + 0x80);
+        Ch[0].freq = *(WORD*)(IO + SND1FRQ);
         return;
     case 0x82:
     case 0x83:
         IO[A] = V;
-        Ch[1].freq = *(unsigned short*)(IO + 0x82);
+        Ch[1].freq = *(WORD*)(IO + SND2FRQ);
         return;
     case 0x84:
     case 0x85:
         IO[A] = V;
-        Ch[2].freq = *(unsigned short*)(IO + 0x84);
+        Ch[2].freq = *(WORD*)(IO + SND3FRQ);
         return;
     case 0x86:
     case 0x87:
         IO[A] = V;
-        Ch[3].freq = *(unsigned short*)(IO + 0x86);
+        Ch[3].freq = *(WORD*)(IO + SND4FRQ);
         return;
     case 0x88:
         Ch[0].volL = (V >> 4) & 0x0F;
@@ -477,7 +477,7 @@ void  WriteIO(DWORD A, BYTE V)
         Noise.on  = V & 0x80;
         break;
     case 0x91:
-        V |= 0x80; // ÉwÉbÉhÉzÉìÇÕèÌÇ…ÉIÉì
+        V |= 0x80; // „Éò„ÉÉ„Éâ„Éõ„É≥„ÅØÂ∏∏„Å´„Ç™„É≥
         break;
     case 0xA0:
         V=0x02;
@@ -485,7 +485,7 @@ void  WriteIO(DWORD A, BYTE V)
     case 0xA2:
         if(V & 0x01)
         {
-            HTimer = HPRE;
+            HTimer = *(WORD*)(IO + HPRE);
         }
         else
         {
@@ -493,7 +493,7 @@ void  WriteIO(DWORD A, BYTE V)
         }
         if(V & 0x04)
         {
-            VTimer = VPRE;
+            VTimer = *(WORD*)(IO + VPRE);
         }
         else
         {
@@ -509,11 +509,11 @@ void  WriteIO(DWORD A, BYTE V)
     case 0xA7:
         IO[A] = V;
         IO[A + 4] = V; // Dark eyes
-        if(TIMCTL & 0x04)
+        if(IO[TIMCTL] & 0x04)
         {
-            VTimer = VPRE;
+            VTimer = *(WORD*)(IO + VPRE);
         }
-        break;
+        return;
     case 0xB3:
         if(V & 0x20)
         {
@@ -522,16 +522,16 @@ void  WriteIO(DWORD A, BYTE V)
         V |= 0x04;
         break;
     case 0xB5:
-        KEYCTL = (BYTE)(V & 0xF0);
-        if(KEYCTL & 0x40) KEYCTL |= (BYTE)((ButtonState >> 8) & 0x0F);
-        if(KEYCTL & 0x20) KEYCTL |= (BYTE)((ButtonState >> 4) & 0x0F);
-        if(KEYCTL & 0x10) KEYCTL |= (BYTE)(ButtonState & 0x0F);
+        IO[KEYCTL] = (BYTE)(V & 0xF0);
+        if(IO[KEYCTL] & 0x40) IO[KEYCTL] |= (BYTE)((ButtonState >> 8) & 0x0F);
+        if(IO[KEYCTL] & 0x20) IO[KEYCTL] |= (BYTE)((ButtonState >> 4) & 0x0F);
+        if(IO[KEYCTL] & 0x10) IO[KEYCTL] |= (BYTE)(ButtonState & 0x0F);
         return;
     case 0xB6:
-        IRQACK &= (BYTE)~V;
+        IO[IRQACK] &= (BYTE)~V;
         return;
     case 0xBE:
-        ComEEP(&sIEep, (WORD*)(IO + 0xBC), (WORD*)(IO + 0xBA));
+        ComEeprom(&sIEep, (WORD*)(IO + EEPCMD), (WORD*)(IO + EEPDATA));
         V >>= 4;
         break;
     case 0xC0:
@@ -554,18 +554,18 @@ void  WriteIO(DWORD A, BYTE V)
         Page[0xF] = ROMMap[0xF | j];
         break;
     case 0xC1:
-		if (V >= 8) // WonderWitch
-		{
-			Page[1] = MemDummy;
-		}
+        if (V >= 8) // WonderWitch
+        {
+            Page[1] = MemDummy;
+        }
         else if (V >= RAMBanks)
-		{
-			RAMEnable = 0;
-		}
+        {
+            RAMEnable = 0;
+        }
         else
-		{
-			Page[1] = RAMMap[V];
-		}
+        {
+            Page[1] = RAMMap[V];
+        }
         break;
     case 0xC2:
         Page[2] = ROMMap[V];
@@ -574,7 +574,7 @@ void  WriteIO(DWORD A, BYTE V)
         Page[3] = ROMMap[V];
         break;
     case 0xC8:
-        ComEEP(&sCEep, (WORD*)(IO + 0xC6), (WORD*)(IO + 0xC4));
+        ComEeprom(&sCEep, (WORD*)(IO + CEEPCMD), (WORD*)(IO + CEEPDATA));
         if(V & 0x10)
         {
             V >>= 4;
@@ -608,16 +608,15 @@ BYTE ReadIO(DWORD A)
     switch(A)
     {
     case 0xCA:
-        return IO[0xCA] | 0x80;
+        return IO[RTCCMD] | 0x80;
     case 0xCB:
-        if (IO[0xCA] == 0x15)  // get time command
-        {
+        if (IO[RTCCMD] == 0x15)  // get time command
+        { 
             BYTE year, mon, mday, wday, hour, min, sec, j;
             struct tm *newtime;
             time_t long_time;
 
-			long_time = time(NULL);
-            //time(&long_time);
+            time(&long_time);
             newtime = localtime(&long_time);
             switch(RtcCount)
             {
@@ -659,7 +658,7 @@ BYTE ReadIO(DWORD A)
         }
         else {
             // set ack
-            return (IO[0xCB] | 0x80);
+            return (IO[RTCDATA] | 0x80);
         }
     }
     return IO[A];
@@ -704,9 +703,9 @@ void WsReset (void)
         sCEep.we = 0;
     }
     Page[0xF] = ROMMap[0xFF];
-    i = (SPRTAB & 0x1F) << 9;
-    i += SPRBGN << 2;
-    j = SPRCNT << 2;
+    i = (IO[SPRTAB] & 0x1F) << 9;
+    i += IO[SPRBGN] << 2;
+    j = IO[SPRCNT] << 2;
     memcpy(SprTMap, IRAM + i, j);
     SprTTMap = SprTMap;
     SprETMap = SprTMap + j - 4;
@@ -755,10 +754,10 @@ void WsReset (void)
     WriteIO(0xB3, 0x04);
     WriteIO(0xBA, 0x01);
     WriteIO(0xBB, 0x00);
-    WriteIO(0xBC, 0x30); // ì‡ë†EEPROM
-    WriteIO(0xBD, 0x01); // èëÇ´çûÇ›ãñâ¬
+    WriteIO(0xBC, 0x30); // ÂÜÖËîµEEPROM
+    WriteIO(0xBD, 0x01); // Êõ∏„ÅçËæº„ÅøÂèØËÉΩ
     WriteIO(0xBE, 0x83);
-    IO[0xC0] = 0x0F;
+    IO[BNKSLCT] = 0x0F;
     j = 0xF0;
     Page[0x4] = ROMMap[0x4 | j];
     Page[0x5] = ROMMap[0x5 | j];
@@ -784,10 +783,10 @@ void WsReset (void)
     IRAM[0x75B3]=0x31;
     apuWaveClear();
     ButtonState = 0x0000;
-	for (i = 0; i < 11; i++)
-	{
-		Segment[i] = 0;
-	}
+    for (i = 0; i < 11; i++)
+    {
+        Segment[i] = 0;
+    }
     nec_reset(NULL);
     nec_set_reg(NEC_SP, 0x2000);
 }
@@ -800,13 +799,13 @@ void WsRomPatch(BYTE *buf)
         RAMSize = 0x8000;
         CartKind = 0;
     }
-    if((buf[0] == 0x01) && (buf[1] == 0x00) && (buf[2] == 0x2C || buf[2] == 0x2F)) // SWJ-BAN02C,02F ÉfÉWÉ^ÉãÉpÅ[ÉgÉiÅ[
+    if((buf[0] == 0x01) && (buf[1] == 0x00) && (buf[2] == 0x2C || buf[2] == 0x2F)) // SWJ-BAN02C,02F „Éá„Ç∏„Çø„É´„Éë„Éº„Éà„Éä„Éº
     {
         RAMBanks = 1;
         RAMSize = 0x8000;
         CartKind = 0;
     }
-    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x38)) // SWJ-BANC38 NARUTO ñÿÉmótîEñ@íü
+    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x38)) // SWJ-BANC38 NARUTO Êú®„ÉéËëâÂøçÊ≥ïÂ∏ñ
     {
         RAMBanks = 1;
         RAMSize = 0x10000;
@@ -819,52 +818,52 @@ int Interrupt(void)
     static int LCount=0, Joyz=0x0000;
     int i, j;
 
-    if(++LCount>=8) // 8âÒÇ≈1Hblankä˙ä‘
+    if(++LCount>=8) // 8Âõû„Åß1HblankÊúüÈñì
     {
         LCount=0;
     }
     switch(LCount)
     {
         case 0:
-            if(RSTRL == 144)
+            if (IO[RSTRL] == 144)
             {
                 DWORD VCounter;
 
                 ButtonState = WsInputGetState(HVMode);
                 if((ButtonState ^ Joyz) & Joyz)
                 {
-                    if(IRQENA & KEY_IFLAG)
+                    if(IO[IRQENA] & KEY_IFLAG)
                     {
-                        IRQACK |= KEY_IFLAG;
+                        IO[IRQACK] |= KEY_IFLAG;
                     }
                 }
                 Joyz = ButtonState;
-                // VblankÉJÉEÉìÉgÉAÉbÉv
-                VCounter = VCNTH << 16 | VCNTL;
+                // Vblank„Ç´„Ç¶„É≥„Éà„Ç¢„ÉÉ„Éó
+                VCounter = *(WORD*)(IO + VCNTH) << 16 | *(WORD*)(IO + VCNTL);
                 VCounter++;
-                VCNTL = (WORD)VCounter;
-                VCNTH = (WORD)(VCounter >> 16);
+                *(WORD*)(IO + VCNTL) = (WORD)VCounter;
+                *(WORD*)(IO + VCNTH) = (WORD)(VCounter >> 16);
             }
             break;
         case 2:
-            // HblankñàÇ…1ÉTÉìÉvÉãÉZÉbÉgÇ∑ÇÈÇ±Ç∆Ç≈12KHzÇÃwaveÉfÅ[É^Ç™èoóàÇÈ
-			apuWaveSet();
-			//NCSR = apuShiftReg();
+            // HblankÊØé„Å´1„Çµ„É≥„Éó„É´„Çª„ÉÉ„Éà„Åô„Çã„Åì„Å®„Åß12KHz„ÅÆwave„Éá„Éº„Çø„ÅåÂá∫Êù•„Çã
+            apuWaveSet();
+            *(WORD*)(IO + NCSR) = apuShiftReg();
             break;
         case 4:
-            if(RSTRL == 140)
+            if(IO[RSTRL] == 140)
             {
-                i = (SPRTAB & 0x1F) << 9;
-                i += SPRBGN << 2;
-                j = SPRCNT << 2;
+                i = (IO[SPRTAB] & 0x1F) << 9;
+                i += IO[SPRBGN] << 2;
+                j = IO[SPRCNT] << 2;
                 memcpy(SprTMap, IRAM + i, j);
                 SprTTMap = SprTMap;
                 SprETMap= SprTMap + j - 4;
             }
 
-            if(LCDSLP & 0x01)
+            if(IO[LCDSLP] & 0x01)
             {
-			    if(RSTRL == 0)
+                if(IO[RSTRL] == 0)
                 {
                     SkipCnt--;
                     if(SkipCnt < 0)
@@ -872,13 +871,13 @@ int Interrupt(void)
                         SkipCnt = 4;
                     }
                 }
-				if(TblSkip[FrameSkip][SkipCnt])
+                if(TblSkip[FrameSkip][SkipCnt])
                 {
-                    if(RSTRL < 144)
+                    if(IO[RSTRL] < 144)
                     {
-                        RefreshLine(RSTRL);
+                        RefreshLine(IO[RSTRL]);
                     }
-                    if(RSTRL == 144)
+                    if(IO[RSTRL] == 144)
                     {
                         graphics_paint();
                     }
@@ -886,113 +885,91 @@ int Interrupt(void)
             }
             break;
         case 6:
-            if((TIMCTL & 0x01) && HTimer)
+            if((IO[TIMCTL] & 0x01) && HTimer)
             {
                 HTimer--;
                 if(!HTimer)
                 {
-                    if(TIMCTL & 0x02)
+                    if(IO[TIMCTL] & 0x02)
                     {
-                        HTimer = HPRE;
+                        HTimer = *(WORD*)(IO + HPRE);
                     }
-                    if(IRQENA & HTM_IFLAG)
+                    if(IO[IRQENA] & HTM_IFLAG)
                     {
-                        IRQACK |= HTM_IFLAG;
+                        IO[IRQACK] |= HTM_IFLAG;
                     }
                 }
             }
-            else if(HPRE == 1)
+            else if(*(WORD*)(IO + HPRE) == 1)
             {
-                if(IRQENA & HTM_IFLAG)
+                if(IO[IRQENA] & HTM_IFLAG)
                 {
-                    IRQACK |= HTM_IFLAG;
+                    IO[IRQACK] |= HTM_IFLAG;
                 }
             }
-            if((IRQENA & VBB_IFLAG) && (RSTRL == 144))
+            if((IO[IRQENA] & VBB_IFLAG) && (IO[RSTRL] == 144))
             {
-                IRQACK |= VBB_IFLAG;
+                IO[IRQACK] |= VBB_IFLAG;
             }
-            if((TIMCTL & 0x04) && (RSTRL == 144) && VTimer)
+            if((IO[TIMCTL] & 0x04) && (IO[RSTRL] == 144) && VTimer)
             {
                 VTimer--;
                 if(!VTimer)
                 {
-                    if(TIMCTL & 0x08)
+                    if(IO[TIMCTL] & 0x08)
                     {
-                        VTimer = VPRE;
+                        VTimer = *(WORD*)(IO + VPRE);
                     }
-                    if(IRQENA & VTM_IFLAG)
+                    if(IO[IRQENA] & VTM_IFLAG)
                     {
-                        IRQACK |= VTM_IFLAG;
+                        IO[IRQACK] |= VTM_IFLAG;
                     }
                 }
             }
-            if((IRQENA & RST_IFLAG) && (RSTRL == RSTRLC))
+            if((IO[IRQENA] & RST_IFLAG) && (IO[RSTRL] == IO[RSTRLC]))
             {
-                IRQACK |= RST_IFLAG;
+                IO[IRQACK] |= RST_IFLAG;
             }
             break;
         case 7:
-            RSTRL++;
-            if(RSTRL >= 159)
+            IO[RSTRL]++;
+            if(IO[RSTRL] >= 159)
             {
-                RSTRL = 0;
+                IO[RSTRL] = 0;
             }
-            // HblankÉJÉEÉìÉgÉAÉbÉv
-            HCNT++;
+            // Hblank„Ç´„Ç¶„É≥„Éà„Ç¢„ÉÉ„Éó
+            (*(WORD*)(IO + HCNT))++;
             break;
         default:
             break;
     }
-    return IRQACK;
+    return IO[IRQACK];
 }
 
 int WsRun(void)
 {
     static int period = IPeriod;
-    int i, iack, inum;
-#ifndef SPEEDHACKS
-	int cycle;
-#endif
-    
-	for(i = 0; i < 159*8; i = i + 1) // 1/75s
+    int i, cycle, iack, inum;
+//  for(i = 0; i < 480; i++) //5ms
+    for(i = 0; i < 159*8; i++) // 1/75s
     {
-#ifdef SPEEDHACKS
-			nec_execute(period);
-			period = tableau_games[game_choosen][1];
-#else
-			cycle = nec_execute(period);
-			period += IPeriod - cycle;
-#endif
-					
-			if(Interrupt())
-			{
-				iack = IRQACK;
-				for(inum = 7; inum >= 0; inum--)
-				{
-					if(iack & 0x80)
-					{
-						break;
-					}
-					iack <<= 1;
-				}
-				nec_int((inum + IRQBSE) << 2);
-			}
-
+        cycle = nec_execute(period);
+        period += IPeriod - cycle;
+        if(Interrupt())
+        {
+            iack = IO[IRQACK];
+            for(inum = 7; inum >= 0; inum--)
+            {
+                if(iack & 0x80)
+                {
+                    break;
+                }
+                iack <<= 1;
+            }
+            nec_int((inum + IO[IRQBSE]) << 2);
+        }
     }
-
     return 0;
-}
-
-#define POS_X (88)
-#define POS_Y (32)
-#define NAME_Y (96)
-
-void Sleep(int ticks)
-{
-	/*
-	unsigned long ini=SDL_UXTimerRead();
-	while (SDL_UXTimerRead()-ini<(ticks*10000));*/
 }
 
 void SetHVMode(int Mode)
@@ -1004,15 +981,14 @@ void WsInit(void) {
 #ifdef SOUND_ON
 	apuInit();
 #endif
-	WsLoadIEep();
+	WsLoadEeprom();
 }
 
 void WsDeInit(void) {
-	WsSaveIEep();
+	WsSaveEeprom();
 	WsRelease();
 #ifdef SOUND_ON
 	apuEnd();
 #endif
 }
-
 

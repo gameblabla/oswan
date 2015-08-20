@@ -1,6 +1,6 @@
-/*
-$Date: 2009-10-30 05:26:46 +0100 (ven., 30 oct. 2009) $
-$Rev: 71 $
+ï»¿/*
+$Date: 2010-05-11 09:13:27 -0400 (Tue, 11 May 2010) $
+$Rev: 85 $
 */
 
 #ifndef WS_H_
@@ -19,11 +19,11 @@ extern BYTE *Page[0x10];
 extern BYTE IRAM[0x10000];
 extern BYTE IO[0x100];
 extern BYTE MemDummy[0x10000];
-extern BYTE *ROMMap[0x100];     // C-ROMƒoƒ“ƒNƒ}ƒbƒv
-extern int ROMBanks;            // C-ROMƒoƒ“ƒN”
-extern BYTE *RAMMap[0x100];     // C-RAMƒoƒ“ƒNƒ}ƒbƒv
-extern int RAMBanks;            // C-RAMƒoƒ“ƒN”
-extern int RAMSize;             // C-RAM‘—e—Ê
+extern BYTE *ROMMap[0x100];     // C-ROMãƒãƒ³ã‚¯ãƒãƒƒãƒ—
+extern int ROMBanks;            // C-ROMãƒãƒ³ã‚¯æ•°
+extern BYTE *RAMMap[0x100];     // C-RAMãƒãƒ³ã‚¯ãƒãƒƒãƒ—
+extern int RAMBanks;            // C-RAMãƒãƒ³ã‚¯æ•°
+extern int RAMSize;             // C-RAMç·å®¹é‡
 extern WORD IEep[64];
 extern struct EEPROM sIEep;
 extern struct EEPROM sCEep;
@@ -34,12 +34,10 @@ extern int CartKind;
 void WriteIO(DWORD A, BYTE V);
 void WsReset (void);
 void WsRomPatch(BYTE *buf);
+void WsSetDir(void);
 int WsRun(void);
-void WsCpyPdata(BYTE* dst);
-void Sleep(int);
-void SetHVMode(int Mode);
-
 void WsInit(void);
 void WsDeInit(void);
+void SetHVMode(int Mode);
 
 #endif

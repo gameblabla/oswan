@@ -3,21 +3,19 @@
 typedef enum { ES, CS, SS, DS } SREGS;
 typedef enum { AW, CW, DW, BW, SP, BP, IX, IY } WREGS;
 
-unsigned int ModRM;
-
 #define NEC_NMI_INT_VECTOR 2
 
 /* Cpu types, steps of 8 to help the cycle count calculation */
+#define V33 0
+#define V30 8
+#define V20 16
+
 #ifndef FALSE
 #define FALSE 0
 #define TRUE 1
 #endif
 
-#ifdef BIG_FIRST
-typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
-#else
 typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
-#endif
 /* parameter x = result, y = source 1, z = source 2 */
 
 #define SetTF(x)		(I.TF = (x))
@@ -81,10 +79,10 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 #define PutMemW(Seg,Off,x) { /*nec_ICount-=((Off)&1)?1:0*/; PutMemB(Seg,Off,(x)&0xff); PutMemB(Seg,(Off)+1,(BYTE)((x)>>8)); }
 
 /* Todo:  Remove these later - plus readword could overflow */
-#define ReadByte(ea) ((BYTE)cpu_readmem20((ea)))
-#define ReadWord(ea) ( cpu_readmem20((ea))+(cpu_readmem20(((ea)+1))<<8))
-#define WriteByte(ea,val) { cpu_writemem20((ea),val); }
-#define WriteWord(ea,val) { cpu_writemem20((ea),(BYTE)(val)); cpu_writemem20(((ea)+1),(val)>>8); }
+#define ReadByte(ea) (/*nec_ICount-=((ea)&1)?1:0,*/ (BYTE)cpu_readmem20((ea)))
+#define ReadWord(ea) (/*nec_ICount-=((ea)&1)?1:0,*/ cpu_readmem20((ea))+(cpu_readmem20(((ea)+1))<<8))
+#define WriteByte(ea,val) { /*nec_ICount-=((ea)&1)?1:0*/; cpu_writemem20((ea),val); }
+#define WriteWord(ea,val) { /*nec_ICount-=((ea)&1)?1:0*/; cpu_writemem20((ea),(BYTE)(val)); cpu_writemem20(((ea)+1),(val)>>8); }
 
 #define read_port(port) cpu_readport(port)
 #define write_port(port,val) cpu_writeport(port,val)
@@ -97,8 +95,7 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 #define PEEK(addr) ((BYTE)cpu_readop_arg(addr))
 #define PEEKOP(addr) ((BYTE)cpu_readop(addr))
 
-/*#define GetModRM UINT32 ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)*/
-#define GetModRM ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)
+#define GetModRM UINT32 ModRM=cpu_readop_arg((I.sregs[CS]<<4)+I.ip++)
 
 /* Cycle count macros:
 	CLK  - cycle count is the same on all processors
@@ -106,16 +103,24 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 	CLKW - cycle count for word read/write differs for odd/even source/destination address
 	CLKM - cycle count for reg/mem instructions
 	CLKR - cycle count for reg/mem instructions with different counts for odd/even addresses
+
+
 	Prefetch & buswait time is not emulated.
 	Extra cycles for PUSH'ing or POP'ing registers to odd addresses is not emulated.
+
 #define CLK(all) nec_ICount-=all
 #define CLKS(v20,v30,v33) { const UINT32 ccount=(v20<<16)|(v30<<8)|v33; nec_ICount-=(ccount>>cpu_type)&0x7f; }
 #define CLKW(v20o,v30o,v33o,v20e,v30e,v33e) { const UINT32 ocount=(v20o<<16)|(v30o<<8)|v33o, ecount=(v20e<<16)|(v30e<<8)|v33e; nec_ICount-=(I.ip&1)?((ocount>>cpu_type)&0x7f):((ecount>>cpu_type)&0x7f); }
 #define CLKM(v20,v30,v33,v20m,v30m,v33m) { const UINT32 ccount=(v20<<16)|(v30<<8)|v33, mcount=(v20m<<16)|(v30m<<8)|v33m; nec_ICount-=( ModRM >=0xc0 )?((ccount>>cpu_type)&0x7f):((mcount>>cpu_type)&0x7f); }
 #define CLKR(v20o,v30o,v33o,v20e,v30e,v33e,vall) { const UINT32 ocount=(v20o<<16)|(v30o<<8)|v33o, ecount=(v20e<<16)|(v30e<<8)|v33e; if (ModRM >=0xc0) nec_ICount-=vall; else nec_ICount-=(I.ip&1)?((ocount>>cpu_type)&0x7f):((ecount>>cpu_type)&0x7f); }
 */
+#define CLKS(v20,v30,v33) { const UINT32 ccount=(v20<<16)|(v30<<8)|v33; nec_ICount-=(ccount>>cpu_type)&0x7f; }
+
 #define CLK(all) nec_ICount-=all
-#define CLKM(mcount, ccount) { if(ModRM >=0xc0 ) { CLK(ccount);} else {CLK(mcount);}  }
+#define CLKW(v30MZo,v30MZe) { nec_ICount-=(I.ip&1)?v30MZo:v30MZe; }
+#define CLKM(v30MZm,v30MZ) { nec_ICount-=( ModRM >=0xc0 )?v30MZ:v30MZm; }
+#define CLKR(v30MZo,v30MZe,vall) { if (ModRM >=0xc0) nec_ICount-=vall; else nec_ICount-=(I.ip&1)?v30MZo:v30MZe; }
+
 #define CompressFlags() (WORD)(CF | (PF << 2) | (AF << 4) | (ZF << 6) \
 				| (SF << 7) | (I.TF << 8) | (I.IF << 9) \
 				| (I.DF << 10) | (OF << 11))
@@ -160,18 +165,16 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 	if (flag)								\
 	{										\
 		I.ip = (WORD)(I.ip+tmp);			\
-		CLK(3);								\
+		nec_ICount-=3;						\
 		return;								\
 	}
 
 #define ADJ4(param1,param2)					\
 	if (AF || ((I.regs.b[AL] & 0xf) > 9))	\
 	{										\
-		UINT16 tmp;							\
-		tmp = I.regs.b[AL] + param1;		\
-		I.regs.b[AL] = tmp;					\
+		int tmp;							\
+		I.regs.b[AL] = tmp = I.regs.b[AL] + param1;	\
 		I.AuxVal = 1;						\
-		I.CarryVal |= tmp & 0x100; /*if(tmp&0x100){puts("Meow"); }*//* Correct? */	\
 	}										\
 	if (CF || (I.regs.b[AL] > 0x9f))		\
 	{										\
@@ -246,7 +249,7 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 	uresult = I.regs.w[AW];									\
 	uresult2 = uresult % tmp;								\
 	if ((uresult /= tmp) > 0xff) {							\
-		nec_interrupt(0); break;							\
+		nec_interrupt(0,0); break;							\
 	} else {												\
 		I.regs.b[AL] = uresult;								\
 		I.regs.b[AH] = uresult2;							\
@@ -256,7 +259,7 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 	result = (INT16)I.regs.w[AW];							\
 	result2 = result % (INT16)((INT8)tmp);					\
 	if ((result /= (INT16)((INT8)tmp)) > 0xff) {			\
-		nec_interrupt(0); break;							\
+		nec_interrupt(0,0); break;							\
 	} else {												\
 		I.regs.b[AL] = result;								\
 		I.regs.b[AH] = result2;								\
@@ -266,7 +269,7 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 	uresult = (((UINT32)I.regs.w[DW]) << 16) | I.regs.w[AW];\
 	uresult2 = uresult % tmp;								\
 	if ((uresult /= tmp) > 0xffff) {						\
-		nec_interrupt(0); break;							\
+		nec_interrupt(0,0); break;							\
 	} else {												\
 		I.regs.w[AW]=uresult;								\
 		I.regs.w[DW]=uresult2;								\
@@ -276,7 +279,7 @@ typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 	result = ((UINT32)I.regs.w[DW] << 16) + I.regs.w[AW];	\
 	result2 = result % (INT32)((INT16)tmp);					\
 	if ((result /= (INT32)((INT16)tmp)) > 0xffff) {			\
-		nec_interrupt(0); break;							\
+		nec_interrupt(0,0); break;							\
 	} else {												\
 		I.regs.w[AW]=result;								\
 		I.regs.w[DW]=result2;								\

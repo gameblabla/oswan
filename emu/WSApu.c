@@ -5,7 +5,7 @@ $Rev: 71 $
 #include <stdio.h>
 
 //#include "entry.h"
-#include "WSHard.h"
+#include "WSHard_apu.h"
 #include "WS.h"
 #include "WSApu.h"
 
@@ -27,11 +27,7 @@ WAVEOUT_INFO mywaveinfo;
 #define WAV_FREQ    12000
 #define SND_BNKSIZE 256  
  
-#if defined(SOUND_ON) && !defined(SOUND_EMULATION)
-	#define SND_RNGSIZE ((44100/60)*2*64)
-#else
-	#define SND_RNGSIZE (64 * SND_BNKSIZE)
-#endif
+#define SND_RNGSIZE (10 * SND_BNKSIZE)
 
 #define WAV_VOLUME  40
 
@@ -73,23 +69,6 @@ int apuBufLen(void)
 	return 0;
 #endif
 }
-
-/*
-short* apuBufGetLock(int size)
-{
-	if (apuBufLen() >= size) {
-		return &sndbuffer[rBuf];
-	}
-	return NULL;
-}
-
-void apuBufGetUnlock(void* ptr, int size)
-{
-	if (ptr == (void*)&sndbuffer[rBuf]) {
-		rBuf = (rBuf + size) % SND_RNGSIZE;
-	}
-}
-*/
 
 void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 {
@@ -414,6 +393,7 @@ void WsWaveSet(BYTE voice, BYTE hvoice)
 			}
 			else if (channel == 3 && Noise.on && Sound[6]){
 				index = (3072000 / WAV_FREQ) * point[3] / (2048 - Ch[3].freq);
+				
 				if ((index %= BUFSIZEN) == 0 && preindex[3]) {
 					point[3] = 0;
 				}

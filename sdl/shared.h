@@ -15,14 +15,32 @@
 
 #include <SDL/SDL.h>
 
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
+
 #ifdef NSPIRE
 	#define BITDEPTH_OSWAN has_colors ? 16 : 8
+	#define FLAG_VIDEO SDL_SWSURFACE
 #elif defined(GCW0)
 	#define BITDEPTH_OSWAN 16
+	#define FLAG_VIDEO SDL_SWSURFACE
 #elif defined(DREAMCAST)
-	#define BITDEPTH_OSWAN 16	
-#else
 	#define BITDEPTH_OSWAN 16
+	#define FLAG_VIDEO SDL_SWSURFACE
+#else
+	#define BITDEPTH_OSWAN 0
+	#define FLAG_VIDEO SDL_SWSURFACE
+#endif
+
+#ifdef NSPIRE
+	#define PATH_DIRECTORY "/documents/ndless/"
+	#define EXTENSION ".tns"
+#elif defined(GCW)
+	#define PATH_DIRECTORY getenv("HOME")
+	#define EXTENSION ""
+#else
+	#define PATH_DIRECTORY "./"
+	#define EXTENSION ""
 #endif
 	
 #ifdef GCW
@@ -153,11 +171,13 @@ typedef int bool;
 #define cartridge_IsLoaded() (strlen(gameName) != 0)
 
 typedef struct {
-  unsigned int sndLevel;
-  unsigned int m_ScreenRatio; // 0 = original show, 1 = full screen
-  unsigned int OD_Joy[12]; // each key mapping
-  unsigned int m_DisplayFPS;
-  char current_dir_rom[MAX__PATH];
+	unsigned int sndLevel;
+	unsigned int m_ScreenRatio; // 0 = original show, 1 = full screen
+	unsigned int OD_Joy[12]; // each key mapping
+	unsigned int m_DisplayFPS;
+	char current_dir_rom[MAX__PATH];
+	unsigned int stick_swap;
+	unsigned int dpad_abxy_mapped;
 } gamecfg;
 
 //typedef unsigned char byte;
@@ -165,11 +185,7 @@ typedef unsigned short word;
 typedef unsigned int uint;
 
 extern SDL_Surface* screen;						// Main program screen
-extern SDL_Surface* actualScreen;						// Main program screen
-
-#ifdef LAYERS
-extern SDL_Surface *layer,*layerback,*layerbackgrey;
-#endif
+extern SDL_Surface* actualScreen, *screenshots;						// Main program screen
 
 extern SDL_Event event;
 

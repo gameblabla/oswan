@@ -10,6 +10,7 @@
 sdl/*.o
 emu/*.o
 emu/cpu/*.o
+sdl/gfx/*.o
 DC/
 roms/
 roms/*.wsc

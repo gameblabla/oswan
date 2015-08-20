@@ -1,11 +1,12 @@
-/*
-$Date: 2009-10-30 05:26:46 +0100 (ven., 30 oct. 2009) $
-$Rev: 71 $
+Ôªø/*
+$Date: 2010-09-29 04:51:41 -0400 (Wed, 29 Sep 2010) $
+$Rev: 102 $
 */
-#include <string.h>
 
+#include <string.h>
 #include "WSRender.h"
 #include "WS.h"
+#include "WSDraw.h"
 #include "WSSegment.h"
 
 #define MAP_TILE 0x01FF
@@ -29,7 +30,7 @@ BYTE SprTMap[512];
 WORD Palette[16][16];
 WORD MonoColor[8];
 WORD FrameBuffer[320*240];
-WORD SegmentBuffer[(LCD_MAIN_H * 4) * (8 * 4)]; // 8 * 144 ÇÃ4î{ÇÃÉTÉCÉYÇ≈ï`âÊ
+WORD SegmentBuffer[(144 * 4) * (8 * 4)]; // 8 * 144 ¬Ç√å4¬î{¬Ç√å¬ÉT¬ÉC¬ÉY¬Ç√Ö¬ï`¬â√¶
 int Layer[3] = {1, 1, 1};
 int Segment[11];
 
@@ -39,22 +40,24 @@ void SetPalette(int addr)
 
     // RGB444 format
     color = *(WORD*)(IRAM + (addr & 0xFFFE));
+  
 	// RGB565
 	r = (color & 0x0F00) << 4;
 	g = (color & 0x00F0) << 3;
 	b = (color & 0x000F) << 1;
 	
     Palette[(addr & 0x1E0) >> 5][(addr & 0x1E) >> 1] = r | g | b;
+    /*Palette[(addr & 0x1E0) >> 5][(addr & 0x1E) >> 1] = color | 0xF000;*/
 }
 
 void RefreshLine(int Line)
 {
-    WORD *pSBuf;            // ÉfÅ[É^èëÇ´çûÇ›ÉoÉbÉtÉ@
-    WORD *pSWrBuf;          // Å™ÇÃèëÇ´çûÇ›à íuópÉ|ÉCÉìÉ^
-    int *pZ;                // Å´ÇÃÉCÉìÉNÉäÉÅÉìÉgópÉ|ÉCÉìÉ^
-    int ZBuf[0x100];        // FGÉåÉCÉÑÅ[ÇÃîÒìßñæïîÇï€ë∂
-    int *pW;                // Å´ÇÃÉCÉìÉNÉäÉÅÉìÉgópÉ|ÉCÉìÉ^
-    int WBuf[0x100];        // FGÉåÉCÉÑÅ[ÇÃÉEÉBÉìÉhÅ[Çï€ë∂
+    WORD *pSBuf;            // „Éá„Éº„ÇøÊõ∏„ÅçËæº„Åø„Éê„ÉÉ„Éï„Ç°
+    WORD *pSWrBuf;          // ‚Üë„ÅÆÊõ∏„ÅçËæº„Åø‰ΩçÁΩÆÁî®„Éù„Ç§„É≥„Çø
+    int *pZ;                // ‚Üì„ÅÆ„Ç§„É≥„ÇØ„É™„É°„É≥„ÉàÁî®„Éù„Ç§„É≥„Çø
+    int ZBuf[0x100];        // FG„É¨„Ç§„É§„Éº„ÅÆÈùûÈÄèÊòéÈÉ®„Çí‰øùÂ≠ò
+    int *pW;                // ‚Üì„ÅÆ„Ç§„É≥„ÇØ„É™„É°„É≥„ÉàÁî®„Éù„Ç§„É≥„Çø
+    int WBuf[0x100];        // FG„É¨„Ç§„É§„Éº„ÅÆ„Ç¶„Ç£„É≥„Éâ„Éº„Çí‰øùÂ≠ò
     int OffsetX;            // 
     int OffsetY;            // 
     BYTE *pbTMap;           // 
@@ -63,51 +66,51 @@ void RefreshLine(int Line)
     int TMapXEnd;           // 
     BYTE *pbTData;          // 
     int PalIndex;               // 
-    unsigned int i, j, k, index[8];
+    int i, j, k, index[8];
     WORD BaseCol;           // 
-    pSBuf = FrameBuffer + Line * SCREEN_WIDTH;
+    pSBuf = FrameBuffer + Line * 320;
     pSWrBuf = pSBuf;
 
-    if(LCDSLP & 0x01)
+    if(IO[LCDSLP] & 0x01)
     {
-        if(COLCTL & 0xE0)
+        if(IO[COLCTL] & 0xE0)
         {
-            BaseCol = Palette[(BORDER & 0xF0) >> 4][BORDER & 0x0F];
+            BaseCol = Palette[(IO[BORDER] & 0xF0) >> 4][IO[BORDER] & 0x0F];
         }
         else
         {
-            BaseCol = MonoColor[BORDER & 0x07];
+            BaseCol = MonoColor[IO[BORDER] & 0x07];
         }
     }
     else
     {
         BaseCol = 0;
     }
-    for(i = 0; i < LCD_MAIN_W; i++)
+    for(i = 0; i < 224; i++)
     {
         {
             *pSWrBuf++ = BaseCol;
         }
     }
-    if(!(LCDSLP & 0x01)) return;
+    if(!(IO[LCDSLP] & 0x01)) return;
 /*********************************************************************/
-    if((DSPCTL & 0x01) && Layer[0])                                 //BG layer
+    if((IO[DSPCTL] & 0x01) && Layer[0])                                 //BG layer
     {
-        OffsetX = SCR1X & 0x07;
+        OffsetX = IO[SCR1X] & 0x07;
         pSWrBuf = pSBuf - OffsetX;
-        i = Line + SCR1Y;
+        i = Line + IO[SCR1Y];
         OffsetY = (i & 0x07);
 
         pbTMap = Scr1TMap + ((i & 0xF8) << 3);
-        TMapX = (SCR1X & 0xF8) >> 2;
-        TMapXEnd = ((SCR1X + LCD_MAIN_W + 7) >> 2) & 0xFFE;
+        TMapX = (IO[SCR1X] & 0xF8) >> 2;
+        TMapXEnd = ((IO[SCR1X] + 224 + 7) >> 2) & 0xFFE;
 
         for(; TMapX < TMapXEnd;)
         {
             TMap = *(pbTMap + (TMapX++ & 0x3F));
             TMap |= *(pbTMap + (TMapX++ & 0x3F)) << 8;
 
-            if(COLCTL & 0x40) // 16 colors
+            if(IO[COLCTL] & 0x40) // 16 colors
             {
                 if(TMap & MAP_BANK)
                 {
@@ -129,7 +132,7 @@ void RefreshLine(int Line)
             }
             else
             {
-                if((COLCTL & 0x80) && (TMap & MAP_BANK))// 4 colors and bank 1
+                if((IO[COLCTL] & 0x80) && (TMap & MAP_BANK))// 4 colors and bank 1
                 {
                     pbTData = IRAM + 0x4000;
                 }
@@ -148,9 +151,9 @@ void RefreshLine(int Line)
                 }
             }
 
-            if(COLCTL & 0x20)                       // Packed Mode
+            if(IO[COLCTL] & 0x20)                       // Packed Mode
             {
-                if(COLCTL & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   // 16 Color
                 {
                     index[0] = (pbTData[0] & 0xF0) >> 4;
                     index[1] = pbTData[0] & 0x0F;
@@ -175,7 +178,7 @@ void RefreshLine(int Line)
             }
             else
             {
-                if(COLCTL & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   // 16 Color
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -248,42 +251,42 @@ void RefreshLine(int Line)
             }
 
             PalIndex = (TMap & MAP_PAL) >> 9;
-            if((!index[0]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
+            if((!index[0]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[0]];
             }
-            if((!index[1]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
+            if((!index[1]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[1]];
             }
-            if((!index[2]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
+            if((!index[2]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[2]];
             }
-            if((!index[3]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
+            if((!index[3]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[3]];
             }
-            if((!index[4]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
+            if((!index[4]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[4]];
             }
-            if((!index[5]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
+            if((!index[5]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[5]];
             }
-            if((!index[6]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
+            if((!index[6]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[6]];
             }
-            if((!index[7]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
+            if((!index[7]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[7]];
@@ -292,31 +295,31 @@ void RefreshLine(int Line)
     }
 /*********************************************************************/
     memset(ZBuf, 0, sizeof(ZBuf));
-    if((DSPCTL & 0x02) && Layer[1])          //FG layerï\é¶
+    if((IO[DSPCTL] & 0x02) && Layer[1])          //FG layerË°®Á§∫
     {
-        if((DSPCTL & 0x30) == 0x20) // ÉEÉBÉìÉhÉEì‡ïîÇÃÇ›Ç…ï\é¶
+        if((IO[DSPCTL] & 0x30) == 0x20) // „Ç¶„Ç£„É≥„Éâ„Ç¶ÂÜÖÈÉ®„ÅÆ„Åø„Å´Ë°®Á§∫
         {
-            for(i = 0, pW = WBuf + 8; i < LCD_MAIN_W; i++)
+            for(i = 0, pW = WBuf + 8; i < 224; i++)
             {
                 *pW++ = 1;
             }
-            if((Line >= SCR2WT) && (Line <= SCR2WB))
+            if((Line >= IO[SCR2WT]) && (Line <= IO[SCR2WB]))
             {
-                for(i = SCR2WL, pW = WBuf + 8 + i; (i <= SCR2WR) && (i < LCD_MAIN_W); i++)
+                for(i = IO[SCR2WL], pW = WBuf + 8 + i; (i <= IO[SCR2WR]) && (i < 224); i++)
                 {
                     *pW++ = 0;
                 }
             }
         }
-        else if((DSPCTL & 0x30) == 0x30) // ÉEÉBÉìÉhÉEäOïîÇÃÇ›Ç…ï\é¶
+        else if((IO[DSPCTL] & 0x30) == 0x30) // „Ç¶„Ç£„É≥„Éâ„Ç¶Â§ñÈÉ®„ÅÆ„Åø„Å´Ë°®Á§∫
         {
-            for(i = 0, pW = WBuf + 8; i < LCD_MAIN_W; i++)
+            for(i = 0, pW = WBuf + 8; i < 224; i++)
             {
                 *pW++ = 0;
             }
-            if((Line >= SCR2WT) && (Line <= SCR2WB))
+            if((Line >= IO[SCR2WT]) && (Line <= IO[SCR2WB]))
             {
-                for(i = SCR2WL, pW = WBuf + 8 + i; (i <= SCR2WR) && (i < LCD_MAIN_W); i++)
+                for(i = IO[SCR2WL], pW = WBuf + 8 + i; (i <= IO[SCR2WR]) && (i < 224); i++)
                 {
                     *pW++ = 1;
                 }
@@ -324,20 +327,20 @@ void RefreshLine(int Line)
         }
         else
         {
-            for(i = 0, pW = WBuf + 8; i < LCD_MAIN_W; i++)
+            for(i = 0, pW = WBuf + 8; i < 224; i++)
             {
                 *pW++ = 0;
             }
         }
 
-        OffsetX = SCR2X & 0x07;
+        OffsetX = IO[SCR2X] & 0x07;
         pSWrBuf = pSBuf - OffsetX;
-        i = Line + SCR2Y;
+        i = Line + IO[SCR2Y];
         OffsetY = (i & 0x07);
 
         pbTMap = Scr2TMap + ((i & 0xF8) << 3);
-        TMapX = (SCR2X & 0xF8) >> 2;
-        TMapXEnd = ((SCR2X + LCD_MAIN_W + 7) >> 2) & 0xFFE;
+        TMapX = (IO[SCR2X] & 0xF8) >> 2;
+        TMapXEnd = ((IO[SCR2X] + 224 + 7) >> 2) & 0xFFE;
 
         pW = WBuf + 8 - OffsetX;
         pZ = ZBuf + 8 - OffsetX;
@@ -347,7 +350,7 @@ void RefreshLine(int Line)
             TMap = *(pbTMap + (TMapX++ & 0x3F));
             TMap |= *(pbTMap + (TMapX++ & 0x3F)) << 8;
 
-            if(COLCTL & 0x40)
+            if(IO[COLCTL] & 0x40)
             {
                 if(TMap & MAP_BANK)
                 {
@@ -369,7 +372,7 @@ void RefreshLine(int Line)
             }
             else
             {
-                if((COLCTL & 0x80) && (TMap & MAP_BANK))// 4 colors and bank 1
+                if((IO[COLCTL] & 0x80) && (TMap & MAP_BANK))// 4 colors and bank 1
                 {
                     pbTData = IRAM + 0x4000;
                 }
@@ -388,9 +391,9 @@ void RefreshLine(int Line)
                 }
             }
 
-            if(COLCTL & 0x20)                       // Packed Mode
+            if(IO[COLCTL] & 0x20)                       // Packed Mode
             {
-                if(COLCTL & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   // 16 Color
                 {
                     index[0] = (pbTData[0] & 0xF0) >> 4;
                     index[1] = pbTData[0] & 0x0F;
@@ -415,7 +418,7 @@ void RefreshLine(int Line)
             }
             else
             {
-                if(COLCTL & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   // 16 Color
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -488,56 +491,56 @@ void RefreshLine(int Line)
             }
 
             PalIndex = (TMap & MAP_PAL) >> 9;
-            if(((!index[0]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
+            if(((!index[0]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[0]];
                 *pZ = 1;
             }
             pW++;pZ++;
-            if(((!index[1]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
+            if(((!index[1]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[1]];
                 *pZ = 1;
             }
             pW++;pZ++;
-            if(((!index[2]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
+            if(((!index[2]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[2]];
                 *pZ = 1;
             }
             pW++;pZ++;
-            if(((!index[3]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
+            if(((!index[3]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[3]];
                 *pZ = 1;
             }
             pW++;pZ++;
-            if(((!index[4]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
+            if(((!index[4]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[4]];
                 *pZ = 1;
             }
             pW++;pZ++;
-            if(((!index[5]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
+            if(((!index[5]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[5]];
                 *pZ = 1;
             }
             pW++;pZ++;
-            if(((!index[6]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
+            if(((!index[6]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[6]];
                 *pZ = 1;
             }
             pW++;pZ++;
-            if(((!index[7]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
+            if(((!index[7]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800))))) || (*pW)) pSWrBuf++;
             else
             {
                 *pSWrBuf++ = Palette[PalIndex][index[7]];
@@ -547,17 +550,17 @@ void RefreshLine(int Line)
         }
     }
 /*********************************************************************/
-    if((DSPCTL & 0x04) && Layer[2])          //sprite
+    if((IO[DSPCTL] & 0x04) && Layer[2])          //sprite
     {
-        if (DSPCTL & 0x08)      //sprite window
+        if (IO[DSPCTL] & 0x08)      //sprite window
         {
-            for (i = 0, pW = WBuf + 8; i < LCD_MAIN_W; i++)
+            for (i = 0, pW = WBuf + 8; i < 224; i++)
             {
                 *pW++ = 1;
             }
-            if ((Line >= SPRWT) && (Line <= SPRWB))
+            if ((Line >= IO[SPRWT]) && (Line <= IO[SPRWB]))
             {
-                for (i = SPRWL, pW = WBuf + 8 + i; (i <= SPRWR) && (i < LCD_MAIN_W); i++)
+                for (i = IO[SPRWL], pW = WBuf + 8 + i; (i <= IO[SPRWR]) && (i < 224); i++)
                 {
                     *pW++ = 0;
                 }
@@ -590,13 +593,13 @@ void RefreshLine(int Line)
                 continue;
             if (Line >= j + 8)
                 continue;
-            if (LCD_MAIN_W <= k)
+            if (224 <= k)
                 continue;
 
             i = k;
             pSWrBuf = pSBuf + i;
 
-            if (COLCTL & 0x40)
+            if (IO[COLCTL] & 0x40)
             {
                 pbTData = IRAM + 0x4000;
                 pbTData += (TMap & SPR_TILE) << 5;
@@ -623,9 +626,9 @@ void RefreshLine(int Line)
                 }
             }
 
-            if(COLCTL & 0x20)                       // Packed Mode
+            if(IO[COLCTL] & 0x20)                       // Packed Mode
             {
-                if(COLCTL & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   // 16 Color
                 {
                     index[0] = (pbTData[0] & 0xF0) >> 4;
                     index[1] =  pbTData[0] & 0x0F;
@@ -650,7 +653,7 @@ void RefreshLine(int Line)
             }
             else
             {
-                if(COLCTL & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   // 16 Color
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -727,7 +730,7 @@ void RefreshLine(int Line)
             PalIndex = ((TMap & SPR_PAL) >> 9) + 8;
             for(i = 0; i < 8; i++, pZ++, pW++)
             {
-                if(DSPCTL & 0x08)
+                if(IO[DSPCTL] & 0x08)
                 {
                     if(TMap & SPR_CLIP)
                     {
@@ -746,7 +749,7 @@ void RefreshLine(int Line)
                         }
                     }
                 }
-                if((!index[i]) && (!(!(COLCTL & 0x40) && (!(TMap & 0x0800)))))
+                if((!index[i]) && (!(!(IO[COLCTL] & 0x40) && (!(TMap & 0x0800)))))
                 {
                     pSWrBuf++;
                     continue;
@@ -763,42 +766,42 @@ void RefreshLine(int Line)
 }
 
 /*
- 8 * 144 ÇÃÉTÉCÉYÇ 32 * 576 Ç≈ï`âÊ
+ 8 * 144 „ÅÆ„Çµ„Ç§„Ç∫„Çí 32 * 576 „ÅßÊèèÁîª
 */
 void RenderSegment(void)
 {
-	int bit, x, y, i;
-	WORD* p = SegmentBuffer;
+    int bit, x, y, i;
+    WORD* p = SegmentBuffer;
 
-	for (i = 0; i < 11; i++)
-	{
-		for (y = 0; y < segLine[i]; y++)
-		{
-			for (x = 0; x < 4; x++)
-			{
-				BYTE ch = seg[i][y * 4 + x];
-				for (bit = 0; bit < 8; bit++)
-				{
-					if (ch & 0x80)
-					{
-						if (Segment[i])
-						{
-							*p++ = 0xFCCC;
-						}
-						else
-						{
-							*p++ = 0xF222;
-						}
-					}
-					else
-					{
-						*p++ = 0xF000;
-					}
-					ch <<= 1;
-				}
-			}
-		}
-	}
+    for (i = 0; i < 11; i++)
+    {
+        for (y = 0; y < segLine[i]; y++)
+        {
+            for (x = 0; x < 4; x++)
+            {
+                BYTE ch = seg[i][y * 4 + x];
+                for (bit = 0; bit < 8; bit++)
+                {
+                    if (ch & 0x80)
+                    {
+                        if (Segment[i])
+                        {
+                            *p++ = 0xFCCC;
+                        }
+                        else
+                        {
+                            *p++ = 0xF222;
+                        }
+                    }
+                    else
+                    {
+                        *p++ = 0xF000;
+                    }
+                    ch <<= 1;
+                }
+            }
+        }
+    }
 }
 
 void RenderSleep(void)
@@ -807,14 +810,14 @@ void RenderSleep(void)
     unsigned int x, y;
     WORD* p;
 
-    // îwåiÇÉOÉåÉCÇ≈ÉNÉäÉA
+    // ¬îw¬åi¬Ç√∞¬ÉO¬É¬å¬ÉC¬Ç√Ö¬ÉN¬É¬ä¬ÉA
     p = FrameBuffer;
-    for (y = 0; y < LCD_MAIN_H; y++)
+    for (y = 0; y < 144; y++)
     {
-        for (x = 0; x < LCD_MAIN_W; x++)
+        for (x = 0; x < 224; x++)
         {
             *p++ = 0x4208;
         }
     }
-	p += SCREEN_WIDTH - LCD_MAIN_W;
+	p += 320 - 224;
 }

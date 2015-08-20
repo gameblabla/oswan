@@ -9,28 +9,20 @@
 #include <dirent.h>
 
 #include "shared.h"
+#include "drawing.h"
 #include "WSFileio.h"
 #include "font.h" // Font c array
 
 #include "./data/oswan_background.h"
 #include "./data/oswan_load.h"
+#ifndef SWITCHING_GRAPHICS
 #include "./data/oswan_skin.h"
+#endif
 
 extern unsigned int m_Flag;
 
 bool gameMenu;
 
-
-#ifdef LAYERS
-#define COLOR_BG            PIX_TO_RGB(layer->format,05, 03, 02)
-#define COLOR_HELP_TEXT		PIX_TO_RGB(layer->format,64, 240, 96)
-#define COLOR_OK			PIX_TO_RGB(layer->format,0,0,255)
-#define COLOR_KO			PIX_TO_RGB(layer->format,255,0,0)
-#define COLOR_INFO			PIX_TO_RGB(layer->format,0,255,0)
-#define COLOR_LIGHT			PIX_TO_RGB(layer->format,255,255,0)
-#define COLOR_ACTIVE_ITEM   PIX_TO_RGB(layer->format,232, 253, 77)
-#define COLOR_INACTIVE_ITEM PIX_TO_RGB(layer->format,67,89,153)
-#else
 #define COLOR_BG            PIX_TO_RGB(actualScreen->format,05, 03, 02)
 #define COLOR_HELP_TEXT		PIX_TO_RGB(actualScreen->format,64, 240, 96)
 #define COLOR_OK			PIX_TO_RGB(actualScreen->format,0,0,255)
@@ -39,18 +31,24 @@ bool gameMenu;
 #define COLOR_LIGHT			PIX_TO_RGB(actualScreen->format,255,255,0)
 #define COLOR_ACTIVE_ITEM   PIX_TO_RGB(actualScreen->format,232, 253, 77)
 #define COLOR_INACTIVE_ITEM PIX_TO_RGB(actualScreen->format,67,89,153)
+
+char *file_ext[] = { (char *) ".ws", (char *) ".wsc", (char *) ".WSC", (char *) ".WS", 
+#ifdef NSPIRE
+	".tns", 
 #endif
-char *file_ext[] = { (char *) ".ws", (char *) ".wsc", (char *) ".WSC", (char *) ".WS", ".tns", NULL };
+	NULL };
 
 void menuReset(void);
 void menuQuit(void);
 void menuContinue(void);
 void menuFileBrowse(void);
-void menuSaveBmp(void);
 void menuSaveState(void);
 void menuLoadState(void);
 void screen_showkeymenu(void);
 void menuReturn(void);
+#if !defined(NOSCREENSHOTS)
+void menuSaveBmp(void);
+#endif
 
 //---------------------------------------------------------------------------------------
 typedef struct {
@@ -67,15 +65,8 @@ typedef struct {
 	MENUITEM *m; // array of items
 } MENU;
 
-char mnuYesNo[2][16] = {"no", "yes"};
+char mnuYesNo[2][16] = {"No", "Yes"};
 char mnuRatio[2][16] = { "1x size","Full screen"};
-
-char mnuButtons[7][16] = {
-  "Up","Down","Left","Right","But #1","But #2", "Options"
-};
-
-int stick_swap;
-int dpad_abxy_mapped;
 
 MENUITEM MainMenuItems[] = {
 	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
@@ -84,30 +75,23 @@ MENUITEM MainMenuItems[] = {
 	{"Load State", NULL, 0, NULL, &menuLoadState},
 	{"Save State", NULL, 0, NULL, &menuSaveState},
 	{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},
+#if !defined(NOSCREENSHOTS)
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
+#endif
 	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
-	{"Swap X1, Y1: ", (int *) &stick_swap, 1, (char *) &mnuYesNo, NULL},
-	{"ABXY is DPAD: ", (int *) &dpad_abxy_mapped, 1, (char *) &mnuYesNo, NULL},
+	{"Swap X1, Y1: ", (int *) &GameConf.stick_swap, 1, (char *) &mnuYesNo, NULL},
+	{"ABXY is DPAD: ", (int *) &GameConf.dpad_abxy_mapped, 1, (char *) &mnuYesNo, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
 
 
 MENU mnuMainMenu = { 
+#if defined(NOSCREENSHOTS)
+	10,
+#else
 	11,
+#endif
 	0, (MENUITEM *) &MainMenuItems };
-
-MENUITEM ConfigMenuItems[] = {
-	{"Button A: ", (int *) &GameConf.OD_Joy[4], 6, (char *)  &mnuButtons, NULL},
-	{"Button B: ", (int *) &GameConf.OD_Joy[5], 6, (char *)  &mnuButtons, NULL},
-	{"Button X: ", (int *) &GameConf.OD_Joy[6], 6, (char *)  &mnuButtons, NULL},
-	{"Button Y: ", (int *) &GameConf.OD_Joy[7], 6, (char *)  &mnuButtons, NULL},
-	{"Button R: ", (int *) &GameConf.OD_Joy[8], 6, (char *)  &mnuButtons, NULL},
-	{"Button L: ", (int *) &GameConf.OD_Joy[9], 6, (char *)  &mnuButtons, NULL},
-	{"START   : ", (int *) &GameConf.OD_Joy[10], 6, (char *) &mnuButtons, NULL},
-	{"SELECT  : ", (int *) &GameConf.OD_Joy[11], 6, (char *) &mnuButtons, NULL},
-	{"Return to menu", NULL, 0, NULL, &menuReturn},
-};
-MENU mnuConfigMenu = { 9, 0, (MENUITEM *) &ConfigMenuItems };
 
 //----------------------------------------------------------------------------------------------------
 // Prints char on a given surface
@@ -134,11 +118,7 @@ void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, int fg_color
 void print_string(const char *s, unsigned short fg_color, unsigned short bg_color, int x, int y) 
 {
 	int i, j = strlen(s);
-	#ifdef LAYERS
-		for(i = 0; i < j; i++, x += 6) screen_showchar(layer, x, y, s[i], fg_color, bg_color);
-	#else
-		for(i = 0; i < j; i++, x += 6) screen_showchar(actualScreen, x, y, s[i], fg_color, bg_color);
-	#endif
+	for(i = 0; i < j; i++, x += 6) screen_showchar(actualScreen, x, y, s[i], fg_color, bg_color);
 }
 
 void print_string_video(int x, int y, const char *s) 
@@ -168,10 +148,7 @@ void screen_showitem(int x, int y, MENUITEM *m, int fg_color)
 // flip the layer to screen
 void screen_flip(void) 
 {
-#ifdef LAYERS
-	SDL_BlitSurface(layer, 0, actualScreen, 0);
-#endif
-	SDL_Flip(actualScreen);
+	flip_screen(actualScreen);
 }
 
 // draw default emulator design
@@ -193,51 +170,23 @@ void screen_prepback(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize
 void screen_prepbackground(void) 
 {
 	// draw default background
-#ifdef LAYERS
-	screen_prepback(layerbackgrey, OSWAN_BACKGROUND, OSWAN_BACKGROUND_SIZE);
-#else
 	screen_prepback(actualScreen, OSWAN_BACKGROUND, OSWAN_BACKGROUND_SIZE);
-#endif
 }
 
 // Shows menu items and pointing arrow
 #define SPRX (16)
 void screen_showmenu(MENU *menu) 
 {
-	int i;
+	unsigned char i;
 	MENUITEM *mi = menu->m;
-
-	/* clear buffer */
-#ifdef LAYERS
-	SDL_BlitSurface(layerbackgrey, 0, layer, 0);
-#endif
-
-	/* Hacky Workaround for graphical bug */
-#ifndef LAYERS
-	static unsigned char once = 0;
-	if (menu->itemNum == 9)
-	{
-		if (once == 0)
-		{
-			screen_prepbackground();
-			once = 1;
-		}
-	}
-	else
-	{
-		if (once == 1) once = 0;
-	}
-#endif
-
+	
 	/* show menu lines */
 	for(i = 0; i < menu->itemNum; i++, mi++) 
 	{
 		int fg_color;
 		if(menu->itemCur == i) fg_color = COLOR_ACTIVE_ITEM; else fg_color = COLOR_INACTIVE_ITEM;
 		screen_showitem(SPRX+10, 44+i*15, mi, fg_color);
-		#ifdef LAYERS
-			if(menu->itemCur == i) print_string("-", fg_color, COLOR_BG, SPRX+10-12, 44+i*15);
-		#endif
+		if(menu->itemCur == i) print_string("-", fg_color, COLOR_BG, SPRX+10-12, 44+i*15);
 	}
 }
 
@@ -265,7 +214,6 @@ void screen_waitkeyarelease(void)
 		if (keys[PAD_A] != SDL_PRESSED) break;
 	}
 }
-
 
 // Main function that runs all the stuff
 void screen_showmainmenu(MENU *menu) 
@@ -315,7 +263,12 @@ void screen_showmainmenu(MENU *menu)
 		// UP - arrow up
 		if (keys[PAD_UP] == SDL_PRESSED) { 
 			if (!keyup) {
-				keyup = 1; if(--menu->itemCur < 0) menu->itemCur = menu->itemNum - 1;
+				keyup = 1; 
+				screen_prepbackground();
+				if(--menu->itemCur < 0)
+				{
+					menu->itemCur = menu->itemNum - 1;
+				}
 			}
 			else {
 				keyup++; if (keyup>12) keyup=0;
@@ -326,7 +279,12 @@ void screen_showmainmenu(MENU *menu)
 		//DOWN - arrow down
 		if (keys[PAD_DOWN] == SDL_PRESSED) { 
 			if (!keydown) {
-				keydown = 1; if(++menu->itemCur == menu->itemNum) menu->itemCur = 0;
+				keydown = 1; 
+				screen_prepbackground();
+				if(++menu->itemCur == menu->itemNum) 
+				{
+					menu->itemCur = 0;
+				}
 			}
 			else {
 				keydown++; if (keydown>12) keydown=0;
@@ -341,15 +299,7 @@ void screen_showmainmenu(MENU *menu)
 				if(mi->itemPar != NULL && *mi->itemPar > 0)
 				{ 
 					 *mi->itemPar -= 1;
-#ifndef LAYERS
-					screen_prepbackground();
-#endif
-				}
-				
-				// big hack for key conf
-				if (menu == &mnuConfigMenu)  
-				{
-					if (*mi->itemPar < 4) *mi->itemPar = 4;
+				      screen_prepbackground();
 				}
 			}
 			else {
@@ -365,9 +315,7 @@ void screen_showmainmenu(MENU *menu)
 				if(mi->itemPar != NULL && *mi->itemPar < mi->itemParMaxValue) 
 				{ 
 					*mi->itemPar += 1;
-#ifndef LAYERS
 					screen_prepbackground();
-#endif
 				}
 				
 			}
@@ -393,46 +341,23 @@ void screen_showmainmenu(MENU *menu)
 			}
 		}
 
-#ifdef NSPIRE
-		SDL_Delay(8);
-#else
-		SDL_Delay(16);
-#endif
+		SDL_Delay(4);
 		screen_flip();
 	}
 	
 }
 
 
-
-// Menu function that runs keys configuration
-void screen_showkeymenu(void) 
-{
-	screen_showmainmenu(&mnuConfigMenu);
-}
-
 // Menu function that runs main top menu
 void screen_showtopmenu(void) 
 {
-	
 #ifdef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio)
 	{
-		SDL_FreeSurface(actualScreen);
-#ifdef NSPIRE
-		actualScreen = SDL_SetVideoMode(320, 240, has_colors ? 16 : 8, SDL_SWSURFACE ); 
-#else
-		actualScreen = SDL_SetVideoMode(320, 240, BITDEPTH_OSWAN, SDL_SWSURFACE );
-#endif
-		SDL_FillRect(actualScreen, NULL, 0);
-		SDL_Flip(actualScreen);
+		SetVideo(0);
 	}
 #endif
-	
-	// Save screen in layer
-#ifdef LAYERS
-	SDL_BlitSurface(actualScreen, 0, layerback, 0);
-#endif
+
 	screen_prepbackground();
 
 	// Display and manage main menu
@@ -444,22 +369,15 @@ void screen_showtopmenu(void)
 #ifdef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio)
 	{
-		SDL_FreeSurface(actualScreen);
+		SetVideo(1);
 		screen_prepbackground();
-#ifdef NSPIRE
-		actualScreen = SDL_SetVideoMode(224, 144, has_colors ? 16 : 8, SDL_SWSURFACE ); 
-#else
-		actualScreen = SDL_SetVideoMode(224, 144, BITDEPTH_OSWAN, SDL_SWSURFACE );
-#endif
-		SDL_FillRect(actualScreen, NULL, 0);
-		SDL_Flip(actualScreen);
 	}
 #else
 	// if no ratio, put skin
 	if (!GameConf.m_ScreenRatio) 
 	{
 		screen_prepback(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
-		SDL_Flip(actualScreen);
+		flip_screen(actualScreen);
 	}
 #endif
 	
@@ -652,11 +570,7 @@ signed int load_file(char **wildcards, char *result)
 
 		while(repeat) 
 		{
-#ifdef LAYERS
-			screen_prepback(layer, OSWAN_LOAD, OSWAN_LOAD_SIZE);
-#else
 			screen_prepback(actualScreen, OSWAN_LOAD, OSWAN_LOAD_SIZE);
-#endif
 			print_string(current_dir_short, COLOR_ACTIVE_ITEM, COLOR_BG, 4, 10*3);
 			print_string("Press B to return to the main menu", COLOR_HELP_TEXT, COLOR_BG, 160-(34*8/2), 240-5 -10*3);
 			for(i = 0, current_filedir_number = i + current_filedir_scroll_value; i < FILE_LIST_ROWS; i++, current_filedir_number++) {
@@ -764,21 +678,15 @@ signed int load_file(char **wildcards, char *result)
 		strcpy(GameConf.current_dir_rom,current_dir_name);
 	}
 
-	/* 
-	   Hack, Show Menu graphics again after you quit ROM file browser
-	   Remove this piece of code and the menu background will not be shown,
-	   only the last one (the file browser one) !
-	*/
-#ifndef LAYERS
-		screen_prepbackground();
-#endif
-	
+	screen_prepbackground();
+
 	return return_value;
 }
 
 void menuFileBrowse(void) 
 {
-	if (load_file(file_ext, gameName) != -1) { // exit if file is chosen
+	if (load_file(file_ext, gameName) != -1) // exit if file is chosen
+	{ 
 		gameMenu=false;
 		m_Flag = GF_GAMEINIT;
 		// free memory if another game is loaded
@@ -788,9 +696,9 @@ void menuFileBrowse(void)
 }
 
 // Take a screenshot of current game
+#if !defined(NOSCREENSHOTS)
 void menuSaveBmp(void) 
 {
-#ifndef NO_SCREENSHOT
     char szFile[512], szFile1[512];
 	
 	if (cartridge_IsLoaded()) {
@@ -823,17 +731,13 @@ void menuSaveBmp(void)
 		print_string("Saving...", COLOR_OK, COLOR_BG, 8,240-5 -10*3);
 		screen_flip();
 		findNextFilename(szFile,szFile1);
-#ifdef LAYERS
-		SDL_SaveBMP(layerback, szFile1);
-#else
-		SDL_SaveBMP(actualScreen, szFile1);
-#endif
+		SDL_SaveBMP(screenshots, szFile1);
 		print_string("Screen saved !", COLOR_OK, COLOR_BG, 8+10*8,240-5 -10*3);
 		screen_flip();
 		screen_waitkey();
 	}
-#endif
 }
+#endif
 
 // Save current state of game emulated
 void menuSaveState(void) 
@@ -899,10 +803,10 @@ void system_loadcfg(char *cfg_name)
 	if (!GameConf.m_ScreenRatio) 
 	{
 		screen_prepback(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
-		SDL_Flip(actualScreen);
+		flip_screen(actualScreen);
 	}
 #else
-		SDL_Flip(actualScreen);
+		flip_screen(actualScreen);
 #endif
   }
   else 
@@ -933,10 +837,5 @@ void system_savecfg(char *cfg_name)
 		write(fd, &GameConf, sizeof(GameConf)); 
 		close(fd);
 	}
-}
-
-void get_filename(const char *filename)
-{
-
 }
 

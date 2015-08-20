@@ -2,11 +2,13 @@ CC=kos-cc
 SH_DIRECTORY=/opt/toolchains/dc/sh-elf/bin/
 
 CFLAGS = -O2 -g -I$(KOS_BASE)/addons/include/SDL -I$(KOS_BASE)/addons/include -I./emu -I./sdl ${DEFINES} 
-DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DDREAMCAST -DJOYSTICK
+DEFINES = -DNOLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DDREAMCAST -DJOYSTICK
 LDFLAGS = -flto -Wl,--as-needed -lSDL -lm
 OUTPUT = oswan.elf
 
-SOURCES = sdl/main_od.c sdl/menu.c sdl/drawing.c sdl/hack.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
+SDL = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/gfx/SDL_rotozoom.c sdl/drawing.c sdl/input.c
+EMU_CORE = emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSRender.c
+SOURCES = ${SDL} ${EMU_CORE}
 OBJS = ${SOURCES:.c=.o}
 
 all : ${OUTPUT} scramble

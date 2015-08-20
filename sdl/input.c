@@ -1,13 +1,11 @@
-/*
-$Date: 2009-10-30 05:26:46 +0100 (ven., 30 oct. 2009) $
-$Rev: 71 $
-*/
 #include <SDL/SDL.h>
 #include <string.h>
-#include "../sdl/shared.h"
+
+#include "input.h"
+#include "drawing.h"
+#include "shared.h"
 
 #include "WSFileio.h"
-#include "WSInput.h"
 
 extern SDL_Event event;
 SDL_Joystick* joy;
@@ -17,9 +15,6 @@ const unsigned short keyCoresp[7] = {
 	// A      B   start
 	1<<10, 1<<11, 1<<9,
 };
-
-extern int stick_swap;
-extern int dpad_abxy_mapped;
 
 int WsInputGetState(int mode)
 {
@@ -41,7 +36,7 @@ int WsInputGetState(int mode)
 	unsigned char *keys = SDL_GetKeyState(NULL);
 
 
-	if (dpad_abxy_mapped == 1)
+	if (GameConf.dpad_abxy_mapped == 1)
 	{
 		/* Disable Auto-Fire and map Dpad to ABXY buttons */
 		
@@ -49,7 +44,6 @@ int WsInputGetState(int mode)
 			button |= (1<<6); // DOWN -> X3
 		if (keys[PAD_B] == SDL_PRESSED) 
 			button |= (1<<5); // RIGHT -> X2
-			
 		if (keys[PAD_X]) 
 			button |= (1<<7); // LEFT -> X4
 		if (keys[PAD_Y]) 
@@ -61,11 +55,11 @@ int WsInputGetState(int mode)
 			button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
 		if (keys[PAD_B] == SDL_PRESSED) 
 			button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
-			
+		
 		if (keys[PAD_X]) 
-			button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A (Fire
+			button |= keyCoresp[GameConf.OD_Joy[5]];  // Button A (Fire)
 		if (keys[PAD_Y]) 
-			button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B (Fire)
+			button |= keyCoresp[GameConf.OD_Joy[4]];  // Button B (Fire)
 	}
 		
 	// Load
@@ -92,9 +86,7 @@ int WsInputGetState(int mode)
 		WsLoadState(szFile, 0);
 	}
 
-	#ifdef JOYSTICK
-	
-		if (stick_swap == 0)
+		if (GameConf.stick_swap == 0)
 		{	
 			if (keys[PAD_XUP] == SDL_PRESSED)    
 				button |= (1<<4); // UP -> X1
@@ -105,6 +97,7 @@ int WsInputGetState(int mode)
 			if (keys[PAD_XLEFT] == SDL_PRESSED)  
 				button |= (1<<7); // LEFT -> X4
 			
+			#ifdef JOYSTICK
 			if (x_joy > 7500) 
 				button |= (1<<1); // RIGHT -> Y1
 			else if (x_joy < -7500) 
@@ -114,8 +107,9 @@ int WsInputGetState(int mode)
 				button |= (1<<2); // DOWN -> Y1
 			else if (y_joy < -7500) 
 				button |= (1<<0); // UP -> Y1
+			#endif
 		}
-		else if (stick_swap == 1)
+		else 
 		{
 			if (keys[PAD_XUP] == SDL_PRESSED)    
 				button |= (1<<2); // UP -> X1
@@ -126,6 +120,7 @@ int WsInputGetState(int mode)
 			if (keys[PAD_XLEFT] == SDL_PRESSED)  
 				button |= (1<<3); // LEFT -> X4
 			
+			#ifdef JOYSTICK
 			if (x_joy > 7500) 
 				button |= (1<<5); // RIGHT -> Y1
 			else if (x_joy < -7500) 
@@ -135,25 +130,17 @@ int WsInputGetState(int mode)
 				button |= (1<<6); // DOWN -> Y1
 			else if (y_joy < -7500) 
 				button |= (1<<4); // UP -> Y1
+			#endif
 		}
-	#else
-		if (keys[PAD_YUP] == SDL_PRESSED)    
-			button |= (1<<0); // UP -> Y1
-		if (keys[PAD_YRIGHT] == SDL_PRESSED) 
-			button |= (1<<2); // RIGHT -> Y2
-		if (keys[PAD_YDOWN] == SDL_PRESSED)  
-			button |= (1<<1); // DOWN -> Y3
-		if (keys[PAD_YLEFT] == SDL_PRESSED)  
-			button |= (1<<3); // LEFT -> Y4
-	#endif
 			
 	if (keys[PAD_QUIT] == SDL_PRESSED) 
 	{
+		take_screenshot();
 		m_Flag = GF_MAINUI;
 	}
 			
-	if (keys[PAD_START] == SDL_PRESSED)  { button |=  keyCoresp[GameConf.OD_Joy[11]]; } // START -> START 
-	/*if (keys[PAD_SELECT] == SDL_PRESSED) { button |=  keyCoresp[GameConf.OD_Joy[11]]; }*/ // SELECT -> OPTION 
+	if (keys[PAD_START] == SDL_PRESSED)  // START -> START 	
+		button |=  keyCoresp[GameConf.OD_Joy[11]];
 			
 	return button;
 }

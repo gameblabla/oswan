@@ -1,31 +1,22 @@
+﻿/*
+$Date: 2010-09-29 04:51:41 -0400 (Wed, 29 Sep 2010) $
+$Rev: 102 $
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "WSHard.h"
 #include "WS.h"
+#include "WSDraw.h"
 #include "WSFileio.h"
 #include "WSRender.h"
 #include "cpu/necintrf.h"
 
-#include "../sdl/shared.h"
+int result;
 
-#define ERR_MALLOC					0
-#define ERR_OVER_RAMSIZE			0
-#define ERR_WRITE_ROM				0
-#define ERR_WAVEOUT_OPEN			0
-#define ERR_WAVEOUT_PREPAREHEADER	0
-#define ERR_FOPEN					0
-#define ERR_FREAD_ROMINFO			0
-#define ERR_ILLEGAL_ROMSIZE			0
-#define ERR_FREAD_ROM				0
-#define ERR_CHECKSUM				0
-#define ERR_FREAD_SAVE				0
-
-/*
-static char *SaveDir = "RAM";
-static char *StateDir = "STATE";
-*/
+// ファイル操作は表などとディレクトリセパレータがかぶるのでUNICODEを使います
 static char SaveName[512];   // ".sav"
 static char StateName[512];
 #ifdef NSPIRE
@@ -33,8 +24,6 @@ static char* IEepPath = "./ossav.tns";
 #else
 static char* IEepPath = "./oswan.dat";
 #endif
-
-int result;
 
 int WsSetPdata(void)
 {
@@ -76,7 +65,7 @@ int WsCreate(char *CartName)
     {
         //ErrorMsg(ERR_FOPEN);
 		fprintf(stderr,"ERR_FOPEN");
-        return ERR_FOPEN;
+        return 1;
     }
     
     /*ws_romsize = sizeof(fp);*/
@@ -86,7 +75,7 @@ int WsCreate(char *CartName)
     {
         //ErrorMsg(ERR_FREAD_ROMINFO);
 		fprintf(stderr,"ERR_FREAD_ROMINFO");
-        return ERR_FREAD_ROMINFO;
+        return 1;
     }
     switch (buf[4])
     {
@@ -125,7 +114,7 @@ int WsCreate(char *CartName)
     {
         //ErrorMsg(ERR_ILLEGAL_ROMSIZE);
 		fprintf(stderr,"ERR_ILLEGAL_ROMSIZE\n");
-        return ERR_ILLEGAL_ROMSIZE;
+        return 1;
     }
     switch (buf[5])
     {
@@ -165,9 +154,9 @@ int WsCreate(char *CartName)
         CartKind = CK_EEP;
         break;
     default:
-        RAMBanks = 0;
-        RAMSize = 0;
-        CartKind = 0;
+        RAMBanks = 0x10000;
+        RAMSize = 1;
+        CartKind = CK_EEP;
         break;
     }
     WsRomPatch(buf);
@@ -196,7 +185,7 @@ int WsCreate(char *CartName)
         {
             //ErrorMsg(ERR_MALLOC);
 			fprintf(stderr,"ERR_MALLOC\n");
-            return ERR_MALLOC;
+            return 1;
         }
     }
     fclose(fp);
@@ -221,7 +210,7 @@ int WsCreate(char *CartName)
             {
                 //ErrorMsg(ERR_MALLOC);
 				fprintf(stderr,"ERR_MALLOC 1\n");
-				return ERR_MALLOC;
+				return 1;
             }
         }
     }
@@ -311,7 +300,7 @@ void WsRelease(void)
     StateName[0] = '\0';
 }
 
-void WsLoadIEep(void)
+void WsLoadEeprom(void)
 {
     FILE* fp;
 
@@ -334,7 +323,7 @@ void WsLoadIEep(void)
 	}
 }
 
-void WsSaveIEep(void)
+void WsSaveEeprom(void)
 {
     FILE* fp;
 
@@ -464,3 +453,5 @@ int WsSaveState(const char *savename, int num)
     printf("Yes...\n");
     return 0;
 }
+
+

@@ -1,11 +1,13 @@
 CC = mipsel-linux-gcc
 
 CFLAGS = -O2 -fomit-frame-pointer -mips32r2 -Wall -I./emu -I./sdl ${DEFINES} 
-DEFINES = -DLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DGCW -DJOYSTICK -DHOME_SUPPORT
+DEFINES = -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DGCW -DJOYSTICK -DHOME_SUPPORT
 LDFLAGS = -lSDL -lm  -Wl,--as-needed -s -flto
 OUTPUT = oswan
 
-SOURCES = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/drawing.c emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSInput.c emu/WSRender.c
+SDL = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/gfx/SDL_rotozoom.c sdl/drawing.c sdl/input.c
+EMU_CORE = emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSRender.c
+SOURCES = ${SDL} ${EMU_CORE}
 OBJS = ${SOURCES:.c=.o}
 
 all: ${OUTPUT} pack
