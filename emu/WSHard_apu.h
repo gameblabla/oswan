@@ -66,7 +66,7 @@ BYTE  ReadIO(DWORD A);
 
 #define SDMASA  (*(WORD*)(IO+0x4A)) //
 #define SDMASB  IO[0x4C]        // 
-#define SDMACNT (*(WORD*)(IO+0x4E)) //
+#define SDMACNT 0x4E //
 #define SDMACTL IO[0x52]        // 
 
 #define COLCTL  IO[0x60]        // 
@@ -106,6 +106,10 @@ BYTE  ReadIO(DWORD A);
 #define BNK1SEL IO[0xC1]        // 
 #define BNK2SEL IO[0xC2]        // 
 #define BNK3SEL IO[0xC3]        // 
+
+#define SDMASL      0x4A        //
+#define SDMASH      0x4C        // 
+#define SND2VOL     0x89        // 
 
 //---------------------------------------------------------------------------
 // 

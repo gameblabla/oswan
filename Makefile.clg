@@ -5,9 +5,10 @@ DEFINES = -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSWITCHING_GRAPHICS
 LDFLAGS = -lSDLmain -lSDL -Wl,--as-needed
 OUTPUT = oswan
 
-SDL = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/gfx/SDL_rotozoom.c sdl/drawing.c sdl/input.c
-EMU_CORE = emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSRender.c
-SOURCES = ${SDL} ${EMU_CORE}
+SDL = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/gfx/SDL_rotozoom.c sdl/drawing.c sdl/input.c sdl/md5.c
+CPU = emu/cpu/nec.c
+EMU_CORE = emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSRender.c
+SOURCES = ${SDL} ${CPU} ${EMU_CORE}
 OBJS = ${SOURCES:.c=.o}
 
 ${OUTPUT}:${OBJS}

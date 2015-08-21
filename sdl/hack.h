@@ -1,3 +1,4 @@
-extern void hack_period();
-extern int tableau_games[128][3];
-extern short game_choosen;
+#ifdef SPEEDHACKS
+unsigned char period_hack;
+void Check_MD5(unsigned char* buf, FILE* fp);
+#endif

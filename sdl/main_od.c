@@ -84,11 +84,11 @@ void initSDL(void)
 #ifdef SOUND_ON
 	 //set up SDL sound 
     SDL_AudioSpec fmt, retFmt;
-
-    fmt.freq = 44100;  
+	//fmt.freq = 48000;   
+	fmt.freq = 44100;   
     fmt.format = AUDIO_S16;
-    fmt.channels = 1;
-    fmt.samples = 512;
+    fmt.channels = 2;
+    fmt.samples = 1024;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
 
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 {
 	double period;
 	
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 	enable_relative_paths(argv);
 #endif
 	
@@ -159,9 +159,7 @@ int main(int argc, char *argv[])
 #ifdef SOUND_ON
 				SDL_PauseAudio(0);
 #endif
-#ifndef NSPIRE
 				nextTick = SDL_UXTimerRead() + interval;
-#endif
 				}
 				break;
 
@@ -170,14 +168,12 @@ int main(int argc, char *argv[])
 				{
 					WsInit();
 					m_Flag = GF_GAMERUNNING;
-					hack_period();
-#ifndef NSPIRE
+					
 					// Init timing
 					period = 1.0 / 60;
 					period = period * 1000000;
 					interval = (int) period;
 					nextTick = SDL_UXTimerRead() + interval;
-#endif
 #ifdef SOUND_ON
 					SDL_PauseAudio(0);
 #endif
@@ -190,22 +186,19 @@ int main(int argc, char *argv[])
 				break;
 		
 			case GF_GAMERUNNING:	
-#ifndef NSPIRE
 				currentTick = SDL_UXTimerRead(); 
 				wait = (nextTick - currentTick);
-				if (wait > 0) {
+				if (wait > 0) 
+				{
 					if (wait < 1000000) 
 					{
-#ifndef NSPIRE
+#ifndef _TINSPIRE
 						usleep(wait);
 #endif
 					}
 				}
-#endif
 				WsRun();
-#ifndef NSPIRE
 				nextTick += interval;
-#endif
 				break;
 		}
 	}

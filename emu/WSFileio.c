@@ -1,9 +1,4 @@
-﻿/*
-$Date: 2010-09-29 04:51:41 -0400 (Wed, 29 Sep 2010) $
-$Rev: 102 $
-*/
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,13 +9,16 @@ $Rev: 102 $
 #include "WSRender.h"
 #include "cpu/necintrf.h"
 
+
+#include "hack.h"
+
 int result;
 
 // ファイル操作は表などとディレクトリセパレータがかぶるのでUNICODEを使います
 static char SaveName[512];   // ".sav"
 static char StateName[512];
-#ifdef NSPIRE
-static char* IEepPath = "./ossav.tns";
+#ifdef _TINSPIRE
+static char* IEepPath = "./oswan.dat.tns";
 #else
 static char* IEepPath = "./oswan.dat";
 #endif
@@ -248,10 +246,10 @@ int WsCreate(char *CartName)
     }
     WsReset();
 	SetHVMode(buf[6] & 1);
+	
 #ifdef SPEEDHACKS
-    gameCRC = crc32(0, buf, sizeof(fp));
+	Check_MD5(buf, fp);
 #endif
-    /*printf("gameCRC = %d \n", gameCRC);*/
     
 	return 1;
 }

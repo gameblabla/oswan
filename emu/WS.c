@@ -14,6 +14,8 @@ extern unsigned long SDL_UXTimerRead(void);
 #include "WSFileio.h"
 #include "cpu/necintrf.h"
 
+#include "hack.h"
+
 #define IPeriod 32          // HBlank/8 (256/8)
 
 int Run;
@@ -967,12 +969,21 @@ int Interrupt(void)
 int WsRun(void)
 {
     static int period = IPeriod;
-    int i, cycle, iack, inum;
-//  for(i = 0; i < 480; i++) //5ms
-    for(i = 0; i < 159*8; i++) // 1/75s
+    int i, iack, inum;
+#ifndef SPEEDHACKS
+	int cycle;
+#endif
+
+	// 1/75s
+    for(i = 0; i < 159*8; i++)
     {
+#ifdef SPEEDHACKS
+		nec_execute(period);
+        period = period_hack;
+#else
         cycle = nec_execute(period);
         period += IPeriod - cycle;
+#endif
         if(Interrupt())
         {
             iack = IO[IRQACK];

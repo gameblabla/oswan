@@ -35,21 +35,35 @@ int WsInputGetState(int mode)
 	SDL_PollEvent(&event);
 	unsigned char *keys = SDL_GetKeyState(NULL);
 
-
-	if (GameConf.dpad_abxy_mapped == 1)
+	if (GameConf.dpad_abxy_mapped == 2)
+	{
+		/* Disable Auto-Fire and map Joystick to ABXY buttons */
+		#ifdef JOYSTICK
+			if (x_joy > 7500) 
+				button |= (1<<6); // RIGHT -> Y1
+			else if (x_joy < -7500) 
+				button |= (1<<7); // LEFT -> Y1
+					
+			if (y_joy > 7500) 
+				button |= (1<<5); // DOWN -> Y1
+			else if (y_joy < -7500) 
+				button |= (1<<4); // UP -> Y1
+		#endif
+	}
+	else if (GameConf.dpad_abxy_mapped == 1)
 	{
 		/* Disable Auto-Fire and map Dpad to ABXY buttons */
 		
 		if (keys[PAD_A] == SDL_PRESSED) 
-			button |= (1<<6); // DOWN -> X3
+			button |= (1<<5); // DOWN -> X3
 		if (keys[PAD_B] == SDL_PRESSED) 
-			button |= (1<<5); // RIGHT -> X2
+			button |= (1<<6); // RIGHT -> X2
 		if (keys[PAD_X]>0) 
 			button |= (1<<7); // LEFT -> X4
 		if (keys[PAD_Y]>0) 
 			button |= (1<<4); // UP -> X1
 	}
-	else
+	else if (GameConf.dpad_abxy_mapped == 0)
 	{
 		if (keys[PAD_A] == SDL_PRESSED) 
 			button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
@@ -66,7 +80,7 @@ int WsInputGetState(int mode)
 	if (keys[PAD_L] == SDL_PRESSED) 
 	{
 		strcpy(szFile, gameName);
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 		strcpy(strrchr(szFile, '.'), ".sta.tns");
 #else
 		strcpy(strrchr(szFile, '.'), ".sta");
@@ -78,7 +92,7 @@ int WsInputGetState(int mode)
 	if (keys[PAD_R] == SDL_PRESSED) 
 	{
 		strcpy(szFile, gameName);
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 		strcpy(strrchr(szFile, '.'), ".sta.tns");
 #else
 		strcpy(strrchr(szFile, '.'), ".sta");
@@ -97,17 +111,20 @@ int WsInputGetState(int mode)
 			if (keys[PAD_XLEFT] == SDL_PRESSED)  
 				button |= (1<<7); // LEFT -> X4
 			
-			#ifdef JOYSTICK
-			if (x_joy > 7500) 
-				button |= (1<<1); // RIGHT -> Y1
-			else if (x_joy < -7500) 
-				button |= (1<<3); // LEFT -> Y1
-				
-			if (y_joy > 7500) 
-				button |= (1<<2); // DOWN -> Y1
-			else if (y_joy < -7500) 
-				button |= (1<<0); // UP -> Y1
-			#endif
+			if (GameConf.dpad_abxy_mapped != 2)
+			{
+				#ifdef JOYSTICK
+				if (x_joy > 7500) 
+					button |= (1<<1); // RIGHT -> Y1
+				else if (x_joy < -7500) 
+					button |= (1<<3); // LEFT -> Y1
+					
+				if (y_joy > 7500) 
+					button |= (1<<2); // DOWN -> Y1
+				else if (y_joy < -7500) 
+					button |= (1<<0); // UP -> Y1
+				#endif
+			}
 		}
 		else 
 		{
@@ -120,17 +137,20 @@ int WsInputGetState(int mode)
 			if (keys[PAD_XLEFT] == SDL_PRESSED)  
 				button |= (1<<3); // LEFT -> X4
 			
-			#ifdef JOYSTICK
-			if (x_joy > 7500) 
-				button |= (1<<5); // RIGHT -> Y1
-			else if (x_joy < -7500) 
-				button |= (1<<7); // LEFT -> Y1
-				
-			if (y_joy > 7500) 
-				button |= (1<<6); // DOWN -> Y1
-			else if (y_joy < -7500) 
-				button |= (1<<4); // UP -> Y1
-			#endif
+			if (GameConf.dpad_abxy_mapped != 2)
+			{
+				#ifdef JOYSTICK
+				if (x_joy > 7500) 
+					button |= (1<<5); // RIGHT -> Y1
+				else if (x_joy < -7500) 
+					button |= (1<<7); // LEFT -> Y1
+					
+				if (y_joy > 7500) 
+					button |= (1<<6); // DOWN -> Y1
+				else if (y_joy < -7500) 
+					button |= (1<<4); // UP -> Y1
+				#endif
+			}
 		}
 			
 	if (keys[PAD_QUIT] == SDL_PRESSED) 

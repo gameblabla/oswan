@@ -1,6 +1,5 @@
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 #include <os.h>
-#include <math.h>
 #endif
 
 #include <stdio.h>
@@ -33,7 +32,7 @@ bool gameMenu;
 #define COLOR_INACTIVE_ITEM PIX_TO_RGB(actualScreen->format,67,89,153)
 
 char *file_ext[] = { (char *) ".ws", (char *) ".wsc", (char *) ".WSC", (char *) ".WS", 
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 	".tns", 
 #endif
 	NULL };
@@ -65,6 +64,7 @@ typedef struct {
 	MENUITEM *m; // array of items
 } MENU;
 
+char mnuABXY[3][16] = {"ABXY Normal", "ABXY is DPAD", "ABXY is Stick"};
 char mnuYesNo[2][16] = {"No", "Yes"};
 char mnuRatio[2][16] = { "1x size","Full screen"};
 
@@ -80,7 +80,7 @@ MENUITEM MainMenuItems[] = {
 #endif
 	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
 	{"Swap X1, Y1: ", (int *) &GameConf.stick_swap, 1, (char *) &mnuYesNo, NULL},
-	{"ABXY is DPAD: ", (int *) &GameConf.dpad_abxy_mapped, 1, (char *) &mnuYesNo, NULL},
+	{"", (int *) &GameConf.dpad_abxy_mapped, 2, (char *) &mnuABXY, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
 
@@ -341,7 +341,11 @@ void screen_showmainmenu(MENU *menu)
 			}
 		}
 
+#ifdef _TINSPIRE
+		sleep(1);
+#else
 		SDL_Delay(4);
+#endif
 		screen_flip();
 	}
 	
@@ -704,7 +708,7 @@ void menuSaveBmp(void)
 	if (cartridge_IsLoaded()) {
 		sprintf(szFile,"./%s",strrchr(gameName,'/')+1);
 
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 		szFile[strlen(szFile)-12] = '%';
 		szFile[strlen(szFile)-11] = '0';
 		szFile[strlen(szFile)-10] = '3';
@@ -747,7 +751,7 @@ void menuSaveState(void)
 	if (cartridge_IsLoaded()) 
 	{
 		strcpy(szFile, gameName);
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 		strcpy(strrchr(szFile, '.'), ".sta.tns");
 #else
 		strcpy(strrchr(szFile, '.'), ".sta");
@@ -768,7 +772,7 @@ void menuLoadState(void)
 	if (cartridge_IsLoaded()) 
 	{
 		strcpy(szFile, gameName);
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 		strcpy(strrchr(szFile, '.'), ".sta.tns");
 #else
 		strcpy(strrchr(szFile, '.'), ".sta");

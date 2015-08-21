@@ -1,7 +1,7 @@
 #ifndef SHARED_H
 #define SHARED_H
 
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 #include <os.h>
 #endif
 
@@ -18,7 +18,7 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 	#define BITDEPTH_OSWAN has_colors ? 16 : 8
 	#define FLAG_VIDEO SDL_SWSURFACE
 #elif defined(GCW0)
@@ -32,7 +32,7 @@
 	#define FLAG_VIDEO SDL_SWSURFACE
 #endif
 
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 	#define PATH_DIRECTORY "/documents/ndless/"
 	#define EXTENSION ".tns"
 #elif defined(GCW)
@@ -52,7 +52,7 @@
 	#endif
 #endif
 
-#ifdef NSPIRE
+#ifdef _TINSPIRE
 	#define PAD_UP		SDLK_UP
 	#define PAD_LEFT	SDLK_LEFT
 	#define PAD_RIGHT	SDLK_RIGHT

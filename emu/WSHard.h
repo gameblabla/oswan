@@ -1,9 +1,4 @@
-﻿/*
-$Date: 2010-05-18 02:10:10 -0400 (Tue, 18 May 2010) $
-$Rev: 96 $
-*/
-
-#ifndef WSHARD_H_
+﻿#ifndef WSHARD_H_
 #define WSHARD_H_
 
 typedef unsigned char BYTE;
