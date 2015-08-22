@@ -28,7 +28,7 @@
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
 #else
-	#define BITDEPTH_OSWAN 0
+	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
 #endif
 
@@ -106,6 +106,8 @@
 	#define PAD_START		SDLK_RETURN
 	#define PAD_SELECT		SDLK_ESCAPE
 	
+	#define PAD_SLIDER		SDLK_HOME
+	
 	#define PAD_QUIT		SDLK_ESCAPE
 
 #else
@@ -160,7 +162,7 @@
 #define false 0
 typedef int bool;
 
-#define PIX_TO_RGB(fmt, r, g, b) (((r>>fmt->Rloss)<<fmt->Rshift)| ((g>>fmt->Gloss)<<fmt->Gshift)|((b>>fmt->Bloss)<<fmt->Bshift))
+#define PIX_TO_RGB(fmt, r, g, b) (((r*8>>fmt->Rloss)<<fmt->Rshift)| ((g*6>>fmt->Gloss)<<fmt->Gshift)|((b*8>>fmt->Bloss)<<fmt->Bshift))
 
 // osWan dependencies
 #include "../emu/WS.h"
@@ -176,8 +178,14 @@ typedef struct {
 	unsigned int OD_Joy[12]; // each key mapping
 	unsigned int m_DisplayFPS;
 	char current_dir_rom[MAX__PATH];
-	unsigned int stick_swap;
-	unsigned int dpad_abxy_mapped;
+	unsigned int input_layout;
+	unsigned int reserved1;
+	unsigned int reserved2;
+	unsigned int reserved3;
+	unsigned int reserved4;
+#ifndef OLDSAVE_HACK
+	unsigned char save_oldoswan_check;
+#endif
 } gamecfg;
 
 //typedef unsigned char byte;

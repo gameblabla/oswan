@@ -24,3 +24,4 @@ fork/
 oswan_svn/
 opk/
 screenshots/
+emu/cpu_oswanj/*.o

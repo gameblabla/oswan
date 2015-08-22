@@ -3,7 +3,7 @@ CC = nspire-gcc
 CFLAGS = -Os -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -I./emu -I./sdl
 CFLAGS += ${DEFINES} 
 DEFINES = -DSWITCHING_GRAPHICS
-LDFLAGS =
+LDFLAGS = -Wl,--as-needed -flto
 OUTPUT = oswan
 
 SDL = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/drawing.c sdl/input.c

@@ -64,7 +64,7 @@ typedef struct {
 	MENUITEM *m; // array of items
 } MENU;
 
-char mnuABXY[3][16] = {"ABXY Normal", "ABXY is DPAD", "ABXY is Stick"};
+char mnuABXY[4][16] = {"Normal", "Wonderswan-like", "Swap DPAD,ABXY", "Swap ABXY,Stick"};
 char mnuYesNo[2][16] = {"No", "Yes"};
 char mnuRatio[2][16] = { "1x size","Full screen"};
 
@@ -79,17 +79,16 @@ MENUITEM MainMenuItems[] = {
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 #endif
 	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
-	{"Swap X1, Y1: ", (int *) &GameConf.stick_swap, 1, (char *) &mnuYesNo, NULL},
-	{"", (int *) &GameConf.dpad_abxy_mapped, 2, (char *) &mnuABXY, NULL},
+	{"", (int *) &GameConf.input_layout, 3, (char *) &mnuABXY, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
 
 
 MENU mnuMainMenu = { 
 #if defined(NOSCREENSHOTS)
-	10,
+	9,
 #else
-	11,
+	10,
 #endif
 	0, (MENUITEM *) &MainMenuItems };
 
@@ -102,12 +101,21 @@ void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, int fg_color
 
 	//if(SDL_MUSTLOCK(s)) SDL_LockSurface(s);
 	SDL_LockSurface(s);
-	for(h = 8; h; h--) {
-		dst = (unsigned short *)s->pixels + (y+8-h)*s->w + x;
-		for(w = 8; w; w--) {
+	for(h = 8; h; h--) 
+	{
+#if BITDEPTH_OSWAN == 32
+		dst = (unsigned short *)s->pixels + ((y+8-h)*s->w + x)*2;
+#else
+		dst = (unsigned short *)s->pixels + ((y+8-h)*s->w + x);
+#endif
+		for(w = 8; w; w--) 
+		{
 			unsigned short color = *dst; // background
 			if((fontdata8x8[a*8 + (8-h)] >> w) & 1) color = fg_color;
 			*dst++ = color;
+#if BITDEPTH_OSWAN == 32
+			*dst++ = color;
+#endif
 		}
 	}
 	//if(SDL_MUSTLOCK(s)) SDL_UnlockSurface(s);
@@ -803,6 +811,16 @@ void system_loadcfg(char *cfg_name)
   {
 	read(fd, &GameConf, sizeof(GameConf));
     close(fd);
+    /*To remove in the future...*/
+#ifndef OLDSAVE_HACK
+	if (GameConf.save_oldoswan_check!=128) 
+	{
+		printf("Old Save format ! Let's remove it...\n");
+		remove(cfg_name);
+		GameConf.input_layout = 0;
+		GameConf.save_oldoswan_check = 128;
+	} 
+#endif
 #ifndef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio) 
 	{
@@ -827,6 +845,9 @@ void system_loadcfg(char *cfg_name)
 		GameConf.sndLevel=40;
 		GameConf.m_ScreenRatio=1; // 0 = original show, 1 = full screen
 		GameConf.m_DisplayFPS=1; // 0 = no
+#ifndef OLDSAVE_HACK
+		GameConf.save_oldoswan_check=128;
+#endif
 		getcwd(GameConf.current_dir_rom, MAX__PATH);
 	}
 }

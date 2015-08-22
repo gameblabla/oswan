@@ -2,7 +2,7 @@ CC=kos-cc
 SH_DIRECTORY=/opt/toolchains/dc/sh-elf/bin/
 
 CFLAGS = -O2 -g -I$(KOS_BASE)/addons/include/SDL -I$(KOS_BASE)/addons/include -I./emu -I./sdl ${DEFINES} 
-DEFINES = -DNOLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DDREAMCAST -DJOYSTICK
+DEFINES = -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DDREAMCAST -DJOYSTICK
 LDFLAGS = -flto -Wl,--as-needed -lSDL -lm
 OUTPUT = oswan.elf
 

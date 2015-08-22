@@ -152,12 +152,16 @@ int WsCreate(char *CartName)
         CartKind = CK_EEP;
         break;
     default:
-        RAMBanks = 0x10000;
-        RAMSize = 1;
-        CartKind = CK_EEP;
+        RAMBanks = 1;
+        RAMSize = 0x2000;
+        CartKind = 0;
         break;
     }
+    
+    /*printf("\n buf[5] = %d \n",buf[5]);
+    printf("\n Cart : %s \n RAMBanks = %d \n RAMSize = %d \n CartKind % d\n ROMBanks %d\n",CartName,RAMBanks,RAMSize,CartKind,ROMBanks);*/
     WsRomPatch(buf);
+    
     Checksum = (int)((buf[9] << 8) + buf[8]);
     Checksum += (int)(buf[9] + buf[8]);
     for (i = ROMBanks - 1; i >= 0; i--)

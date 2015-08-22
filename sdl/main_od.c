@@ -74,7 +74,7 @@ void initSDL(void)
 	SetVideo(0);
 
 #if !defined(NOSCREENSHOTS)
-	screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, 320, 240, 16, 0,0,0,0);
+	screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, 320, 240, BITDEPTH_OSWAN, 0,0,0,0);
 	if(screenshots == NULL) {
 		fprintf(stderr, "Couldn't create surface: %s\n", SDL_GetError());
 		exit(1);

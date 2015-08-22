@@ -1,8 +1,11 @@
-﻿#include <string.h>
+﻿#include <math.h>
+#include <string.h>
+#include <SDL/SDL.h>
 #include "WSRender.h"
 #include "WS.h"
 #include "WSDraw.h"
 #include "WSSegment.h"
+#include "shared.h"
 
 #define MAP_TILE 0x01FF
 #define MAP_PAL  0x1E00
@@ -32,16 +35,27 @@ int Segment[11];
 void SetPalette(int addr)
 {
     WORD color, r, g, b;
+    int pal;
 
     // RGB444 format
     color = *(WORD*)(IRAM + (addr & 0xFFFE));
   
 	// RGB565
-	r = (color & 0x0F00) << 4;
-	g = (color & 0x00F0) << 3;
-	b = (color & 0x000F) << 1;
+	r = ((color & 0x0F00) << 4);
+	g = ((color & 0x00F0) << 3);
+	b = ((color & 0x000F) << 1);
 	
-    Palette[(addr & 0x1E0) >> 5][(addr & 0x1E) >> 1] = r | g | b;
+#if BITDEPTH_OSWAN == 32
+	r = r * 255 / 31;
+	g = g * 255 / 63;
+	b = b * 255 / 31;
+	
+	pal = (r<<16) | (g << 8) | (b);
+#else
+	pal = (r) | (g) | (b);
+#endif
+
+	Palette[(addr & 0x1E0)>>5][(addr & 0x1E) >> 1] = pal;
     /*Palette[(addr & 0x1E0) >> 5][(addr & 0x1E) >> 1] = color | 0xF000;*/
 }
 

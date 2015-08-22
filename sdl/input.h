@@ -7,5 +7,6 @@ $Rev: 71 $
 #define WSINPUT_H_
 
 int WsInputGetState(int mode);
+int Fire_buttons();
 
 #endif

@@ -59,11 +59,11 @@ void SetVideo(unsigned char mode)
 		if (real_screen) SDL_FreeSurface(real_screen);
 		if (actualScreen) SDL_FreeSurface(actualScreen);
 		
-		actualScreen = SDL_CreateRGBSurface(FLAG_VIDEO, w, h, 16, 0,0,0,0);
+		actualScreen = SDL_CreateRGBSurface(FLAG_VIDEO, w, h, BITDEPTH_OSWAN, 0,0,0,0);
 		real_screen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
 	#else
 		if (actualScreen) SDL_FreeSurface(actualScreen);
-		actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, 16, flags);
+		actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
 	#endif
 
 }
@@ -91,6 +91,9 @@ void screen_draw(void)
 			W=320; x=0;
 			do {
 				*buffer_scr++=buffer_mem[x>>16];
+#if BITDEPTH_OSWAN == 32
+				*buffer_scr++=buffer_mem[x>>16];
+#endif
 				x+=ix;
 			} while (--W);
 			y+=iy;
@@ -116,6 +119,9 @@ void screen_draw(void)
 			do 
 			{
 				*buffer_scr++=buffer_mem[x>>16];
+#if BITDEPTH_OSWAN == 32
+				*buffer_scr++=buffer_mem[x>>16];
+#endif
 				x+=ix;
 			} while (--W);
 			y+=iy;
@@ -139,6 +145,9 @@ void screen_draw(void)
 			do 
 			{
 				*buffer_scr++=buffer_mem[x>>16];
+#if BITDEPTH_OSWAN == 32
+				*buffer_scr++=buffer_mem[x>>16];
+#endif
 				x+=ix;
 			} while (--W);
 			y+=iy;
