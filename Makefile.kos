@@ -1,5 +1,5 @@
 OUTFILE = oswan
-SDL = main/sdl/main_od.o main/sdl/menu.o main/sdl/hack.o main/sdl/gfx/SDL_rotozoom.o main/sdl/drawing.o main/sdl/input.o
+SDL = main/sdl/main.o main/sdl/menu.o main/sdl/hack.o main/sdl/gfx/SDL_rotozoom.o main/sdl/drawing.o main/sdl/input.o
 EMU_CORE = main/emu/cpu/nec.o main/emu/WS.o main/emu/WSApu.o main/emu/WSFileio.c main/emu/WSRender.o
 OBJS = ${SDL} ${EMU_CORE}
 CFLAGS = -Os -fomit-frame-pointer -DNOLAYERS -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS -DKOLIBRI -I./main/emu -I./main/sdl

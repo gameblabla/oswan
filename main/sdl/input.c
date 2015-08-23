@@ -13,8 +13,6 @@ extern SDL_Event event;
 	short x_joy = 0, y_joy = 0;
 #endif
 
-int r_data, g_data, b_data, mode_data;
-
 int WsInputGetState(int mode)
 {
 	char szFile[512];
@@ -41,34 +39,6 @@ int WsInputGetState(int mode)
 	SDL_PollEvent(&event);
 	unsigned char *keys = SDL_GetKeyState(NULL);
 	
-	if (keys[PAD_XUP])
-	{
-		mode_data++;
-		if (mode_data > 2) mode_data = 2;
-		printf("Mode % d \n", mode_data);
-	}
-	else if (keys[PAD_XDOWN])
-	{
-		mode_data++;
-		if (mode_data < 0) mode_data = 0;
-		printf("Mode % d \n", mode_data);
-	}
-	
-	if (keys[PAD_XLEFT])
-	{
-		if (mode_data == 0)
-		{
-			
-		}
-	}
-	else if (keys[PAD_XRIGHT])
-	{
-
-
-	}
-	
-	
-
 	button = Fire_buttons(keys);
 	
 	#ifdef JOYSTICK
@@ -145,11 +115,11 @@ int WsInputGetState(int mode)
 	{
 			if (keys[PAD_XRIGHT] == SDL_PRESSED) 
 				button |= (1<<5); // RIGHT -> X2
-			else if (keys[PAD_XLEFT] == SDL_PRESSED)  
+			if (keys[PAD_XLEFT] == SDL_PRESSED)  
 				button |= (1<<7); // LEFT -> X4
 			if (keys[PAD_XDOWN] == SDL_PRESSED)  
 				button |= (1<<6); // DOWN -> X3
-			else if (keys[PAD_XUP] == SDL_PRESSED)    
+			if (keys[PAD_XUP] == SDL_PRESSED)    
 				button |= (1<<4); // UP -> X1
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
@@ -173,11 +143,11 @@ int WsInputGetState(int mode)
 	{
 			if (keys[PAD_XRIGHT] == SDL_PRESSED) 
 				button |= (1<<1); // RIGHT -> Y2
-			else if (keys[PAD_XLEFT] == SDL_PRESSED)  
+			if (keys[PAD_XLEFT] == SDL_PRESSED)  
 				button |= (1<<3); // LEFT -> Y4
 			if (keys[PAD_XDOWN] == SDL_PRESSED)  
 				button |= (1<<2); // DOWN -> Y3
-			else if (keys[PAD_XUP] == SDL_PRESSED)    
+			if (keys[PAD_XUP] == SDL_PRESSED)    
 				button |= (1<<0); // UP -> Y1
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
@@ -229,11 +199,11 @@ int WsInputGetState(int mode)
 	{
 			if (keys[PAD_XRIGHT] == SDL_PRESSED) 
 				button |= (1<<5); // RIGHT -> X2
-			else if (keys[PAD_XLEFT] == SDL_PRESSED)  
+			if (keys[PAD_XLEFT] == SDL_PRESSED)  
 				button |= (1<<7); // LEFT -> X4
 			if (keys[PAD_XDOWN] == SDL_PRESSED)  
 				button |= (1<<6); // DOWN -> X3
-			else if (keys[PAD_XUP] == SDL_PRESSED)    
+			if (keys[PAD_XUP] == SDL_PRESSED)    
 				button |= (1<<4); // UP -> X1
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
@@ -317,21 +287,21 @@ int Fire_buttons(unsigned char * keys)
 #endif
 	}
 	
-	if (x_button==1)
+	if (x_button == 1)
 	{
 		button |= (1<<11);
 	}
-	else if (x_button!=0)
+	else if (x_button>1)
 	{
 		button |= (0<<11);
 		x_button = 0;
 	}
 	
-	if (y_button==1)
+	if (y_button == 1)
 	{
 		button |= (1<<10);
 	}
-	else if (y_button!=0)
+	else if (y_button>1)
 	{
 		button |= (0<<10);
 		y_button = 0;

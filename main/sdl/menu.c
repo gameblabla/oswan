@@ -51,10 +51,10 @@ void menuSaveBmp(void);
 
 //---------------------------------------------------------------------------------------
 typedef struct {
-	char itemName[16];
+	const char itemName[16];
 	int *itemPar;
 	int itemParMaxValue;
-	char *itemParName;
+	const char *itemParName;
 	void (*itemOnA)();
 } MENUITEM;
 
@@ -64,10 +64,10 @@ typedef struct {
 	MENUITEM *m; // array of items
 } MENU;
 
-char mnuABXY[4][16] = {"Normal", "Wonderswan-like", "Swap DPAD,ABXY", "Swap ABXY,Stick"};
-char mnuYesNo[2][16] = {"No", "Yes"};
-char mnuRatio[2][16] = { "1x size","Full screen"};
-char mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
+const char mnuABXY[4][16] = {"Normal", "Wonderswan-like", "Swap DPAD,ABXY", "Swap ABXY,Stick"};
+const char mnuYesNo[2][16] = {"No", "Yes"};
+const char mnuRatio[2][16] = { "1x size","Full screen"};
+const char mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
 
 
 MENUITEM MainMenuItems[] = {

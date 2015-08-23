@@ -2,13 +2,12 @@ CC = mipsel-linux-gcc
 
 CFLAGS = -O2 -fomit-frame-pointer -mips32r2 -Wall -I./main/emu -I./main/sdl ${DEFINES} 
 DEFINES = -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DGCW -DJOYSTICK -DHOME_SUPPORT
-LDFLAGS = -lSDL -lm  -Wl,--as-needed -s -flto
+LDFLAGS = -lSDL -Wl,--as-needed -s -flto
 OUTPUT = oswan
 
-SDL = main/sdl/main.c main/sdl/menu.c main/sdl/hack.c main/sdl/gfx/SDL_rotozoom.c main/sdl/drawing.c main/sdl/input.c main/sdl/md5.c
-CPU = main/emu/cpu/nec.c
-EMU_CORE = main/emu/WS.c main/emu/WSApu.c main/emu/WSFileio.c main/emu/WSRender.c
-SOURCES = ${SDL} ${EMU_CORE} ${CPU}
+SDL = main/sdl/main.c main/sdl/menu.c main/sdl/hack.c main/sdl/gfx/SDL_rotozoom.c main/sdl/drawing.c main/sdl/input.c
+EMU_CORE = main/emu/cpu/nec.c main/emu/WS.c main/emu/WSApu.c main/emu/WSFileio.c main/emu/WSRender.c
+SOURCES = ${SDL} ${EMU_CORE}
 OBJS = ${SOURCES:.c=.o}
 
 all: ${OUTPUT} pack
@@ -21,9 +20,7 @@ ${OUTPUT}:${OBJS}
 	${CC} -o ${OUTPUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
 	
 clean:
-	rm emu/*.o
-	rm emu/cpu/*.o
-	rm sdl/*.o
+	rm ${OBJS}
 	rm ${OUTPUT}
 
 install:

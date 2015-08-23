@@ -5,19 +5,16 @@ DEFINES = -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS -DHOME_SUPPORT -DSC
 LDFLAGS = -Wl,--as-needed `sdl-config --cflags --libs` -lSDLmain -lSDL 
 OUTPUT = oswan
 
-SDL = main/sdl/main.c main/sdl/menu.c main/sdl/hack.c main/sdl/gfx/SDL_rotozoom.c main/sdl/drawing.c main/sdl/input.c main/sdl/md5.c
-CPU = main/emu/cpu/nec.c
-EMU_CORE = main/emu/WS.c main/emu/WSApu.c main/emu/WSFileio.c main/emu/WSRender.c
-SOURCES = ${SDL} ${EMU_CORE} ${CPU}
+SDL = main/sdl/main.c main/sdl/menu.c main/sdl/hack.c main/sdl/gfx/SDL_rotozoom.c main/sdl/drawing.c main/sdl/input.c
+EMU_CORE = main/emu/cpu/nec.c main/emu/cpu/io.c main/emu/WS.c main/emu/WSApu.c main/emu/WSFileio.c main/emu/WSRender.c
+SOURCES = ${SDL} ${EMU_CORE}
 OBJS = ${SOURCES:.c=.o}
 
 ${OUTPUT}:${OBJS}
 	${CC} -o ${OUTPUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
 	
 clean:
-	rm emu/*.o
-	rm emu/cpu/*.o
-	rm sdl/*.o
+	rm ${OBJS}
 	rm ${OUTPUT}
 
 install:
