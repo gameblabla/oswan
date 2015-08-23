@@ -1,13 +1,14 @@
 CC = gcc
 
-CFLAGS = -O2 -Wall ${DEFINES} -I./emu -I./sdl
+CFLAGS = -O2 -Wall ${DEFINES} -I./main/emu -I./main/sdl
 DEFINES = -DSMOOTH -DSOUND_ON -DSOUND_EMULATION -DSPEEDHACKS -DHOME_SUPPORT -DSCALING
 LDFLAGS = -Wl,--as-needed `sdl-config --cflags --libs` -lSDLmain -lSDL 
 OUTPUT = oswan
 
-SDL = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/gfx/SDL_rotozoom.c sdl/drawing.c sdl/input.c
-EMU_CORE = emu/cpu/nec.c emu/cpu/io.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSRender.c
-SOURCES = ${SDL} ${EMU_CORE}
+SDL = main/sdl/main.c main/sdl/menu.c main/sdl/hack.c main/sdl/gfx/SDL_rotozoom.c main/sdl/drawing.c main/sdl/input.c main/sdl/md5.c
+CPU = main/emu/cpu/nec.c
+EMU_CORE = main/emu/WS.c main/emu/WSApu.c main/emu/WSFileio.c main/emu/WSRender.c
+SOURCES = ${SDL} ${EMU_CORE} ${CPU}
 OBJS = ${SOURCES:.c=.o}
 
 ${OUTPUT}:${OBJS}

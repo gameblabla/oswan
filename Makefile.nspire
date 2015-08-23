@@ -1,14 +1,15 @@
 CC = nspire-gcc
 
-CFLAGS = -Os -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -I./emu -I./sdl
+CFLAGS = -Os -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -I./main/emu -I./main/sdl
 CFLAGS += ${DEFINES} 
-DEFINES = -DSWITCHING_GRAPHICS
+DEFINES = -DSWITCHING_GRAPHICS -DSPEEDHACKS
 LDFLAGS = -Wl,--as-needed -flto
 OUTPUT = oswan
 
-SDL = sdl/main_od.c sdl/menu.c sdl/hack.c sdl/drawing.c sdl/input.c
-EMU_CORE = emu/cpu/nec.c emu/WS.c emu/WSApu.c emu/WSFileio.c emu/WSRender.c
-SOURCES = ${SDL} ${EMU_CORE}
+SDL = main/sdl/main.c main/sdl/menu.c main/sdl/hack.c main/sdl/gfx/SDL_rotozoom.c main/sdl/drawing.c main/sdl/input.c main/sdl/md5.c
+CPU = main/emu/cpu/nec.c
+EMU_CORE = main/emu/WS.c main/emu/WSApu.c main/emu/WSFileio.c main/emu/WSRender.c
+SOURCES = ${SDL} ${EMU_CORE} ${CPU}
 OBJS = ${SOURCES:.c=.o}
 
 all : ${OUTPUT} gen mkprg
