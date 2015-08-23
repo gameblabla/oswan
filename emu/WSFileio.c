@@ -9,14 +9,15 @@
 #include "WSRender.h"
 #include "cpu/necintrf.h"
 
-
 #include "hack.h"
+#include "shared.h"
 
 int result;
 
 // ファイル操作は表などとディレクトリセパレータがかぶるのでUNICODEを使います
-static char SaveName[512];   // ".sav"
-static char StateName[512];
+static char SaveName[256];   // ".sav"
+static char StateName[256];
+
 #ifdef _TINSPIRE
 static char* IEepPath = "./oswan.dat.tns";
 #else
@@ -32,7 +33,6 @@ int WsSetPdata(void)
     if ((ROMMap[0xFF] = (BYTE*)malloc(0x10000)) == NULL)
     {
 		fprintf(stderr,"WsSetPdata\n");
-
         //ErrorMsg(ERR_MALLOC);
         return 0;
     }
@@ -179,8 +179,10 @@ int WsCreate(char *CartName)
             else
             {
                 //ErrorMsg(ERR_FREAD_ROM);
-				fprintf(stderr,"ERR_FREAD_ROM\n");
-                break;
+                printf("ERROR: ERR_FREAD_ROM");
+                printf("Are you playing a homebrew game ?");
+				/*fprintf(stderr,"ERR_FREAD_ROM\n");*/
+                /*break;*/
             }
         }
         else
@@ -218,6 +220,10 @@ int WsCreate(char *CartName)
     }
     if (RAMSize)
     {
+		snprintf(SaveName, sizeof(SaveName), "%s.epm%s",CartName, EXTENSION);
+		
+		printf("SaveName %s \n", SaveName);
+        
         if ((fp = fopen(SaveName, "rb")) != NULL)
         {
             for (i = 0; i < RAMBanks; i++)
@@ -243,6 +249,11 @@ int WsCreate(char *CartName)
             }
             fclose(fp);
         }
+        else
+        {
+			fp = fopen(SaveName, "w");
+			fclose(fp);
+		}
     }
     else
     {
@@ -348,7 +359,7 @@ int WsLoadState(const char *savename, int num)
 	
 	printf("Load SaveState...\n");
 
-	snprintf(buf, sizeof(buf), "%s", savename);
+	snprintf(buf, sizeof(buf), "%s.%d.sta%s", savename, num, EXTENSION);
     if ((fp = fopen(buf, "rb")) == NULL)
     {
 		return 1;
@@ -412,7 +423,7 @@ int WsSaveState(const char *savename, int num)
 	
 	printf("Write SaveState...\n");
 
-	snprintf(buf, sizeof(buf), "%s", savename);
+	snprintf(buf, sizeof(buf), "%s.%d.sta%s", savename, num, EXTENSION);
     if ((fp = fopen(buf, "w+")) == NULL)
     {
 		printf("FAILURE...\n");

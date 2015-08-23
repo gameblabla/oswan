@@ -34,13 +34,16 @@
 
 #ifdef _TINSPIRE
 	#define PATH_DIRECTORY "/documents/ndless/"
+	#define SAVE_DIRECTORY ""
 	#define EXTENSION ".tns"
 #elif defined(GCW)
 	#define PATH_DIRECTORY getenv("HOME")
+	#define SAVE_DIRECTORY "/.oswan/"
 	#define EXTENSION ""
 #else
 	#define PATH_DIRECTORY "./"
 	#define EXTENSION ""
+	#define SAVE_DIRECTORY ""
 #endif
 	
 #ifdef GCW

@@ -8,20 +8,16 @@
 #include "WSFileio.h"
 
 extern SDL_Event event;
-SDL_Joystick* joy;
-
-const unsigned short keyCoresp[7] = {
-	0,0,0,0,
-	// A      B   start
-	1<<10, 1<<11, 1<<9,
-};
-
-int x_button = 0, y_button = 0;
+#ifdef JOYSTICK
+	SDL_Joystick* joy;
+	short x_joy = 0, y_joy = 0;
+#endif
 
 int WsInputGetState(int mode)
 {
 	char szFile[512];
-	
+	static unsigned char button_state[2], button_time[2];
+	unsigned char i;
 	/*
 	 * 0 = Up  (Y1)
 	 * 1 = Right (Y1)
@@ -37,6 +33,8 @@ int WsInputGetState(int mode)
 	 * 11 = B
 	*/
 	int button = 0;
+	int pad;
+	
 
 	SDL_PollEvent(&event);
 	unsigned char *keys = SDL_GetKeyState(NULL);
@@ -44,7 +42,6 @@ int WsInputGetState(int mode)
 	button = Fire_buttons(keys);
 	
 	#ifdef JOYSTICK
-	short x_joy = 0, y_joy = 0;
 	if (SDL_NumJoysticks() > 0)
 		joy = SDL_JoystickOpen(0);
 		
@@ -54,28 +51,64 @@ int WsInputGetState(int mode)
 		SDL_JoystickUpdate();
 	#endif
 		
-	// Load
-	if (keys[PAD_L] == SDL_PRESSED) 
-	{
-		strcpy(szFile, gameName);
-#ifdef _TINSPIRE
-		strcpy(strrchr(szFile, '.'), ".sta.tns");
-#else
-		strcpy(strrchr(szFile, '.'), ".sta");
-#endif
-		WsSaveState(szFile, 0);
+	for(i=0;i<2;i++)
+	{	
+		if (i==0) pad = PAD_L;
+		else if (i==1) pad = PAD_R;
+		
+		switch (button_state[i])
+		{
+			case 0:
+				if (keys[pad] == SDL_PRESSED)
+				{
+					button_state[i] = 1;
+					button_time[i] = 0;
+				}
+			break;
+			
+			case 1:
+				button_time[i]++;
+				
+				if (button_time[i] > 0)
+				{
+					button_state[i] = 2;
+					button_time[i] = 0;
+				}
+			break;
+			
+			case 2:
+				if (!(keys[pad] == SDL_PRESSED))
+				{
+					button_state[i] = 3;
+					button_time[i] = 0;
+				}
+			break;
+			
+			case 3:
+				button_time[i]++;
+				
+				if (button_time[i] > 1)
+				{
+					button_state[i] = 0;
+					button_time[i] = 0;
+				}
+			break;
+		}
 	}
+
 	
-	// Save
-	if (keys[PAD_R] == SDL_PRESSED) 
+	// Save (L button)
+	if (button_time[0] == 1) 
 	{
 		strcpy(szFile, gameName);
-#ifdef _TINSPIRE
-		strcpy(strrchr(szFile, '.'), ".sta.tns");
-#else
-		strcpy(strrchr(szFile, '.'), ".sta");
-#endif
-		WsLoadState(szFile, 0);
+		WsLoadState(szFile, GameConf.reserved2);
+	}
+		
+	// Load (R button)
+	if (button_time[1] == 1) 
+	{
+		strcpy(szFile, gameName);
+		WsSaveState(szFile, GameConf.reserved1);
 	}
 
 	if (GameConf.input_layout == 0)
@@ -90,9 +123,9 @@ int WsInputGetState(int mode)
 				button |= (1<<4); // UP -> X1
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
+				button |= (1<<10);  // Button A
 			if (keys[PAD_B] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
+				button |= (1<<11);  // Button B
 			
 			#ifdef JOYSTICK
 			if (x_joy > 7500) 
@@ -109,50 +142,46 @@ int WsInputGetState(int mode)
 	else if (GameConf.input_layout == 1)
 	{
 			if (keys[PAD_XRIGHT] == SDL_PRESSED) 
-				button |= (1<<1); // RIGHT -> X2
+				button |= (1<<1); // RIGHT -> Y2
 			if (keys[PAD_XLEFT] == SDL_PRESSED)  
-				button |= (1<<3); // LEFT -> X4
+				button |= (1<<3); // LEFT -> Y4
 			if (keys[PAD_XDOWN] == SDL_PRESSED)  
-				button |= (1<<2); // DOWN -> X3
+				button |= (1<<2); // DOWN -> Y3
 			if (keys[PAD_XUP] == SDL_PRESSED)    
-				button |= (1<<0); // UP -> X1
+				button |= (1<<0); // UP -> Y1
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
+				button |= (1<<10);  // Button A
 			if (keys[PAD_B] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
+				button |= (1<<11);  // Button B
 			
 			#ifdef JOYSTICK
 			if (x_joy > 7500) 
-				button |= (1<<5); // RIGHT -> Y1
+				button |= (1<<5); // RIGHT -> X1
 			else if (x_joy < -7500) 
-				button |= (1<<7); // LEFT -> Y1
+				button |= (1<<7); // LEFT -> X1
 					
 			if (y_joy > 7500) 
-				button |= (1<<6); // DOWN -> Y1
+				button |= (1<<6); // DOWN -> X1
 			else if (y_joy < -7500) 
-				button |= (1<<4); // UP -> Y1
+				button |= (1<<4); // UP -> X1
 			#endif
 	}
 	else if (GameConf.input_layout == 2)
 	{
 			if (keys[PAD_XRIGHT] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[5]];
-			if (keys[PAD_XLEFT] == SDL_PRESSED)  
-				button |= keyCoresp[GameConf.OD_Joy[4]];   	//(Rapid Fire A)
+				button |= (1<<11);
 			if (keys[PAD_XDOWN] == SDL_PRESSED)  
-				button |= keyCoresp[GameConf.OD_Joy[4]]; 
-			if (keys[PAD_XUP] == SDL_PRESSED)    
-				button |= keyCoresp[GameConf.OD_Joy[5]];	//(Rapid Fire B)
+				button |= (1<<10); 
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
+				button |= (1<<5); // RIGHT -> X2
 			if (keys[PAD_B] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B
+				button |= (1<<7); // LEFT -> X4
 			if (keys[PAD_X] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[4]];  // Button A
+				button |= (1<<6); // DOWN -> X3
 			if (keys[PAD_Y] == SDL_PRESSED) 
-				button |= keyCoresp[GameConf.OD_Joy[5]];  // Button B	
+				button |= (1<<4); // UP -> X1
 			
 			#ifdef JOYSTICK
 			if (x_joy > 7500) 
@@ -188,14 +217,9 @@ int WsInputGetState(int mode)
 			
 			#ifdef JOYSTICK
 			if (x_joy > 7500) 
-				button |= keyCoresp[GameConf.OD_Joy[5]];
-			else if (x_joy < -7500) 
-				button |= keyCoresp[GameConf.OD_Joy[4]];   	//(Rapid Fire A)
-					
+				button |= (1<<11);
 			if (y_joy > 7500) 
-				button |= keyCoresp[GameConf.OD_Joy[4]]; 
-			else if (y_joy < -7500) 
-				button |= keyCoresp[GameConf.OD_Joy[5]];	//(Rapid Fire B)
+				button |= (1<<10); 
 			#endif
 	}
 			
@@ -214,27 +238,54 @@ int WsInputGetState(int mode)
 #endif
 			
 	if (keys[PAD_START] == SDL_PRESSED)  // START -> START 	
-		button |=  keyCoresp[GameConf.OD_Joy[11]];
+		button |= (1<<9); 
 			
 	return button;
 }
 
 int Fire_buttons(unsigned char * keys)
 {
+	static unsigned char x_button = 0, y_button = 0;
 	int button = 0;
 	
 	if (GameConf.input_layout < 2)
 	{
 		if (keys[PAD_X]) 
-			x_button++;
+			x_button++;		//(Rapid Fire A)
 		else
 			x_button = 0;
 			
 		if (keys[PAD_Y]) 
-			y_button++;
+			y_button++;		//(Rapid Fire B)
 		else
 			y_button = 0;
 	}	
+	else if (GameConf.input_layout == 2)
+	{
+		if (keys[PAD_XLEFT]) 
+			x_button++;		//(Rapid Fire A)
+		else
+			x_button = 0;
+			
+		if (keys[PAD_XUP]) 
+			y_button++;		//(Rapid Fire B)
+		else
+			y_button = 0;
+	}
+	else if (GameConf.input_layout == 3)
+	{
+#ifdef JOYSTICK
+		if (x_joy < -7500) 
+			x_button++;   	//(Rapid Fire A)
+		else
+			x_button = 0;	
+			
+		if (y_joy < -7500) 
+			y_button++;		//(Rapid Fire B)
+		else
+			y_button = 0;
+#endif
+	}
 	
 	if (x_button==1)
 	{

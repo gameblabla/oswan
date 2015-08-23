@@ -67,13 +67,15 @@ typedef struct {
 char mnuABXY[4][16] = {"Normal", "Wonderswan-like", "Swap DPAD,ABXY", "Swap ABXY,Stick"};
 char mnuYesNo[2][16] = {"No", "Yes"};
 char mnuRatio[2][16] = { "1x size","Full screen"};
+char mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
+
 
 MENUITEM MainMenuItems[] = {
 	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
 	{"Continue", NULL, 0, NULL, &menuContinue},
 	{"Reset", NULL, 0, NULL, &menuReset},
-	{"Load State", NULL, 0, NULL, &menuLoadState},
-	{"Save State", NULL, 0, NULL, &menuSaveState},
+	{"Load State: ", (int *) &GameConf.reserved1, 8, (char *) &mnuSaves, &menuLoadState},
+	{"Save State: ", (int *) &GameConf.reserved2, 8, (char *) &mnuSaves, &menuSaveState},
 	{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},
 #if !defined(NOSCREENSHOTS)
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
@@ -216,7 +218,8 @@ void screen_waitkeyarelease(void)
 	unsigned char *keys;
 		
 	// wait key release and go in menu
-	while (1) {
+	while (1) 
+	{
 		SDL_PollEvent(&event);
 		keys = SDL_GetKeyState(NULL);
 		if (keys[PAD_A] != SDL_PRESSED) break;
@@ -226,6 +229,9 @@ void screen_waitkeyarelease(void)
 // Main function that runs all the stuff
 void screen_showmainmenu(MENU *menu) 
 {
+	/* [0] == LEFT,  [1] == RIGHT*/
+	static unsigned char button_state[2], button_time[2];
+	unsigned short pad, i;
 	unsigned char *keys;
 	MENUITEM *mi;
 	char szVal[100];
@@ -239,12 +245,58 @@ void screen_showmainmenu(MENU *menu)
 		SDL_PollEvent(&event);
 		keys = SDL_GetKeyState(NULL);
 		
+		for(i=0;i<2;i++)
+		{	
+			if (i==0) pad = PAD_LEFT;
+			else if (i==1) pad = PAD_RIGHT;
+			
+			switch (button_state[i])
+			{
+				case 0:
+					if (keys[pad] == SDL_PRESSED)
+					{
+						button_state[i] = 1;
+						button_time[i] = 0;
+					}
+				break;
+				
+				case 1:
+					button_time[i]++;
+					
+					if (button_time[i] > 0)
+					{
+						button_state[i] = 2;
+						button_time[i] = 0;
+					}
+				break;
+				
+				case 2:
+					if (!(keys[pad] == SDL_PRESSED))
+					{
+						button_state[i] = 3;
+						button_time[i] = 0;
+					}
+				break;
+				
+				case 3:
+					button_time[i]++;
+					
+					if (button_time[i] > 1)
+					{
+						button_state[i] = 0;
+						button_time[i] = 0;
+					}
+				break;
+			}
+		}	
+		
 		mi = menu->m + menu->itemCur; // pointer to highlit menu option
 
 		// A - apply parameter or enter submenu
 		if (keys[PAD_A] == SDL_PRESSED) 
 		{ 
-			if (!keya) {
+			if (!keya) 
+			{
 				keya = 1; 
 				screen_waitkeyarelease();
 				if (mi->itemOnA != NULL) (*mi->itemOnA)();
@@ -253,8 +305,10 @@ void screen_showmainmenu(MENU *menu)
 		else keya=0;
 
 		// B - exit or back to previous menu
-		if (keys[PAD_B] == SDL_PRESSED) { 
-			if (!keyb) {
+		if (keys[PAD_B] == SDL_PRESSED) 
+		{ 
+			if (!keyb) 
+			{
 				keyb = 1; 
 				if (menu != &mnuMainMenu) 
 				{	
@@ -269,8 +323,10 @@ void screen_showmainmenu(MENU *menu)
 		else keyb=0;
 
 		// UP - arrow up
-		if (keys[PAD_UP] == SDL_PRESSED) { 
-			if (!keyup) {
+		if (keys[PAD_UP] == SDL_PRESSED) 
+		{ 
+			if (!keyup) 
+			{
 				keyup = 1; 
 				screen_prepbackground();
 				if(--menu->itemCur < 0)
@@ -278,15 +334,18 @@ void screen_showmainmenu(MENU *menu)
 					menu->itemCur = menu->itemNum - 1;
 				}
 			}
-			else {
+			else 
+			{
 				keyup++; if (keyup>12) keyup=0;
 			}
 		}
 		else keyup=0;
 
 		//DOWN - arrow down
-		if (keys[PAD_DOWN] == SDL_PRESSED) { 
-			if (!keydown) {
+		if (keys[PAD_DOWN] == SDL_PRESSED) 
+		{ 
+			if (!keydown) 
+			{
 				keydown = 1; 
 				screen_prepbackground();
 				if(++menu->itemCur == menu->itemNum) 
@@ -294,15 +353,18 @@ void screen_showmainmenu(MENU *menu)
 					menu->itemCur = 0;
 				}
 			}
-			else {
+			else 
+			{
 				keydown++; if (keydown>12) keydown=0;
 			}
 		}
 		else keydown=0;
 
 		// LEFT - decrease parameter value
-		if (keys[PAD_LEFT] == SDL_PRESSED) { 
-			if (!keyleft) {
+		if (button_state[0]==1) 
+		{ 
+			if (!keyleft) 
+			{
 				keyleft = 1;
 				if(mi->itemPar != NULL && *mi->itemPar > 0)
 				{ 
@@ -310,15 +372,18 @@ void screen_showmainmenu(MENU *menu)
 				      screen_prepbackground();
 				}
 			}
-			else {
+			else 
+			{
 				keyleft++; if (keyleft>12) keyleft=0;
 			}
 		}
 		else keyleft=0;
 
 		// RIGHT - increase parameter value
-		if (keys[PAD_RIGHT] == SDL_PRESSED) { 
-			if (!keyright) {
+		if (button_state[1]==1) 
+		{ 
+			if (!keyright) 
+			{
 				keyright = 1; 
 				if(mi->itemPar != NULL && *mi->itemPar < mi->itemParMaxValue) 
 				{ 
@@ -327,7 +392,8 @@ void screen_showmainmenu(MENU *menu)
 				}
 				
 			}
-			else {
+			else 
+			{
 				keyright++; if (keyright>12) keyright=0;
 			}
 		}
@@ -765,7 +831,7 @@ void menuSaveState(void)
 		strcpy(strrchr(szFile, '.'), ".sta");
 #endif
 		print_string("Saving...", COLOR_OK, COLOR_BG, 8,240-5 -10*3);
-		WsSaveState(szFile, 0);
+		WsSaveState(szFile, GameConf.reserved2);
 		print_string("Save OK",COLOR_OK,COLOR_BG, 8+10*8,240-5 -10*3);
 		screen_flip();
 		screen_waitkey();
@@ -786,7 +852,7 @@ void menuLoadState(void)
 		strcpy(strrchr(szFile, '.'), ".sta");
 #endif
 		print_string("Loading...", COLOR_OK, COLOR_BG, 8,240-5 -10*3);
-		WsLoadState(szFile, 0);
+		WsLoadState(szFile, GameConf.reserved1);
 		print_string("Load OK",COLOR_OK,COLOR_BG, 8+10*8,240-5 -10*3);
 		screen_flip();
 		screen_waitkey();

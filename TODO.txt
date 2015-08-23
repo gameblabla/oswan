@@ -1,6 +1,8 @@
-- Proper way to identify roms
-Use MD5 instead of CRC.
-This will be useful in the future of SpeedHacks.
+- Improve Sound output
+Plus, it is not at the good speed. (compare with Mednafen)
 
-- Dragon Ball doesn't work
-Need more investigation about this
+- Proper 32-bits support
+On Linux, if the bpp is different from the display, it will be converted
+but there will be a significant drop in speed.
+The only problem is the palette : it is not properly converted to 32 bits and it's DIFFICULT !
+Look at emu/WSRender.c and SetPalette function for more info.
