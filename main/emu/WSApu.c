@@ -11,9 +11,9 @@
 /* Double this if it sounds too shitty... */
 //#define SND_BNKSIZE 2048
 //#define SND_RNGSIZE (10 * SND_BNKSIZE)
-#define SND_BNKSIZE 1024
+#define SND_BNKSIZE 1024*4
 #define SND_RNGSIZE (10 * SND_BNKSIZE)
-#define WAV_VOLUME  50
+#define WAV_VOLUME  30
 
 unsigned long WaveMap;
 SOUND Ch[4];

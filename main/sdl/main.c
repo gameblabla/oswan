@@ -3,11 +3,17 @@
 KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 #endif
 
-#include  <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "shared.h"
 #include "drawing.h"
 #include "hack.h"
+
+#ifdef SWITCHING_GRAPHICS
+	extern void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize);
+#endif
 
 unsigned int m_Flag;
 unsigned int interval;
@@ -18,42 +24,80 @@ char gameName[512];
 char current_conf_app[MAX__PATH];
 
 void exit_oswan();
+void msleep(unsigned char milisec);
 extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 unsigned long nextTick, lastTick = 0, newTick, currentTick, wait;
-int FPS = 60; 
 int pastFPS = 0; 
 
-#ifdef SWITCHING_GRAPHICS
-	extern void screen_prepbackground(void);
+#ifndef NOFRAMERATE_LIMIT	
+	#ifdef NO_FLOAT
+	const int real_FPS = 1000/75.47;
+	#else
+	const float real_FPS = 1000/75.47;
+	#endif
 #endif
-	SDL_Surface *actualScreen, *screenshots;
-	
+
+SDL_Surface *actualScreen, *screenshots;
 SDL_Event event;
 
-unsigned long SDL_UXTimerRead(void) 
+#ifdef PSP
+#include <pspkernel.h>
+#include <pspctrl.h>
+#include <pspdisplay.h>
+#include <psppower.h>
+/* Define the module info section */
+PSP_MODULE_INFO("OSWAN", 0, 1, 1);
+PSP_HEAP_SIZE_MAX();
+/* Define the main thread's attribute value (optional) */
+PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU)
+int exit_callback(int arg1, int arg2, void *common) {
+			m_Flag = GF_GAMEQUIT;
+			return 0;
+}
+int CallbackThread(SceSize args, void *argp) {
+			int cbid = sceKernelCreateCallback("Exit Callback", exit_callback, NULL);
+			sceKernelRegisterExitCallback(cbid);
+			sceKernelSleepThreadCB();
+			return 0;
+}
+int SetupCallbacks(void) {
+			int thid = sceKernelCreateThread("CallbackThread", CallbackThread, 0x11, 0xFA0, PSP_THREAD_ATTR_USER, 0);
+			if (thid >= 0) sceKernelStartThread(thid, 0, 0);
+			return thid;
+}
+#endif
+
+void msleep(unsigned char milisec)
 {
-	struct timeval tval; // timing
-  
-  	gettimeofday(&tval, 0);
-	return (((tval.tv_sec*1000000) + (tval.tv_usec )));
+#ifdef UNIX
+	struct timespec req={0};
+	time_t sec=(unsigned short)(milisec/1000);
+
+	milisec=milisec-(sec*1000);
+	req.tv_sec=sec;
+	req.tv_nsec=milisec*1000000L;
+	while(nanosleep(&req,&req)==-1)
+	continue;
+#else
+	SDL_Delay(milisec);
+ #endif
 }
 
 void graphics_paint(void) 
 {
+	Uint32 start;
 	if(SDL_MUSTLOCK(actualScreen)) SDL_LockSurface(actualScreen);
 
 	screen_draw();
-	
-#if defined(SMOOTH)
-	pastFPS++;
-	newTick = SDL_UXTimerRead();
-	if ((newTick-lastTick)>1000000) {
-		FPS = pastFPS;
-		pastFPS = 0;
-		lastTick = newTick;
+
+#ifndef NOFRAMERATE_LIMIT	
+	start = SDL_GetTicks();
+	if(real_FPS > SDL_GetTicks()-start) 
+	{
+		msleep(real_FPS-(SDL_GetTicks()-start));
 	}
 #endif
-
+	
 	if (SDL_MUSTLOCK(actualScreen)) SDL_UnlockSurface(actualScreen);
 	flip_screen(actualScreen);
 }
@@ -65,35 +109,23 @@ void initSDL(void)
 	SDL_Init(SDL_INIT_AUDIO);
 #endif
 
-#ifdef SCALING
-	Get_resolution(320,240);
-#endif
-
 	SDL_ShowCursor(SDL_DISABLE);
-
 	SetVideo(0);
-
-#if !defined(NOSCREENSHOTS)
-	screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, 320, 240, BITDEPTH_OSWAN, 0,0,0,0);
-	if(screenshots == NULL) {
-		fprintf(stderr, "Couldn't create surface: %s\n", SDL_GetError());
-		exit(1);
-	}
-#endif
 	
 #ifdef SOUND_ON
 	 //set up SDL sound 
     SDL_AudioSpec fmt, retFmt;
 	//fmt.freq = 48000;   
-	fmt.freq = 44100;   
+	fmt.freq = 48000;   
     fmt.format = AUDIO_S16;
     fmt.channels = 2;
-    fmt.samples = 1024;
+    fmt.samples = 2048;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
 
     /* Open the audio device and start playing sound! */
-    if ( SDL_OpenAudio(&fmt, &retFmt) < 0 ) {
+    if ( SDL_OpenAudio(&fmt, &retFmt) < 0 )
+	{
         fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
         exit(1);
     }
@@ -103,10 +135,12 @@ void initSDL(void)
 
 int main(int argc, char *argv[]) 
 {
-	double period;
-	
 #ifdef _TINSPIRE
 	enable_relative_paths(argv);
+#endif
+
+#ifdef PSP
+	SetupCallbacks();
 #endif
 	
 #ifdef JOYSTICK
@@ -118,7 +152,7 @@ int main(int argc, char *argv[])
 	
 #if defined(HOME_SUPPORT)
 	char home_path[256];
-	snprintf(current_conf_app, sizeof(home_path), "%s/.oswan/oswan.cfg", getenv("HOME"));
+	snprintf(home_path, sizeof(home_path), "%s/.oswan", PATH_DIRECTORY);
 	mkdir(home_path, 0755);	
 	snprintf(current_conf_app, sizeof(current_conf_app), "%s/.oswan/oswan.cfg", PATH_DIRECTORY);
 #else
@@ -131,7 +165,7 @@ int main(int argc, char *argv[])
 	m_Flag = GF_MAINUI;
 	system_loadcfg(current_conf_app);
 
-	SDL_WM_SetCaption("Oswan - Wonderswan Emulator", NULL);
+	SDL_WM_SetCaption("Oswan", NULL);
 
     //load rom file via args if a rom path is supplied
 	strcpy(gameName,"");
@@ -139,7 +173,7 @@ int main(int argc, char *argv[])
 	{
 #ifdef SWITCHING_GRAPHICS
 		SetVideo(1);
-		screen_prepbackground();
+		screen_putskin(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
 #endif
 		strcpy(gameName,argv[1]);
 		m_Flag = GF_GAMEINIT;
@@ -150,16 +184,17 @@ int main(int argc, char *argv[])
 		switch (m_Flag) 
 		{
 			case GF_MAINUI:
-#ifdef SOUND_ON
+			
+				#ifdef SOUND_ON
 				SDL_PauseAudio(1);
-#endif
+				#endif
+				
 				screen_showtopmenu();
 				if (cartridge_IsLoaded()) 
 				{
-#ifdef SOUND_ON
-				SDL_PauseAudio(0);
-#endif
-				nextTick = SDL_UXTimerRead() + interval;
+					#ifdef SOUND_ON
+					SDL_PauseAudio(0);
+					#endif
 				}
 				break;
 
@@ -168,15 +203,9 @@ int main(int argc, char *argv[])
 				{
 					WsInit();
 					m_Flag = GF_GAMERUNNING;
-					
-					// Init timing
-					period = 1.0 / 60;
-					period = period * 1000000;
-					interval = (int) period;
-					nextTick = SDL_UXTimerRead() + interval;
-#ifdef SOUND_ON
+					#ifdef SOUND_ON
 					SDL_PauseAudio(0);
-#endif
+					#endif
 				}
 				else 
 				{
@@ -186,19 +215,7 @@ int main(int argc, char *argv[])
 				break;
 		
 			case GF_GAMERUNNING:	
-				currentTick = SDL_UXTimerRead(); 
-				wait = (nextTick - currentTick);
-				if (wait > 0) 
-				{
-					if (wait < 1000000) 
-					{
-#ifndef _TINSPIRE
-						usleep(wait);
-#endif
-					}
-				}
 				WsRun();
-				nextTick += interval;
 				break;
 		}
 	}

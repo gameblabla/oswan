@@ -54,6 +54,12 @@ void SetVideo(unsigned char mode)
 	}
 
 	Get_resolution(w, h);
+	
+	#if !defined(NOSCREENSHOTS)
+		if (screenshots) SDL_FreeSurface(screenshots);
+		if (mode == 1) screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, w, h, BITDEPTH_OSWAN, 0,0,0,0);
+		else screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, 224, 144, BITDEPTH_OSWAN, 0,0,0,0);
+	#endif
 
 	#if defined(SCALING)
 		if (real_screen) SDL_FreeSurface(real_screen);
@@ -65,14 +71,13 @@ void SetVideo(unsigned char mode)
 		if (actualScreen) SDL_FreeSurface(actualScreen);
 		actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
 	#endif
-
 }
 
 void screen_draw(void)
 {
 	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
 	unsigned int W,H,ix,iy,x,y, xfp,yfp;
-	static char buffer[32];
+	/*static char buffer[32];*/
 	
 	// Fullscreen
 	if (GameConf.m_ScreenRatio)
@@ -83,13 +88,15 @@ void screen_draw(void)
 		H=240;
 		ix=(SYSVID_WIDTH<<16)/W;
 		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = 300;yfp = 1;
+		xfp = 300;
+		yfp = 1;
 
 		do   
 		{
 			unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
 			W=320; x=0;
 			do {
+
 				*buffer_scr++=buffer_mem[x>>16];
 #if BITDEPTH_OSWAN == 32
 				*buffer_scr++=buffer_mem[x>>16];
@@ -108,7 +115,8 @@ void screen_draw(void)
 		H=SYSVID_HEIGHT;
 		ix=(SYSVID_WIDTH<<16)/W;
 		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = (x+SYSVID_WIDTH)-20;yfp = y+1;
+		xfp = (x+SYSVID_WIDTH)-20;
+		yfp = y+1;
 		
 		buffer_scr += (y)*224;
 		buffer_scr += (x);
@@ -134,7 +142,8 @@ void screen_draw(void)
 		H=SYSVID_HEIGHT;
 		ix=(SYSVID_WIDTH<<16)/W;
 		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = (x+SYSVID_WIDTH)-20;yfp = y+1;
+		xfp = (x+SYSVID_WIDTH)-20;
+		yfp = y+1;
 		
 		buffer_scr += (y)*320;
 		buffer_scr += (x);
@@ -156,11 +165,11 @@ void screen_draw(void)
 #endif
 	}
 	
-	if (GameConf.m_DisplayFPS) 
+	/*if (GameConf.m_DisplayFPS) 
 	{
 		sprintf(buffer,"%02d",FPS);
 		print_string_video(xfp,yfp,buffer);
-	}
+	}*/
 }
 
 #if defined(SCALING)
@@ -178,6 +187,6 @@ void take_screenshot(void)
 {
 #if !defined(NOSCREENSHOTS)
 	// Save current screen in screenshots's layer
-	SDL_BlitSurface(actualScreen, 0, screenshots, 0);
+	SDL_BlitSurface(actualScreen, NULL, screenshots, NULL);
 #endif
 }

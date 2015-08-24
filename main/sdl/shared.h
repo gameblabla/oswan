@@ -18,18 +18,39 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
+#ifdef GCW
+	#ifndef HOME_SUPPORT
+		#define HOME_SUPPORT
+	#endif
+	#ifndef JOYSTICK
+		#define JOYSTICK
+	#endif
+	#ifndef UNIX
+		#define UNIX
+	#endif
+#endif
+
+#ifdef _TINSPIRE
+	#ifndef NOFRAMERATE_LIMIT
+		#define NOFRAMERATE_LIMIT
+	#endif
+	#ifndef JOYSTICK
+		#define JOYSTICK
+	#endif
+#endif
+
 #ifdef _TINSPIRE
 	#define BITDEPTH_OSWAN has_colors ? 16 : 8
 	#define FLAG_VIDEO SDL_SWSURFACE
-#elif defined(GCW0)
+#elif defined(GCW)
 	#define BITDEPTH_OSWAN 16
-	#define FLAG_VIDEO SDL_SWSURFACE
+	#define FLAG_VIDEO SDL_HWSURFACE | SDL_TRIPLEBUF
 #elif defined(DREAMCAST)
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
 #else
 	#define BITDEPTH_OSWAN 16
-	#define FLAG_VIDEO SDL_SWSURFACE
+	#define FLAG_VIDEO SDL_HWSURFACE
 #endif
 
 #ifdef _TINSPIRE
@@ -41,18 +62,33 @@
 	#define SAVE_DIRECTORY "/.oswan/"
 	#define EXTENSION ""
 #else
-	#define PATH_DIRECTORY "./"
+	#ifdef HOME_SUPPORT
+		#define PATH_DIRECTORY getenv("HOME")
+		#define SAVE_DIRECTORY "/.oswan/"
+	#else
+		#define PATH_DIRECTORY "./"
+		#define SAVE_DIRECTORY ""
+	#endif
 	#define EXTENSION ""
-	#define SAVE_DIRECTORY ""
 #endif
-	
-#ifdef GCW
-	#ifndef HOME_SUPPORT
-		#define HOME_SUPPORT
-	#endif
-	#ifndef JOYSTICK
-		#define JOYSTICK
-	#endif
+
+
+#ifdef PSP
+	#include <pspkernel.h>
+	#include <pspctrl.h>
+	#include <pspdisplay.h>
+	#include <psppower.h>
+	#define keys[x] keys(x)
+	int keys(int controls);
+	int keys(int controls)
+	{
+		SceCtrlData pad;
+		sceCtrlPeekBufferPositive(&pad, 1);
+		if (pad.Buttons & controls)
+			return 1;
+		else
+			return 0;
+	}
 #endif
 
 #ifdef _TINSPIRE
@@ -112,6 +148,33 @@
 	#define PAD_SLIDER		SDLK_HOME
 	
 	#define PAD_QUIT		SDLK_ESCAPE
+
+#elif defined(PSP)
+
+	#define PAD_XUP		PSP_CTRL_UP
+	#define PAD_XLEFT	PSP_CTRL_LEFT
+	#define PAD_XRIGHT	PSP_CTRL_RIGHT
+	#define PAD_XDOWN	PSP_CTRL_DOWN
+
+	#define PAD_UP		PSP_CTRL_UP
+	#define PAD_LEFT	PSP_CTRL_LEFT
+	#define PAD_RIGHT	PSP_CTRL_RIGHT
+	#define PAD_DOWN	PSP_CTRL_DOWN
+	
+	#define PAD_A		PSP_CTRL_CROSS
+	#define PAD_B		PSP_CTRL_CIRCLE
+	#define PAD_X		PSP_CTRL_SQUARE
+	#define PAD_Y		PSP_CTRL_TRIANGLE
+	
+	#define PAD_L		PSP_CTRL_L
+	#define PAD_R		PSP_CTRL_R
+	
+	#define PAD_START		PSP_CTRL_START
+	#define PAD_SELECT		0
+	
+	#define PAD_SLIDER		0
+	
+	#define PAD_QUIT		PSP_CTRL_HOME
 
 #else
 
@@ -186,7 +249,7 @@ typedef struct {
 	unsigned int reserved2;
 	unsigned int reserved3;
 	unsigned int reserved4;
-#ifndef OLDSAVE_HACK
+#ifndef NOSAVE_HACK
 	unsigned char save_oldoswan_check;
 #endif
 } gamecfg;

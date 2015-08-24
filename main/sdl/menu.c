@@ -12,8 +12,6 @@
 #include "WSFileio.h"
 #include "font.h" // Font c array
 
-#include "./data/oswan_background.h"
-#include "./data/oswan_load.h"
 #ifndef SWITCHING_GRAPHICS
 #include "./data/oswan_skin.h"
 #endif
@@ -22,20 +20,22 @@ extern unsigned int m_Flag;
 
 bool gameMenu;
 
-#define COLOR_BG            PIX_TO_RGB(actualScreen->format,05, 03, 02)
-#define COLOR_HELP_TEXT		PIX_TO_RGB(actualScreen->format,64, 240, 96)
-#define COLOR_OK			PIX_TO_RGB(actualScreen->format,0,0,255)
-#define COLOR_KO			PIX_TO_RGB(actualScreen->format,255,0,0)
-#define COLOR_INFO			PIX_TO_RGB(actualScreen->format,0,255,0)
-#define COLOR_LIGHT			PIX_TO_RGB(actualScreen->format,255,255,0)
-#define COLOR_ACTIVE_ITEM   PIX_TO_RGB(actualScreen->format,232, 253, 77)
-#define COLOR_INACTIVE_ITEM PIX_TO_RGB(actualScreen->format,67,89,153)
+SDL_Rect position_select;
 
-char *file_ext[] = { (char *) ".ws", (char *) ".wsc", (char *) ".WSC", (char *) ".WS", 
+#define COLOR_BG           	SDL_MapRGB(actualScreen->format,5,3,2)
+#define COLOR_OK			SDL_MapRGB(actualScreen->format,0,0,255)
+#define COLOR_KO			SDL_MapRGB(actualScreen->format,255,0,0)
+#define COLOR_INFO			SDL_MapRGB(actualScreen->format,0,255,0)
+#define COLOR_LIGHT			SDL_MapRGB(actualScreen->format,255,255,0)
+#define COLOR_ACTIVE_ITEM   SDL_MapRGB(actualScreen->format,255, 255, 255)
+#define COLOR_INACTIVE_ITEM SDL_MapRGB(actualScreen->format,255,255,255)
+
+const char *file_ext[] = { (const char *) ".ws",  (const char *) ".wsc",  (const char *) ".WSC",  (const char *) ".WS", 
 #ifdef _TINSPIRE
-	".tns", 
+	 (const char *) ".tns", 
 #endif
 	NULL };
+
 
 void menuReset(void);
 void menuQuit(void);
@@ -44,6 +44,10 @@ void menuFileBrowse(void);
 void menuSaveState(void);
 void menuLoadState(void);
 void screen_showkeymenu(void);
+#ifndef SWITCHING_GRAPHICS
+void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize);
+#endif
+unsigned char ifactive(unsigned char *keys);
 void menuReturn(void);
 #if !defined(NOSCREENSHOTS)
 void menuSaveBmp(void);
@@ -76,7 +80,7 @@ MENUITEM MainMenuItems[] = {
 	{"Reset", NULL, 0, NULL, &menuReset},
 	{"Load State: ", (int *) &GameConf.reserved1, 8, (char *) &mnuSaves, &menuLoadState},
 	{"Save State: ", (int *) &GameConf.reserved2, 8, (char *) &mnuSaves, &menuSaveState},
-	{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},
+	/*{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},*/
 #if !defined(NOSCREENSHOTS)
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 #endif
@@ -88,9 +92,9 @@ MENUITEM MainMenuItems[] = {
 
 MENU mnuMainMenu = { 
 #if defined(NOSCREENSHOTS)
-	9,
+	8,
 #else
-	10,
+	9,
 #endif
 	0, (MENUITEM *) &MainMenuItems };
 
@@ -134,7 +138,7 @@ void print_string(const char *s, unsigned short fg_color, unsigned short bg_colo
 void print_string_video(int x, int y, const char *s) 
 {
 	int i, j = strlen(s);
-	for(i = 0; i < j; i++, x += 8) screen_showchar(actualScreen, x, y, s[i], PIX_TO_RGB(actualScreen->format,255, 0, 0), 0);
+	for(i = 0; i < j; i++, x += 8) screen_showchar(actualScreen, x, y, s[i], SDL_MapRGB(actualScreen->format,255, 0, 0), 0);
 }
 
 void screen_showitem(int x, int y, MENUITEM *m, int fg_color) 
@@ -161,8 +165,17 @@ void screen_flip(void)
 	flip_screen(actualScreen);
 }
 
-// draw default emulator design
-void screen_prepback(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize) 
+// Clear screen
+void screen_prepback(SDL_Surface *s) 
+{
+	// load logo, Convert the image to optimal display format and Free the temporary surface
+	SDL_FillRect(s, NULL, 0);
+}
+
+
+// Draw emulator skin
+#ifndef SWITCHING_GRAPHICS
+void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize) 
 {
 	// load logo, Convert the image to optimal display format and Free the temporary surface
 	SDL_RWops *rw = SDL_RWFromMem(bmpBuf, bmpSize);
@@ -175,12 +188,13 @@ void screen_prepback(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize
  	SDL_BlitSurface(image, 0, s, 0);
 	SDL_FreeSurface(image);
 }
+#endif
 
 // draw main emulator design
 void screen_prepbackground(void) 
 {
 	// draw default background
-	screen_prepback(actualScreen, OSWAN_BACKGROUND, OSWAN_BACKGROUND_SIZE);
+	screen_prepback(actualScreen);
 }
 
 // Shows menu items and pointing arrow
@@ -189,15 +203,39 @@ void screen_showmenu(MENU *menu)
 {
 	unsigned char i;
 	MENUITEM *mi = menu->m;
+	char szVal[100];
 	
 	/* show menu lines */
 	for(i = 0; i < menu->itemNum; i++, mi++) 
 	{
-		int fg_color;
-		if(menu->itemCur == i) fg_color = COLOR_ACTIVE_ITEM; else fg_color = COLOR_INACTIVE_ITEM;
-		screen_showitem(SPRX+10, 44+i*15, mi, fg_color);
-		if(menu->itemCur == i) print_string("-", fg_color, COLOR_BG, SPRX+10-12, 44+i*15);
+		unsigned short fg_color;
+		
+		if(menu->itemCur == i)
+		{
+			position_select.w  = 320;
+			position_select.h  = 12;
+			position_select.x  = 0;
+			position_select.y  = (44+i*15)-2+8;
+			SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
+		}
+		
+		if(menu->itemCur == i) 
+			fg_color = COLOR_ACTIVE_ITEM; 
+		else 
+			fg_color = COLOR_INACTIVE_ITEM;
+		screen_showitem((SPRX+10)+72, (44+i*15)+8, mi, fg_color);
 	}
+	
+	if (cartridge_IsLoaded()) 
+	{
+		sprintf(szVal,"Game:%s",strrchr(gameName,'/')+1);
+		szVal[(320/6)-2] = '\0'; 
+		print_string(szVal, COLOR_LIGHT, COLOR_BG, 8,240-2-10-10);
+		/*sprintf(szVal,"CRC:%08X",gameCRC); 
+		print_string(szVal, COLOR_LIGHT, COLOR_BG,8,240-2-10);*/
+	}
+	
+	screen_flip();
 }
 
 // wait for a key
@@ -226,17 +264,26 @@ void screen_waitkeyarelease(void)
 	}
 }
 
+unsigned char ifactive(unsigned char *keys)
+{
+	if (keys[PAD_A] || keys[PAD_B] || keys[PAD_UP] || keys[PAD_DOWN] || keys[PAD_LEFT] || keys[PAD_RIGHT]) 
+		return 1; 	// Yes, active
+	else
+		return 0;	// No, inactive
+}
+
 // Main function that runs all the stuff
 void screen_showmainmenu(MENU *menu) 
 {
 	/* [0] == LEFT,  [1] == RIGHT*/
-	static unsigned char button_state[2], button_time[2];
+	static unsigned char button_state[5], button_time[5];
 	unsigned short pad, i;
 	unsigned char *keys;
 	MENUITEM *mi;
-	char szVal[100];
-	int isSta = 0;
 	unsigned int keya=0, keyb=0, keyup=0, keydown=0, keyleft=0, keyright=0;
+
+	/* Show Menu on-screen (Load ROM, Reset...)*/
+	screen_showmenu(menu);
 
 	gameMenu=true;
 
@@ -245,10 +292,12 @@ void screen_showmainmenu(MENU *menu)
 		SDL_PollEvent(&event);
 		keys = SDL_GetKeyState(NULL);
 		
-		for(i=0;i<2;i++)
+		for(i=0;i<4;i++)
 		{	
 			if (i==0) pad = PAD_LEFT;
 			else if (i==1) pad = PAD_RIGHT;
+			else if (i==2) pad = PAD_UP;
+			else if (i==3) pad = PAD_DOWN;
 			
 			switch (button_state[i])
 			{
@@ -323,7 +372,7 @@ void screen_showmainmenu(MENU *menu)
 		else keyb=0;
 
 		// UP - arrow up
-		if (keys[PAD_UP] == SDL_PRESSED) 
+		if (button_state[2]==1) 
 		{ 
 			if (!keyup) 
 			{
@@ -342,7 +391,7 @@ void screen_showmainmenu(MENU *menu)
 		else keyup=0;
 
 		//DOWN - arrow down
-		if (keys[PAD_DOWN] == SDL_PRESSED) 
+		if (button_state[3]==1) 
 		{ 
 			if (!keydown) 
 			{
@@ -401,26 +450,19 @@ void screen_showmainmenu(MENU *menu)
 
 		if (gameMenu) 
 		{
-			screen_showmenu(menu); // show menu items
-			if (menu == &mnuMainMenu) 
+			if (ifactive(keys)) 
 			{
-				if (cartridge_IsLoaded()) 
-				{
-					sprintf(szVal,"Game:%s",strrchr(gameName,'/')+1);szVal[(320/6)-2] = '\0'; 
-					print_string(szVal, COLOR_LIGHT,COLOR_BG, 8,240-2-10-10);
-					sprintf(szVal,"CRC:%08X",gameCRC); 
-					print_string(szVal, COLOR_LIGHT, COLOR_BG,8,240-2-10);
-					if (isSta) print_string("Load state available",COLOR_INFO, COLOR_BG,8+104,240-2-10);
-				}
-			}
-		}
-
+				screen_showmenu(menu); // show menu items
+			}	
+			else
+			{
 #ifdef _TINSPIRE
 		sleep(1);
 #else
 		SDL_Delay(4);
-#endif
-		screen_flip();
+#endif	
+			}
+		}
 	}
 	
 }
@@ -454,7 +496,7 @@ void screen_showtopmenu(void)
 	// if no ratio, put skin
 	if (!GameConf.m_ScreenRatio) 
 	{
-		screen_prepback(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
+		screen_putskin(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
 		flip_screen(actualScreen);
 	}
 #endif
@@ -530,7 +572,7 @@ int sort_function(const void *src_str_ptr, const void *dest_str_ptr)
   return strcmp (p1->name, p2->name);
 }
 
-int strcmp_function(char *s1, char *s2)
+int strcmp_function(const char *s1, const char *s2)
 {
 	int i;
 	/*int c;*/
@@ -544,10 +586,13 @@ int strcmp_function(char *s1, char *s2)
 	return 0;
 }
 
-signed int load_file(char **wildcards, char *result) 
+signed int load_file(const char **wildcards, char *result) 
 {
 	unsigned char *keys;
 	unsigned int keya=0, keyb=0, keyup=0, kepufl=8, keydown=0, kepdfl=8 /*keyleft=0, keyright=0,*/;
+	
+	static unsigned char button_state[7], button_time[7];
+	int pad;
 
 	char current_dir_name[MAX__PATH];
 	DIR *current_dir;
@@ -560,7 +605,6 @@ signed int load_file(char **wildcards, char *result)
 	char *file_name;
 	unsigned int file_name_length;
 	unsigned int ext_pos = -1;
-	/*unsigned int dialog_result = 1;*/
 	signed int return_value = 1;
 	unsigned int repeat;
 	unsigned int i;
@@ -569,6 +613,8 @@ signed int load_file(char **wildcards, char *result)
 	unsigned int current_filedir_selection;
 	unsigned int current_filedir_in_scroll;
 	unsigned int current_filedir_number;
+	
+	char print_buffer[81];
 	
 	// Init dir with saved one
 	strcpy(current_dir_name,GameConf.current_dir_rom);
@@ -589,7 +635,8 @@ signed int load_file(char **wildcards, char *result)
 #endif
 		current_dir = opendir(current_dir_name);
 		
-		do {
+		do 
+		{
 			if(current_dir) current_file = readdir(current_dir); else current_file = NULL;
 
 			if(current_file)
@@ -605,7 +652,8 @@ signed int load_file(char **wildcards, char *result)
 						strcpy(filedir_list[num_filedir].name, file_name);
 						num_filedir++;
 						
-					} else 
+					} 
+					else 
 					{
 						// Must match one of the wildcards, also ignore the .
 						if(file_name_length >= 4) {
@@ -634,30 +682,38 @@ signed int load_file(char **wildcards, char *result)
 		closedir(current_dir);
 
 		current_dir_length = strlen(current_dir_name);
-		if(current_dir_length > 39) {
+		if(current_dir_length > 39) 
+		{
 			memcpy(current_dir_short, "...", 3);
 			memcpy(current_dir_short + 3, current_dir_name + current_dir_length - (39-3), (39-3));
 			current_dir_short[39] = 0;
-		} else {
+		} 
+		else 
+		{
 			memcpy(current_dir_short, current_dir_name, current_dir_length + 1);
 		}
 
 		repeat = 1;
 
-		char print_buffer[81];
-
 		while(repeat) 
 		{
-			screen_prepback(actualScreen, OSWAN_LOAD, OSWAN_LOAD_SIZE);
+			#define CHARLEN ((320/6)-2)
+			
+			screen_prepback(actualScreen);
+			
 			print_string(current_dir_short, COLOR_ACTIVE_ITEM, COLOR_BG, 4, 10*3);
-			print_string("Press B to return to the main menu", COLOR_HELP_TEXT, COLOR_BG, 160-(34*8/2), 240-5 -10*3);
-			for(i = 0, current_filedir_number = i + current_filedir_scroll_value; i < FILE_LIST_ROWS; i++, current_filedir_number++) {
-#define CHARLEN ((320/6)-2)
-				if(current_filedir_number < num_filedir) {
-					if (filedir_list[current_filedir_number].type == 0) { // file (0) or dir (1) ?
+			print_string("Press B to return to the main menu", COLOR_ACTIVE_ITEM, COLOR_BG, 160-(34*8/2), 240-5 -10*3);
+				
+			for(i = 0, current_filedir_number = i + current_filedir_scroll_value; i < FILE_LIST_ROWS; i++, current_filedir_number++)
+			{
+				if(current_filedir_number < num_filedir) 
+				{
+					if (filedir_list[current_filedir_number].type == 0) // file (0) or dir (1) ?
+					{ 
 						strncpy(print_buffer,filedir_list[current_filedir_number].name, CHARLEN);
 					}
-					else {
+					else 
+					{
 						strncpy(print_buffer+1,filedir_list[current_filedir_number].name, CHARLEN-1);
 						print_buffer[0] = '[';
 						if (strlen(filedir_list[current_filedir_number].name)<(CHARLEN-1)) 
@@ -665,29 +721,95 @@ signed int load_file(char **wildcards, char *result)
 						else
 							print_buffer[CHARLEN-1] = ']';
 					}
+						
 					print_buffer[CHARLEN] = 0;
-					if(current_filedir_number == current_filedir_selection) {
+						
+					if(current_filedir_number == current_filedir_selection) 
+					{
+						/* Put Blue rectangle on screen before the text is printed*/
+						position_select.w  = 320;
+						position_select.h  = 8;
+						position_select.x  = 0;
+						position_select.y  = 10*3+((i + 2) * 8);
+						SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
 						print_string(print_buffer, COLOR_ACTIVE_ITEM, COLOR_BG, 4, 10*3+((i + 2) * 8));
-					} else {
+					} 
+					else 
+					{
 						print_string(print_buffer, COLOR_INACTIVE_ITEM, COLOR_BG, 4,10*3+ ((i + 2) * 8));
 					}
 				}
 			}
-
+		
 			// Catch input
 			SDL_PollEvent(&event);
 			keys = SDL_GetKeyState(NULL);
+			
+			/* Detect Hold, Pressed, released... buttons */
+			for(i=0;i<6;i++)
+			{	
+				if (i==0) pad = PAD_LEFT;
+				else if (i==1) pad = PAD_RIGHT;
+				else if (i==2) pad = PAD_UP;
+				else if (i==3) pad = PAD_DOWN;
+				else if (i==4) pad = PAD_L;
+				else if (i==5) pad = PAD_R;
+				
+				switch (button_state[i])
+				{
+					case 0:
+						if (keys[pad] == SDL_PRESSED)
+						{
+							button_state[i] = 1;
+							button_time[i] = 0;
+						}
+					break;
+					
+					case 1:
+						button_time[i]++;
+						
+						if (button_time[i] > 0)
+						{
+							button_state[i] = 2;
+							button_time[i] = 0;
+						}
+					break;
+					
+					case 2:
+						if (!(keys[pad] == SDL_PRESSED))
+						{
+							button_state[i] = 3;
+							button_time[i] = 0;
+						}
+					break;
+					
+					case 3:
+						button_time[i]++;
+						
+						if (button_time[i] > 1)
+						{
+							button_state[i] = 0;
+							button_time[i] = 0;
+						}
+					break;
+				}
+			}	
+		
 
 			// A - choose file or enter directory
-			if (keys[PAD_A] == SDL_PRESSED) { 
-				if (!keya) {
+			if (keys[PAD_A] == SDL_PRESSED) 
+			{ 
+				if (!keya) 
+				{
 					keya = 1; 
 					screen_waitkeyarelease();
-					if (filedir_list[current_filedir_selection].type == 1)  { // so it's a directory
+					if (filedir_list[current_filedir_selection].type == 1)   // so it's a directory
+					{ 
 						repeat = 0;
 						chdir(filedir_list[current_filedir_selection].name);
 					}
-					else {
+					else 
+					{
 						repeat = 0;
 						return_value = 0;
 						sprintf(result, "%s/%s", current_dir_name, filedir_list[current_filedir_selection].name);
@@ -706,35 +828,54 @@ signed int load_file(char **wildcards, char *result)
 			}
 			else keyb=0;
 
-			// UP - arrow up
-			if (keys[PAD_UP] == SDL_PRESSED) { 
-				if (!keyup) {
+			// UP or (L shoulder) - arrow up
+			if (button_state[2]==1 || button_state[4]==2) 
+			{ 
+				if (!keyup) 
+				{
 					keyup = 1; 
-					if(current_filedir_selection) {
+					if(current_filedir_selection) 
+					{
 						current_filedir_selection--;
-						if(current_filedir_in_scroll == 0) {
+						
+						if(current_filedir_in_scroll == 0) 
+						{
 							current_filedir_scroll_value--;
-						} else {
+						} 
+						else 
+						{
 							current_filedir_in_scroll--;
 						}
 					}
 				}
-				else {
-					keyup++; if (keyup>kepufl) keyup=0;
+				else 
+				{
+					keyup++; 
+					if (keyup>kepufl) keyup=0;
 					if (kepufl>2) kepufl--; 
 				}
 			}
-			else { keyup=0; kepufl = 8; }
+			else 
+			{ 
+				keyup=0; 
+				kepufl = 8; 
+			}
 
-			//DOWN - arrow down
-			if (keys[PAD_DOWN] == SDL_PRESSED) { 
+			//DOWN or (R shoulder) - arrow down
+			if (button_state[3]==1 || button_state[5]==2) 
+			{ 
 				if (!keydown) {
 					keydown = 1; 
-					if(current_filedir_selection < (num_filedir - 1)) {
+					if(current_filedir_selection < (num_filedir - 1)) 
+					{
 						current_filedir_selection++;
-						if(current_filedir_in_scroll == (FILE_LIST_ROWS - 1)) {
+						
+						if(current_filedir_in_scroll == (FILE_LIST_ROWS - 1)) 
+						{
 							current_filedir_scroll_value++;
-						} else {
+						} 
+						else 
+						{
 							current_filedir_in_scroll++;
 						}
 					}
@@ -744,10 +885,19 @@ signed int load_file(char **wildcards, char *result)
 					if (kepdfl>2) kepdfl--; 
 				}
 			}
-			else { keydown=0;	kepdfl = 8; }
-
-			SDL_Delay(16);
+			else
+			{ 
+				keydown=0;	
+				kepdfl = 8; 
+			}
+			
 			screen_flip();
+#ifdef _TINSPIRE
+		sleep(1);
+#else
+		SDL_Delay(4);
+#endif	
+			
 		}
 	}
 
@@ -760,6 +910,7 @@ signed int load_file(char **wildcards, char *result)
 
 	return return_value;
 }
+
 
 void menuFileBrowse(void) 
 {
@@ -871,14 +1022,14 @@ void menuReturn(void)
 void system_loadcfg(char *cfg_name) 
 {
   int fd;
-
   fd = open(cfg_name, O_RDONLY | O_BINARY);
   if (fd >= 0) 
   {
 	read(fd, &GameConf, sizeof(GameConf));
     close(fd);
+    printf("closed...");
     /*To remove in the future...*/
-#ifndef OLDSAVE_HACK
+#ifndef NOSAVE_HACK
 	if (GameConf.save_oldoswan_check!=128) 
 	{
 		printf("Old Save format ! Let's remove it...\n");
@@ -890,7 +1041,7 @@ void system_loadcfg(char *cfg_name)
 #ifndef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio) 
 	{
-		screen_prepback(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
+		screen_prepback(actualScreen);
 		flip_screen(actualScreen);
 	}
 #else

@@ -16,8 +16,6 @@ void take_screenshot(void);
 	SDL_Surface *real_screen;
 #endif
 
-extern int FPS;
-
 struct scaling
 {
 	unsigned short w_display;

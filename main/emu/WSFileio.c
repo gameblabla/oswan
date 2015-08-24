@@ -220,9 +220,7 @@ int WsCreate(char *CartName)
     }
     if (RAMSize)
     {
-		snprintf(SaveName, sizeof(SaveName), "%s.epm%s",CartName, EXTENSION);
-		
-		printf("SaveName %s \n", SaveName);
+		snprintf(SaveName, sizeof(SaveName), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(CartName,'/')+1, EXTENSION);
         
         if ((fp = fopen(SaveName, "rb")) != NULL)
         {
@@ -357,9 +355,7 @@ int WsLoadState(const char *savename, int num)
 	unsigned int value;
 	int i;
 	
-	printf("Load SaveState...\n");
-
-	snprintf(buf, sizeof(buf), "%s.%d.sta%s", savename, num, EXTENSION);
+	snprintf(buf, sizeof(buf), "%s%s%s.%d.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
     if ((fp = fopen(buf, "rb")) == NULL)
     {
 		return 1;
@@ -421,9 +417,7 @@ int WsSaveState(const char *savename, int num)
 	unsigned int value;
 	int i;
 	
-	printf("Write SaveState...\n");
-
-	snprintf(buf, sizeof(buf), "%s.%d.sta%s", savename, num, EXTENSION);
+	snprintf(buf, sizeof(buf), "%s%s%s.%d.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
     if ((fp = fopen(buf, "w+")) == NULL)
     {
 		printf("FAILURE...\n");

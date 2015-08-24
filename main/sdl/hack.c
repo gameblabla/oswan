@@ -9,7 +9,7 @@
 #include "hack.h"
 #include "md5.h"
 
-char tableau_games[128][33] =
+const char tableau_games[128][33] =
 {
 	{"40b6a56d5d964231c82e00d8b40bbf26"},	//	Dicing Knight
 	{"60045cc8567724881a341ab6b4030889"},	//	Mr. Driller
@@ -27,7 +27,7 @@ char tableau_games[128][33] =
 	{"8d02ef5711368fee511cdcd01dfc6c40"}, 	//	Kinnikuman
 };
 
-unsigned char tab_periods[128] =
+const unsigned char tab_periods[128] =
 {
 	25,	//	Dicing Knight
 	20,	//	Mr. Driller

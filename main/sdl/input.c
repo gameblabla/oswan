@@ -35,12 +35,12 @@ int WsInputGetState(int mode)
 	int button = 0;
 	int pad;
 	
-
+#ifndef PSP
 	SDL_PollEvent(&event);
 	unsigned char *keys = SDL_GetKeyState(NULL);
-	
 	button = Fire_buttons(keys);
-	
+#endif
+
 	#ifdef JOYSTICK
 	if (SDL_NumJoysticks() > 0)
 		joy = SDL_JoystickOpen(0);
@@ -101,6 +101,7 @@ int WsInputGetState(int mode)
 	if (button_time[0] == 1) 
 	{
 		strcpy(szFile, gameName);
+		printf("szFile = %s \n", szFile);
 		WsLoadState(szFile, GameConf.reserved2);
 	}
 		
@@ -108,6 +109,7 @@ int WsInputGetState(int mode)
 	if (button_time[1] == 1) 
 	{
 		strcpy(szFile, gameName);
+		printf("szFile = %s \n", szFile);
 		WsSaveState(szFile, GameConf.reserved1);
 	}
 
