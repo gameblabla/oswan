@@ -72,7 +72,6 @@ unsigned long SDL_UXTimerRead(void) {
 
 void graphics_paint(void) 
 {
-	Uint32 start;
 	if(SDL_MUSTLOCK(actualScreen)) SDL_LockSurface(actualScreen);
 	screen_draw();
 	if (SDL_MUSTLOCK(actualScreen)) SDL_UnlockSurface(actualScreen);
@@ -109,11 +108,10 @@ void initSDL(void)
 	
 	 //set up SDL sound 
     SDL_AudioSpec fmt, retFmt;
-	//fmt.freq = 48000;   
-	fmt.freq = 48000;   
-    fmt.format = AUDIO_S16;
+	fmt.freq = 12000;   
+    fmt.format = AUDIO_S16SYS;
     fmt.channels = 2;
-    fmt.samples = 2048;
+    fmt.samples = 512;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
 
@@ -129,7 +127,7 @@ void initSDL(void)
 
 int main(int argc, char *argv[]) 
 {
-	int lostfps;
+	/*int lostfps;*/
 	double period;
 #ifdef _TINSPIRE
 	enable_relative_paths(argv);

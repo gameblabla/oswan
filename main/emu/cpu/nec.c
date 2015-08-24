@@ -883,15 +883,11 @@ void nec_set_reg(int regnum, unsigned val)
 
 int nec_execute(int cycles)
 {
-	
-
 	nec_ICount=cycles;
-//	cpu_type=V30;
 
-	while(nec_ICount>=0) {
-
+	while(nec_ICount>=0) 
+	{
 		nec_instruction[FETCHOP]();
-//		nec_ICount++;
 	}
 
 	return cycles - nec_ICount;

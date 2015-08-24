@@ -8,12 +8,9 @@
 #define BUFSIZEN    0x10000
 #define BPSWAV      12000 // WSのHblankが12KHz
 
-/* Double this if it sounds too shitty... */
-//#define SND_BNKSIZE 2048
-//#define SND_RNGSIZE (10 * SND_BNKSIZE)
-#define SND_BNKSIZE 1024*4
+#define SND_BNKSIZE 256
 #define SND_RNGSIZE (10 * SND_BNKSIZE)
-#define WAV_VOLUME  30
+#define WAV_VOLUME 30
 
 unsigned long WaveMap;
 SOUND Ch[4];
@@ -44,14 +41,17 @@ int apuBufLen(void)
 	return SND_RNGSIZE + wBuf - rBuf;
 }
 
+
 void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 {
 	int i = len;
 	unsigned short *buffer = (unsigned short *) stream;
 
 	SDL_LockMutex(sound_mutex);
-
-	/*printf("apuBufLen : %d \n", apuBufLen() );*/
+	
+	printf("len : %d \n", len );
+	printf("SND_RNGSIZE : %d \n", SND_RNGSIZE );
+	printf("apuBufLen : %d \n", apuBufLen() );
 	
 	if (apuBufLen() < len) 
 	{
@@ -293,9 +293,9 @@ void apuWaveSet(void)
      * It seems like it just can't keep up.
      * I need someone to improve this...
     */
-	#define MULT 4
+	/*#define MULT 1
 	static int conv=MULT;
-    int i;
+    int i;*/
 
     /*if (WsInputGetNowait())
     {
@@ -361,7 +361,13 @@ void apuWaveSet(void)
     LL = (lVol[0] + lVol[1] + lVol[2] + lVol[3] + vVol) * WAV_VOLUME;
     RR = (rVol[0] + rVol[1] + rVol[2] + rVol[3] + vVol) * WAV_VOLUME;
     
-	if (conv == MULT) 
+	sndbuffer[wBuf][0] = LL;
+	sndbuffer[wBuf][1] = RR;
+	if (++wBuf >= SND_RNGSIZE)
+	{
+		wBuf = 0;
+	}
+	/*if (conv == MULT) 
 		conv = (MULT+1);
 	else
 		conv = MULT;
@@ -374,7 +380,7 @@ void apuWaveSet(void)
 		{
 			wBuf = 0;
 		}
-	}
+	}*/
     
 #ifdef SOUND_ON
 	SDL_UnlockMutex(sound_mutex);

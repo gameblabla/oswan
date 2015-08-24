@@ -64,7 +64,7 @@ static WORD DefColor[] = {
 
 void  ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
 {
-    int i, j, op, WriteIOaddr;
+    int i, j, op, addr;
     const int tblmask[16][5]=
     {
         {0x0000, 0, 0x0000, 0, 0x0000}, // dummy

@@ -13,8 +13,6 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 
 #ifdef SWITCHING_GRAPHICS
 	extern void screen_prepback(SDL_Surface *s);
-#else
-	extern void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize);
 #endif
 
 unsigned int m_Flag;
@@ -119,14 +117,13 @@ void initSDL(void)
 	
 	 //set up SDL sound 
     SDL_AudioSpec fmt, retFmt;
-	//fmt.freq = 48000;   
-	fmt.freq = 48000;   
-    fmt.format = AUDIO_S16;
+	fmt.freq = 12000;   
+    fmt.format = AUDIO_S16SYS;
     fmt.channels = 2;
-    fmt.samples = 2048;
+    fmt.samples = 512;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
-
+    
     /* Open the audio device and start playing sound! */
     if ( SDL_OpenAudio(&fmt, &retFmt) < 0 )
 	{
