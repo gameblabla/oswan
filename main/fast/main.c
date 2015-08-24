@@ -5,7 +5,6 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <time.h>
 
 #include "shared.h"
@@ -30,8 +29,15 @@ void exit_oswan();
 void msleep(unsigned char milisec);
 extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 unsigned long nextTick, lastTick = 0, newTick, currentTick, wait;
-int FPS = 60; 
 int pastFPS = 0; 
+
+#ifndef NOFRAMERATE_LIMIT	
+	#ifdef NO_FLOAT
+	const int real_FPS = 1000/75.47;
+	#else
+	const float real_FPS = 1000/75.47;
+	#endif
+#endif
 
 SDL_Surface *actualScreen, *screenshots;
 SDL_Event event;
@@ -63,34 +69,38 @@ int SetupCallbacks(void) {
 }
 #endif
 
-unsigned long SDL_UXTimerRead(void) {
-	struct timeval tval; // timing
-  
-  	gettimeofday(&tval, 0);
-	return (((tval.tv_sec*1000000) + (tval.tv_usec )));
+void msleep(unsigned char milisec)
+{
+#ifdef UNIX
+	struct timespec req={0};
+	time_t sec=(unsigned short)(milisec/1000);
+
+	milisec=milisec-(sec*1000);
+	req.tv_sec=sec;
+	req.tv_nsec=milisec*1000000L;
+	while(nanosleep(&req,&req)==-1)
+	continue;
+#else
+	SDL_Delay(milisec);
+ #endif
 }
 
 void graphics_paint(void) 
 {
 	Uint32 start;
 	if(SDL_MUSTLOCK(actualScreen)) SDL_LockSurface(actualScreen);
+
 	screen_draw();
-	if (SDL_MUSTLOCK(actualScreen)) SDL_UnlockSurface(actualScreen);
 
-#if !defined(SMOOTH)
-	pastFPS++;
-	newTick = SDL_UXTimerRead();
-	if ((newTick-lastTick)>1000000) {
-		FPS = pastFPS;
-		pastFPS = 0;
-		lastTick = newTick;
+#ifndef NOFRAMERATE_LIMIT	
+	start = SDL_GetTicks();
+	if(real_FPS > SDL_GetTicks()-start) 
+	{
+		msleep(real_FPS-(SDL_GetTicks()-start));
 	}
-
-	FrameSkip = 60 - FPS;
-	if (FrameSkip<0) FrameSkip = 0;
-	else if (FrameSkip>4) FrameSkip=4;
 #endif
-
+	
+	if (SDL_MUSTLOCK(actualScreen)) SDL_UnlockSurface(actualScreen);
 	flip_screen(actualScreen);
 }
 
@@ -129,8 +139,6 @@ void initSDL(void)
 
 int main(int argc, char *argv[]) 
 {
-	int lostfps;
-	double period;
 #ifdef _TINSPIRE
 	enable_relative_paths(argv);
 #endif
@@ -193,7 +201,6 @@ int main(int argc, char *argv[])
 					SDL_PauseAudio(0);
 					#endif
 				}
-				nextTick = SDL_UXTimerRead() + interval;
 				break;
 
 			case GF_GAMEINIT:
@@ -204,11 +211,6 @@ int main(int argc, char *argv[])
 					#ifdef SOUND_ON
 					SDL_PauseAudio(0);
 					#endif
-					// Init timing
-					period = 1.0 / 60;
-					period = period * 1000000;
-					interval = (int) period;
-					nextTick = SDL_UXTimerRead() + interval;
 				}
 				else 
 				{
@@ -218,16 +220,7 @@ int main(int argc, char *argv[])
 				break;
 		
 			case GF_GAMERUNNING:	
-				currentTick = SDL_UXTimerRead(); 
-				wait = (nextTick - currentTick);
-				if (wait > 0) {
-					if (wait < 1000000) 
-					{
-						usleep(wait);
-					}
-				}
 				WsRun();
-				nextTick += interval;
 				break;
 		}
 	}

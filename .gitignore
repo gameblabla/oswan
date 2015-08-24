@@ -9,6 +9,7 @@
 /opk/oswan
 main/sdl/*.o
 main/emu/*.o
+main/fast/*.o
 main/emu/cpu/*.o
 main/emu/cpu_oswanj/*.o
 main/sdl/gfx/*.o
