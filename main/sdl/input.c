@@ -101,7 +101,11 @@ int WsInputGetState(int mode)
 	if (button_time[0] == 1) 
 	{
 		strcpy(szFile, gameName);
-		printf("szFile = %s \n", szFile);
+#ifdef _TINSPIRE
+		strcpy(strrchr(szFile, '.'), ".sta.tns");
+#else
+		strcpy(strrchr(szFile, '.'), ".sta");
+#endif
 		WsLoadState(szFile, GameConf.reserved2);
 	}
 		
@@ -109,7 +113,11 @@ int WsInputGetState(int mode)
 	if (button_time[1] == 1) 
 	{
 		strcpy(szFile, gameName);
-		printf("szFile = %s \n", szFile);
+#ifdef _TINSPIRE
+		strcpy(strrchr(szFile, '.'), ".sta.tns");
+#else
+		strcpy(strrchr(szFile, '.'), ".sta");
+#endif
 		WsSaveState(szFile, GameConf.reserved1);
 	}
 
@@ -177,11 +185,11 @@ int WsInputGetState(int mode)
 				button |= (1<<11); 
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
-				button |= (1<<6); // RIGHT -> X2
+				button |= (1<<7); // RIGHT -> X2
 			if (keys[PAD_B] == SDL_PRESSED) 
 				button |= (1<<5); // LEFT -> X4
 			if (keys[PAD_X] == SDL_PRESSED) 
-				button |= (1<<7); // DOWN -> X3
+				button |= (1<<6); // DOWN -> X3
 			if (keys[PAD_Y] == SDL_PRESSED) 
 				button |= (1<<4); // UP -> X1
 			
