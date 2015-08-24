@@ -50,7 +50,7 @@
 	#define FLAG_VIDEO SDL_SWSURFACE
 #else
 	#define BITDEPTH_OSWAN 16
-	#define FLAG_VIDEO SDL_HWSURFACE
+	#define FLAG_VIDEO SDL_SWSURFACE
 #endif
 
 #ifdef _TINSPIRE

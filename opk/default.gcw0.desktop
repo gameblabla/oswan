@@ -6,4 +6,5 @@ Exec=oswan %f
 Icon=icon
 Terminal=false
 Categories=emulators;
-Mimetype=application/x-wsc;application/x-ws;
+X-OD-NeedsDownscaling=false
+

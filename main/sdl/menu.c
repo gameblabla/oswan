@@ -12,10 +12,6 @@
 #include "WSFileio.h"
 #include "font.h" // Font c array
 
-#ifndef SWITCHING_GRAPHICS
-#include "./data/oswan_skin.h"
-#endif
-
 extern unsigned int m_Flag;
 
 bool gameMenu;
@@ -44,9 +40,6 @@ void menuFileBrowse(void);
 void menuSaveState(void);
 void menuLoadState(void);
 void screen_showkeymenu(void);
-#ifndef SWITCHING_GRAPHICS
-void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize);
-#endif
 unsigned char ifactive(unsigned char *keys);
 void menuReturn(void);
 #if !defined(NOSCREENSHOTS)
@@ -171,24 +164,6 @@ void screen_prepback(SDL_Surface *s)
 	// load logo, Convert the image to optimal display format and Free the temporary surface
 	SDL_FillRect(s, NULL, 0);
 }
-
-
-// Draw emulator skin
-#ifndef SWITCHING_GRAPHICS
-void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize) 
-{
-	// load logo, Convert the image to optimal display format and Free the temporary surface
-	SDL_RWops *rw = SDL_RWFromMem(bmpBuf, bmpSize);
-	SDL_Surface *temp = SDL_LoadBMP_RW(rw, 1);
-	SDL_Surface *image;
-	image = SDL_DisplayFormat(temp);
-	SDL_FreeSurface(temp);
-	
-	// Display image
- 	SDL_BlitSurface(image, 0, s, 0);
-	SDL_FreeSurface(image);
-}
-#endif
 
 // draw main emulator design
 void screen_prepbackground(void) 
@@ -486,20 +461,14 @@ void screen_showtopmenu(void)
 	// save actual config
 	system_savecfg(current_conf_app);
 	
-#ifdef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio)
 	{
+#ifdef SWITCHING_GRAPHICS
 		SetVideo(1);
-		screen_prepbackground();
-	}
-#else
-	// if no ratio, put skin
-	if (!GameConf.m_ScreenRatio) 
-	{
-		screen_putskin(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
+#endif
+		screen_prepback(actualScreen);
 		flip_screen(actualScreen);
 	}
-#endif
 	
 }
 
@@ -931,7 +900,7 @@ void menuSaveBmp(void)
     char szFile[512], szFile1[512];
 	
 	if (cartridge_IsLoaded()) {
-		sprintf(szFile,"./%s",strrchr(gameName,'/')+1);
+		snprintf(szFile, sizeof(szFile), "%s%s%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(gameName,'/')+1);
 
 #ifdef _TINSPIRE
 		szFile[strlen(szFile)-12] = '%';

@@ -1,9 +1,7 @@
 #include "shared.h"
 
-#ifdef SCALING
-void Get_resolution(unsigned short w, unsigned short h);
-#endif
-
+void Get_resolution(void);
+void Set_resolution(unsigned short w, unsigned short h);
 void SetVideo(unsigned char mode);
 void gcw_screen_draw(void);
 void screen_draw(void);

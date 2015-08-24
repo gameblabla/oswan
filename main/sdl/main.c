@@ -12,6 +12,8 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 #include "hack.h"
 
 #ifdef SWITCHING_GRAPHICS
+	extern void screen_prepback(SDL_Surface *s);
+#else
 	extern void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize);
 #endif
 
@@ -105,14 +107,16 @@ void graphics_paint(void)
 void initSDL(void) 
 {
 	SDL_Init(SDL_INIT_VIDEO);
-#ifdef SOUND_ON
-	SDL_Init(SDL_INIT_AUDIO);
-#endif
-
+	
+	/* Get current resolution, does nothing on Windowed or bare metal platroms*/
+	Get_resolution();
+	
 	SDL_ShowCursor(SDL_DISABLE);
 	SetVideo(0);
-	
+
 #ifdef SOUND_ON
+	SDL_Init(SDL_INIT_AUDIO);
+	
 	 //set up SDL sound 
     SDL_AudioSpec fmt, retFmt;
 	//fmt.freq = 48000;   
@@ -143,6 +147,9 @@ int main(int argc, char *argv[])
 	SetupCallbacks();
 #endif
 	
+	// Init graphics & sound
+	initSDL();
+	
 #ifdef JOYSTICK
 	SDL_Init(SDL_INIT_JOYSTICK);
 	SDL_JoystickEventState(SDL_ENABLE);
@@ -159,9 +166,6 @@ int main(int argc, char *argv[])
 	snprintf(current_conf_app, sizeof(current_conf_app), "%soswan.cfg%s", PATH_DIRECTORY, EXTENSION);
 #endif
 	
-	// Init graphics & sound
-	initSDL();
-	
 	m_Flag = GF_MAINUI;
 	system_loadcfg(current_conf_app);
 
@@ -173,8 +177,9 @@ int main(int argc, char *argv[])
 	{
 #ifdef SWITCHING_GRAPHICS
 		SetVideo(1);
-		screen_putskin(actualScreen, OSWAN_SKIN, OSWAN_SKIN_SIZE);
+		screen_prepback(actualScreen);
 #endif
+		flip_screen(actualScreen);
 		strcpy(gameName,argv[1]);
 		m_Flag = GF_GAMEINIT;
 	}
@@ -209,7 +214,7 @@ int main(int argc, char *argv[])
 				}
 				else 
 				{
-					fprintf(stderr,"cant't load %s : %s",gameName,SDL_GetError()); fflush(stderr);
+					fprintf(stderr,"Can't load %s : %s", gameName, SDL_GetError()); fflush(stderr);
 					m_Flag = GF_GAMEQUIT;
 				}
 				break;
@@ -230,16 +235,16 @@ void exit_oswan()
 		SDL_PauseAudio(1);
 	#endif
 
-		// Free memory
+	// Free memory
 	#ifndef NOSCREENSHOTS
-		if (screenshots != NULL) SDL_FreeSurface(screenshots);
+	if (screenshots != NULL) SDL_FreeSurface(screenshots);
 	#endif
-		if (actualScreen != NULL) SDL_FreeSurface(actualScreen);
-		
-		// Free memory
+	if (actualScreen != NULL) SDL_FreeSurface(actualScreen);
+	#if defined(SCALING)
+	if (real_screen != NULL) SDL_FreeSurface(real_screen);
+	#endif
 		
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);	
-		
 	#ifdef SOUND_ON
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
 	#endif

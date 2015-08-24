@@ -8,13 +8,12 @@
 
 #include "drawing.h"
 
-void Get_resolution(unsigned short w, unsigned short h)
+void Get_resolution(void)
 {
 #ifdef SCALING
 	#ifdef SYLLABLE
 	os::Desktop cDesktop;
 	os::IPoint point = cDesktop.GetResolution();
-
 	screen_scale.w_display = point.x;
 	screen_scale.h_display = point.y;
 	#else
@@ -22,7 +21,15 @@ void Get_resolution(unsigned short w, unsigned short h)
 	screen_scale.w_display = info->current_w;
 	screen_scale.h_display = info->current_h;
 	#endif
-	
+#else
+	screen_scale.w_display = 320;
+	screen_scale.h_display = 240;
+#endif
+}
+
+void Set_resolution(unsigned short w, unsigned short h)
+{
+#ifdef SCALING
 	screen_scale.w_scale = screen_scale.w_display / w;
 	screen_scale.h_scale = screen_scale.h_display / h;
   
@@ -40,11 +47,10 @@ void Get_resolution(unsigned short w, unsigned short h)
 void SetVideo(unsigned char mode)
 {
 #ifdef SCALING	
-	int flags = FLAG_VIDEO | SDL_NOFRAME;
+	int flags = FLAG_VIDEO | SDL_NOFRAME | SDL_FULLSCREEN;
 #else
 	int flags = FLAG_VIDEO;
 #endif
-	
 	unsigned short w = 320, h = 240;
 	
 	if (mode == 1) 
@@ -52,24 +58,29 @@ void SetVideo(unsigned char mode)
 		w = 224;
 		h = 144;
 	}
-
-	Get_resolution(w, h);
 	
-	#if !defined(NOSCREENSHOTS)
-		if (screenshots) SDL_FreeSurface(screenshots);
-		if (mode == 1) screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, w, h, BITDEPTH_OSWAN, 0,0,0,0);
-		else screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, 224, 144, BITDEPTH_OSWAN, 0,0,0,0);
-	#endif
-
 	#if defined(SCALING)
 		if (real_screen) SDL_FreeSurface(real_screen);
 		if (actualScreen) SDL_FreeSurface(actualScreen);
-		
-		actualScreen = SDL_CreateRGBSurface(FLAG_VIDEO, w, h, BITDEPTH_OSWAN, 0,0,0,0);
-		real_screen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
 	#else
 		if (actualScreen) SDL_FreeSurface(actualScreen);
+	#endif
+	
+	#if !defined(NOSCREENSHOTS)
+		if (screenshots) SDL_FreeSurface(screenshots);
+	#endif
+	
+	Set_resolution(w, h);
+
+	#if defined(SCALING)
+		real_screen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
+		actualScreen = SDL_CreateRGBSurface(FLAG_VIDEO, w, h, BITDEPTH_OSWAN, 0,0,0,0);
+	#else
 		actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
+	#endif
+	
+	#if !defined(NOSCREENSHOTS)
+		screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, actualScreen->w, actualScreen->h, BITDEPTH_OSWAN, 0,0,0,0);
 	#endif
 }
 
@@ -77,7 +88,6 @@ void screen_draw(void)
 {
 	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
 	unsigned int W,H,ix,iy,x,y, xfp,yfp;
-	/*static char buffer[32];*/
 	
 	// Fullscreen
 	if (GameConf.m_ScreenRatio)
@@ -165,11 +175,14 @@ void screen_draw(void)
 #endif
 	}
 	
-	/*if (GameConf.m_DisplayFPS) 
+	/*
+	static char buffer[32];
+	if (GameConf.m_DisplayFPS) 
 	{
 		sprintf(buffer,"%02d",FPS);
 		print_string_video(xfp,yfp,buffer);
-	}*/
+	}
+	*/
 }
 
 #if defined(SCALING)
