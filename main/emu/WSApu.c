@@ -8,16 +8,20 @@
 #define BUFSIZEN    0x10000
 #define BPSWAV      12000 // WSのHblankが12KHz
 
+#ifdef NATIVE_AUDIO
 #define SND_BNKSIZE 256
+#else
+#define SND_BNKSIZE 4096
+#endif
+
 #define SND_RNGSIZE (10 * SND_BNKSIZE)
 #define WAV_VOLUME 30
 
-unsigned long WaveMap;
 SOUND Ch[4];
-int VoiceOn;
 SWEEP Swp;
-NOISE Noise;
-int Sound[7] = {1, 1, 1, 1, 1, 1, 1};
+NOISE Noise; 
+char VoiceOn;
+short Sound[7] = {1, 1, 1, 1, 1, 1, 1};
 
 static unsigned char PData[4][32];
 static unsigned char PDataN[8][BUFSIZEN];
@@ -49,11 +53,9 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 
 	SDL_LockMutex(sound_mutex);
 	
-	/*
-	printf("len : %d \n", len );
+	/*printf("len : %d \n", len );
 	printf("SND_RNGSIZE : %d \n", SND_RNGSIZE );
-	printf("apuBufLen : %d \n", apuBufLen() );
-	*/
+	printf("apuBufLen : %d \n", apuBufLen() );*/
 	
 	if (apuBufLen() < len) 
 	{
@@ -86,10 +88,6 @@ void apuWaveRelease(void)
 {
 	SDL_PauseAudio(1);
     return;
-}
-
-void apuWaveClear(void)
-{
 }
 
 int apuInit(void)
@@ -295,9 +293,11 @@ void apuWaveSet(void)
      * It seems like it just can't keep up.
      * I need someone to improve this...
     */
-	/*#define MULT 1
+    #ifndef NATIVE_AUDIO
+	#define MULT 4
 	static int conv=MULT;
-    int i;*/
+    int i;
+    #endif
 
     /*if (WsInputGetNowait())
     {
@@ -362,14 +362,16 @@ void apuWaveSet(void)
     // mix 16bits wave -32768 ～ +32767 32768/120 = 273
     LL = (lVol[0] + lVol[1] + lVol[2] + lVol[3] + vVol) * WAV_VOLUME;
     RR = (rVol[0] + rVol[1] + rVol[2] + rVol[3] + vVol) * WAV_VOLUME;
-    
+
+	#ifdef NATIVE_AUDIO
 	sndbuffer[wBuf][0] = LL;
 	sndbuffer[wBuf][1] = RR;
 	if (++wBuf >= SND_RNGSIZE)
 	{
 		wBuf = 0;
 	}
-	/*if (conv == MULT) 
+	#else
+	if (conv == MULT) 
 		conv = (MULT+1);
 	else
 		conv = MULT;
@@ -382,7 +384,8 @@ void apuWaveSet(void)
 		{
 			wBuf = 0;
 		}
-	}*/
+	}
+	#endif
     
 #ifdef SOUND_ON
 	SDL_UnlockMutex(sound_mutex);

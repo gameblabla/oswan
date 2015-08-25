@@ -20,13 +20,17 @@ typedef struct noise {
     int pattern;
 } NOISE;
 
-extern unsigned long WaveMap;
 extern SOUND Ch[4];
-extern int VoiceOn;
 extern SWEEP Swp;
 extern NOISE Noise;
-extern int Sound[7];
 
+extern char VoiceOn;
+extern short Sound[7];
+
+/*
+extern int VoiceOn;
+extern int Sound[7];
+*/
 int apuBufLen(void);
 void apuWaveVolume(int);
 void apuWaveCreate(void);

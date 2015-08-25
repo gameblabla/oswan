@@ -7,9 +7,6 @@ void gcw_screen_draw(void);
 void screen_draw(void);
 void take_screenshot(void);
 
-extern unsigned char FPS;
-extern unsigned char HVMode;
-
 #if !defined(SCALING)
 	#define flip_screen SDL_Flip
 #else

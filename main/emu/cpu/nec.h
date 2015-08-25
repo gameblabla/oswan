@@ -27,7 +27,6 @@ typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
 #define SetTF(x)		(I.TF = (x))
 #define SetIF(x)		(I.IF = (x))
 #define SetDF(x)		(I.DF = (x))
-#define SetMD(x)		(I.MF = (x))	/* OB [19.07.99] Mode Flag V30 */
 
 #define SetCFB(x)		(I.CarryVal = (x) & 0x100)
 #define SetCFW(x)		(I.CarryVal = (x) & 0x10000)
@@ -120,12 +119,8 @@ typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
 #define CLKM(v20,v30,v33,v20m,v30m,v33m) { const UINT32 ccount=(v20<<16)|(v30<<8)|v33, mcount=(v20m<<16)|(v30m<<8)|v33m; nec_ICount-=( ModRM >=0xc0 )?((ccount>>cpu_type)&0x7f):((mcount>>cpu_type)&0x7f); }
 #define CLKR(v20o,v30o,v33o,v20e,v30e,v33e,vall) { const UINT32 ocount=(v20o<<16)|(v30o<<8)|v33o, ecount=(v20e<<16)|(v30e<<8)|v33e; if (ModRM >=0xc0) nec_ICount-=vall; else nec_ICount-=(I.ip&1)?((ocount>>cpu_type)&0x7f):((ecount>>cpu_type)&0x7f); }
 */
-#define CLKS(v20,v30,v33) { const UINT32 ccount=(v20<<16)|(v30<<8)|v33; nec_ICount-=(ccount>>cpu_type)&0x7f; }
-
 #define CLK(all) nec_ICount-=all
-#define CLKW(v30MZo,v30MZe) { nec_ICount-=(I.ip&1)?v30MZo:v30MZe; }
 #define CLKM(v30MZm,v30MZ) { nec_ICount-=( ModRM >=0xc0 )?v30MZ:v30MZm; }
-#define CLKR(v30MZo,v30MZe,vall) { if (ModRM >=0xc0) nec_ICount-=vall; else nec_ICount-=(I.ip&1)?v30MZo:v30MZe; }
 
 #define CompressFlags() (WORD)(CF | (PF << 2) | (AF << 4) | (ZF << 6) \
 				| (SF << 7) | (I.TF << 8) | (I.IF << 9) \
@@ -143,7 +138,6 @@ typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
 	I.IF = ((f) & 512) == 512; \
 	I.DF = ((f) & 1024) == 1024; \
 	I.OverVal = (f) & 2048; \
-	I.MF = ((f) & 0x8000) == 0x8000; \
 }
 
 
@@ -255,7 +249,7 @@ typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
 	uresult = I.regs.w[AW];									\
 	uresult2 = uresult % tmp;								\
 	if ((uresult /= tmp) > 0xff) {							\
-		nec_interrupt(0,0); break;							\
+		nec_interrupt(0); break;							\
 	} else {												\
 		I.regs.b[AL] = uresult;								\
 		I.regs.b[AH] = uresult2;							\
@@ -265,7 +259,7 @@ typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
 	result = (INT16)I.regs.w[AW];							\
 	result2 = result % (INT16)((INT8)tmp);					\
 	if ((result /= (INT16)((INT8)tmp)) > 0xff) {			\
-		nec_interrupt(0,0); break;							\
+		nec_interrupt(0); break;							\
 	} else {												\
 		I.regs.b[AL] = result;								\
 		I.regs.b[AH] = result2;								\
@@ -275,7 +269,7 @@ typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
 	uresult = (((UINT32)I.regs.w[DW]) << 16) | I.regs.w[AW];\
 	uresult2 = uresult % tmp;								\
 	if ((uresult /= tmp) > 0xffff) {						\
-		nec_interrupt(0,0); break;							\
+		nec_interrupt(0); break;							\
 	} else {												\
 		I.regs.w[AW]=uresult;								\
 		I.regs.w[DW]=uresult2;								\
@@ -285,7 +279,7 @@ typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
 	result = ((UINT32)I.regs.w[DW] << 16) + I.regs.w[AW];	\
 	result2 = result % (INT32)((INT16)tmp);					\
 	if ((result /= (INT32)((INT16)tmp)) > 0xffff) {			\
-		nec_interrupt(0,0); break;							\
+		nec_interrupt(0); break;							\
 	} else {												\
 		I.regs.w[AW]=result;								\
 		I.regs.w[DW]=result2;								\

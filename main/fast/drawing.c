@@ -80,7 +80,7 @@ void SetVideo(unsigned char mode)
 	#endif
 	
 	#if !defined(NOSCREENSHOTS)
-		screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, w, h, BITDEPTH_OSWAN, 0,0,0,0);
+		screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, actualScreen->w, actualScreen->h, BITDEPTH_OSWAN, 0,0,0,0);
 	#endif
 }
 
@@ -89,8 +89,34 @@ void screen_draw(void)
 	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
 	unsigned int W,H,ix,iy,x,y, xfp,yfp;
 	
-	// Fullscreen
-	if (GameConf.m_ScreenRatio)
+	// Keep Aspect Ratio
+	if (GameConf.m_ScreenRatio == 2)
+	{
+		x=0;
+		y=18; 
+		W=320;
+		H=204;
+		ix=(SYSVID_WIDTH<<16)/W;
+		iy=(SYSVID_HEIGHT<<16)/H;
+		xfp = 300;
+		yfp = 1;
+
+		do   
+		{
+			unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
+			W=320; x=0;
+			do {
+
+				*buffer_scr++=buffer_mem[x>>16];
+#if BITDEPTH_OSWAN == 32
+				*buffer_scr++=buffer_mem[x>>16];
+#endif
+				x+=ix;
+			} while (--W);
+			y+=iy;
+		} while (--H);
+	}
+	else if (GameConf.m_ScreenRatio)
 	{
 		x=0;
 		y=0; 
@@ -174,14 +200,7 @@ void screen_draw(void)
 		} while (--H);
 #endif
 	}
-	
-	static char buffer[4];
-	if (GameConf.m_DisplayFPS) 
-	{
-		/*snprintf(buffer, sizeof(buffer), "%02d",FPS);*/
-		sprintf(buffer,"%d",FPS);
-		print_string_video(xfp,yfp,buffer);
-	}
+
 }
 
 #if defined(SCALING)

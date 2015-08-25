@@ -68,10 +68,11 @@ int WsCreate(char *CartName)
     {
         return WsSetPdata();
     }
+    
     if ((fp = fopen(CartName, "rb")) == NULL)
     {
         //ErrorMsg(ERR_FOPEN);
-		fprintf(stderr,"ERR_FOPEN");
+		fprintf(stderr,"ERR_FOPEN\n");
         return 1;
     }
     
@@ -81,7 +82,7 @@ int WsCreate(char *CartName)
     if (fread(buf, 1, 10, fp) != 10)
     {
         //ErrorMsg(ERR_FREAD_ROMINFO);
-		fprintf(stderr,"ERR_FREAD_ROMINFO");
+		fprintf(stderr,"ERR_FREAD_ROMINFO\n");
         return 1;
     }
     switch (buf[4])
@@ -188,8 +189,8 @@ int WsCreate(char *CartName)
             else
             {
                 //ErrorMsg(ERR_FREAD_ROM);
-                printf("ERROR: ERR_FREAD_ROM");
-                printf("Are you playing a homebrew game ?");
+                printf("ERROR: ERR_FREAD_ROM\n");
+                printf("Are you playing a homebrew game ?\n");
 				/*fprintf(stderr,"ERR_FREAD_ROM\n");*/
                 /*break;*/
             }

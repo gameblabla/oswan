@@ -31,12 +31,6 @@
 #endif
 
 #ifdef _TINSPIRE
-	#ifndef NOFRAMERATE_LIMIT
-		#define NOFRAMERATE_LIMIT
-	#endif
-#endif
-
-#ifdef _TINSPIRE
 	//#define BITDEPTH_OSWAN has_colors ? 16 : 8
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
@@ -224,7 +218,6 @@
 
 #define true 1
 #define false 0
-typedef int bool;
 
 #define PIX_TO_RGB(fmt, r, g, b) (((r*8>>fmt->Rloss)<<fmt->Rshift)| ((g*6>>fmt->Gloss)<<fmt->Gshift)|((b*8>>fmt->Bloss)<<fmt->Bshift))
 
@@ -237,24 +230,20 @@ typedef int bool;
 #define cartridge_IsLoaded() (strlen(gameName) != 0)
 
 typedef struct {
-	unsigned int sndLevel;
-	unsigned int m_ScreenRatio; // 0 = original show, 1 = full screen
-	unsigned int OD_Joy[12]; // each key mapping
-	unsigned int m_DisplayFPS;
+	unsigned short sndLevel;
+	unsigned short m_ScreenRatio; // 0 = original show, 1 = full screen
+	unsigned short OD_Joy[12]; // each key mapping
+	unsigned short m_DisplayFPS;
 	char current_dir_rom[MAX__PATH];
-	unsigned int input_layout;
-	unsigned int reserved1;
-	unsigned int reserved2;
-	unsigned int reserved3;
-	unsigned int reserved4;
+	unsigned short input_layout;
+	unsigned short reserved1;
+	unsigned short reserved2;
+	unsigned short reserved3;
+	unsigned short reserved4;
 #ifndef NOSAVE_HACK
 	unsigned char save_oldoswan_check;
 #endif
 } gamecfg;
-
-//typedef unsigned char byte;
-typedef unsigned short word;
-typedef unsigned int uint;
 
 extern SDL_Surface* screen;						// Main program screen
 extern SDL_Surface* actualScreen, *screenshots;						// Main program screen
@@ -267,18 +256,13 @@ extern unsigned int m_Flag;
 extern char gameName[512];
 extern char current_conf_app[MAX__PATH];
 
-extern unsigned int gameCRC;
-
-extern void system_loadcfg(char *cfg_name);
-extern void system_savecfg(char *cfg_name);
-
-extern unsigned long crc32 (unsigned int crc, const unsigned char *buf, unsigned int len);
-
+extern void system_loadcfg(const char *cfg_name);
+extern void system_savecfg(const char *cfg_name);
 
 extern void mainemuinit();
 
 // menu
 extern void screen_showtopmenu(void);
-extern void print_string_video(int x, int y, const char *s);
+extern void print_string_video(short x, const short y, const char *s);
 
 #endif

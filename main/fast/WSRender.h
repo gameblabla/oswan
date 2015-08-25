@@ -15,8 +15,8 @@ extern WORD MonoColor[8];
 extern WORD FrameBuffer[320*240];
 extern const unsigned char Layer[3];
 
-void SetPalette(const int addr);
-void RefreshLine(const unsigned short Line);
+void SetPalette(int addr);
+void RefreshLine(int Line);
 void RenderSegment(void);
 void RenderSleep(void);
 

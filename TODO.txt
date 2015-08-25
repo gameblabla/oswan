@@ -1,5 +1,5 @@
 - Improve Sound output
-Plus, it is not at the good speed. (compare with Mednafen)
+It's pretty bad and sounds very scratchy.
 
 - Proper 32-bits support
 On Linux, if the bpp is different from the display, it will be converted

@@ -18,51 +18,39 @@ extern void graphics_paint(void);
 
 #define IPeriod 32          // HBlank/8 (256/8)
 
-int Run;
+/*int Run;*/
 BYTE *Page[16];             // バンク割り当て
 BYTE IRAM[0x10000];         // 内部RAM 64kB = Page[0]
 BYTE IO[0x100];             // IO
 BYTE MemDummy[0x10000];     // ダミーバンク 64kB
 BYTE *ROMMap[0x100];        // C-ROMバンクマップ
-int ROMBanks;               // C-ROMバンク数
+unsigned short ROMBanks;               // C-ROMバンク数
 BYTE *RAMMap[0x100];        // C-RAMバンクマップ
-int RAMBanks;               // C-RAMバンク数
+unsigned char RAMBanks;               // C-RAMバンク数
 int RAMSize;                // C-RAM総容量
 WORD IEep[64];              // 内蔵EEPROM
 struct EEPROM sIEep;        // EEPROM読み書き用構造体（内蔵）
 struct EEPROM sCEep;        // EEPROM読み書き用構造体（カートリッジ）
-int CartKind;               // セーブメモリの種類（CK_EEP = EEPROM）
+unsigned char CartKind;               // セーブメモリの種類（CK_EEP = EEPROM）
 
 static int ButtonState = 0x0000;    // Button state: B.A.START.OPTION.X4.X3.X2.X1.Y4.Y3.Y2.Y1
-static int HVMode;
+static unsigned char HVMode;
 static WORD HTimer;
 static WORD VTimer;
-static int RtcCount;
-static int RAMEnable;
-static int SkipCnt = 0;
-#ifndef SMOOTH
-static int FrameSkip = 0;
-static int TblSkip[5][5] = {
-    {1,1,1,1,1},
-    {0,1,1,1,1},
-    {0,1,0,1,1},
-    {0,0,1,0,1},
-    {0,0,0,0,1},
-};
-#endif
+static unsigned char RtcCount;
+static unsigned long WaveMap;
 
+#if BITDEPTH_OSWAN == 32
+#define MONO(C) 0xF000 | (C)<<8 | (C)<<4 | (C)
+#else
 #define MONO(C) (C)<<12 | (C)<<7 | (C)<<1
+#endif
 static WORD DefColor[] = {
     MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),
     MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
 };
-/*#define MONO(C) 0xF000 | (C)<<8 | (C)<<4 | (C)
-static WORD DefColor[] = {
-    MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),
-    MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
-};*/
 
-void  ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
+void ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
 {
     int i, j, op, addr;
     const int tblmask[16][5]=
@@ -128,10 +116,10 @@ void  ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
         {
             addr = *cmd & tblmask[i][4];
             eeprom->data[addr] = *data;
-            if (ROMBanks == 1 && addr == 0x3A) // アナザヘブンも書き込んでた
+            /*if (ROMBanks == 1 && addr == 0x3A) // アナザヘブンも書き込んでた
             {
                 Run = 0; // パーソナルデータ最後の書き込みなので終了
-            }
+            }*/
         }
         *data = 0;
         break;
@@ -151,24 +139,24 @@ void  ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
     }
 }
 
-inline BYTE ReadMem(DWORD A)
+inline BYTE ReadMem(const DWORD A)
 {
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
 
-void  WriteMem(DWORD A, BYTE V)
+void  WriteMem(const DWORD A, const BYTE V)
 {
     (*WriteMemFnTable[(A >> 16) & 0x0F])(A, V);
 }
 
-typedef void (*WriteMemFn)(DWORD A, BYTE V);
+typedef void (*WriteMemFn)(const DWORD A, const BYTE V);
 
-static void  WriteRom(DWORD A, BYTE V)
+static void  WriteRom(const DWORD A, const BYTE V)
 {
     //ErrorMsg(ERR_WRITE_ROM);
 }
 
-static void  WriteIRam(DWORD A, BYTE V)
+static void  WriteIRam(const DWORD A, const BYTE V)
 {
     IRAM[A & 0xFFFF] = V;
     if((A & 0xFE00) == 0xFE00)
@@ -196,7 +184,7 @@ static void  WriteIRam(DWORD A, BYTE V)
 #define FLASH_CMD_CONTINUE_RES2 0xF0
 #define FLASH_CMD_CONTINUE_RES3 0x00
 #define FLASH_CMD_WRITE         0xA0
-static void  WriteCRam(DWORD A, BYTE V)
+static void  WriteCRam(const DWORD A, const BYTE V)
 {
     static int flashCommand1 = 0;
     static int flashCommand2 = 0;
@@ -288,7 +276,7 @@ static void  WriteCRam(DWORD A, BYTE V)
     }
 }
 
-void  WriteIO(DWORD A, BYTE V)
+void  WriteIO(const DWORD A, BYTE V)
 {
     int i, j, k;
 
@@ -301,59 +289,6 @@ void  WriteIO(DWORD A, BYTE V)
     case 0x07:
         Scr1TMap = IRAM + ((V & 0x0F) << 11);
         Scr2TMap = IRAM + ((V & 0xF0) << 7);
-        break;
-    case 0x15:
-        if (V & 0x01)
-        {
-            Segment[8] = 1;
-            RenderSleep();
-        }
-        else
-        {
-            Segment[8] = 0;
-        }
-        if (V & 0x02)
-        {
-            SetHVMode(1);
-            Segment[4] = 1;
-        }
-        else
-        {
-            Segment[4] = 0;
-        }
-        if (V & 0x04)
-        {
-            SetHVMode(0);
-            Segment[3] = 1;
-        }
-        else
-        {
-            Segment[3] = 0;
-        }
-        if (V & 0x08)
-        {
-            Segment[2] = 1;
-        }
-        else
-        {
-            Segment[2] = 0;
-        }
-        if (V & 0x10)
-        {
-            Segment[1] = 1;
-        }
-        else
-        {
-            Segment[1] = 0;
-        }
-        if (V & 0x20)
-        {
-            Segment[0] = 1;
-        }
-        else
-        {
-            Segment[0] = 0;
-        }
         break;
     case 0x1C:
     case 0x1D:
@@ -571,10 +506,6 @@ void  WriteIO(DWORD A, BYTE V)
         {
             Page[1] = MemDummy;
         }
-        else if (V >= RAMBanks)
-        {
-            RAMEnable = 0;
-        }
         else
         {
             Page[1] = RAMMap[V];
@@ -616,7 +547,7 @@ void  WriteIO(DWORD A, BYTE V)
 }
 
 #define  BCD(value) ((value / 10) << 4) | (value % 10)
-BYTE ReadIO(DWORD A)
+BYTE ReadIO(const DWORD A)
 {
     switch(A)
     {
@@ -794,19 +725,12 @@ void WsReset (void)
     IRAM[0x75B1]=0x5F;
     IRAM[0x75B2]=0x63;
     IRAM[0x75B3]=0x31;
-#ifdef SOUND_ON
-    apuWaveClear();
-#endif
     ButtonState = 0x0000;
-    for (i = 0; i < 11; i++)
-    {
-        Segment[i] = 0;
-    }
     nec_reset(NULL);
     nec_set_reg(NEC_SP, 0x2000);
 }
 
-void WsRomPatch(BYTE *buf)
+void WsRomPatch(const BYTE *buf)
 {
     if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x16)) // SWJ-BANC16 STAR HEARTS
     {
@@ -880,15 +804,6 @@ int Interrupt(void)
 
             if(IO[LCDSLP] & 0x01)
             {
-                if(IO[RSTRL] == 0)
-                {
-                    SkipCnt--;
-                    if(SkipCnt < 0)
-                    {
-                        SkipCnt = 4;
-                    }
-                }
-#ifdef SMOOTH
 				if(IO[RSTRL] < 144)
 				{
 					RefreshLine(IO[RSTRL]);
@@ -897,19 +812,6 @@ int Interrupt(void)
 				{
 					graphics_paint();
 				}
-#else
-                if(TblSkip[FrameSkip][SkipCnt])
-                {
-                    if(IO[RSTRL] < 144)
-                    {
-                        RefreshLine(IO[RSTRL]);
-                    }
-                    else if(IO[RSTRL] == 144)
-                    {
-                        graphics_paint();
-                    }
-                }
-#endif
             }
             break;
         case 6:
@@ -1009,7 +911,7 @@ int WsRun(void)
     return 0;
 }
 
-void SetHVMode(int Mode)
+void SetHVMode(const unsigned char Mode)
 {
     HVMode = Mode;
 }

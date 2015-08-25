@@ -13,8 +13,7 @@
 #include "font.h" // Font c array
 
 extern unsigned int m_Flag;
-
-bool gameMenu;
+unsigned char gameMenu;
 
 SDL_Rect position_select;
 
@@ -40,7 +39,7 @@ void menuFileBrowse(void);
 void menuSaveState(void);
 void menuLoadState(void);
 void screen_showkeymenu(void);
-unsigned char ifactive(unsigned char *keys);
+unsigned char ifactive(const unsigned char *keys);
 void menuReturn(void);
 #if !defined(NOSCREENSHOTS)
 void menuSaveBmp(void);
@@ -49,8 +48,8 @@ void menuSaveBmp(void);
 //---------------------------------------------------------------------------------------
 typedef struct {
 	const char itemName[16];
-	int *itemPar;
-	int itemParMaxValue;
+	short *itemPar;
+	short itemParMaxValue;
 	const char *itemParName;
 	void (*itemOnA)();
 } MENUITEM;
@@ -71,32 +70,32 @@ MENUITEM MainMenuItems[] = {
 	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
 	{"Continue", NULL, 0, NULL, &menuContinue},
 	{"Reset", NULL, 0, NULL, &menuReset},
-	{"Load State: ", (int *) &GameConf.reserved1, 8, (char *) &mnuSaves, &menuLoadState},
-	{"Save State: ", (int *) &GameConf.reserved2, 8, (char *) &mnuSaves, &menuSaveState},
-	/*{"Show FPS: ", (int *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},*/
+	{"Load State: ", (short *) &GameConf.reserved1, 8, (char *) &mnuSaves, &menuLoadState},
+	{"Save State: ", (short *) &GameConf.reserved2, 8, (char *) &mnuSaves, &menuSaveState},
+	{"Show FPS: ", (short *) &GameConf.m_DisplayFPS, 1,(char *) &mnuYesNo, NULL},
 #if !defined(NOSCREENSHOTS)
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 #endif
-	{"Ratio: ", (int *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
-	{"", (int *) &GameConf.input_layout, 3, (char *) &mnuABXY, NULL},
+	{"Ratio: ", (short *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
+	{"", (short *) &GameConf.input_layout, 3, (char *) &mnuABXY, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
 
 
 MENU mnuMainMenu = { 
 #if defined(NOSCREENSHOTS)
-	8,
-#else
 	9,
+#else
+	10,
 #endif
 	0, (MENUITEM *) &MainMenuItems };
 
 //----------------------------------------------------------------------------------------------------
 // Prints char on a given surface
-void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, int fg_color, int bg_color) 
+void screen_showchar(SDL_Surface *s, const short x, const short y, unsigned char a, const int fg_color, const int bg_color) 
 {
 	unsigned short *dst;
-	int w, h;
+	unsigned short w, h;
 
 	//if(SDL_MUSTLOCK(s)) SDL_LockSurface(s);
 	SDL_LockSurface(s);
@@ -122,19 +121,13 @@ void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, int fg_color
 }
 
 // copy-pasted mostly from gpsp emulator by Exophaze. 	thanks for it
-void print_string(const char *s, unsigned short fg_color, unsigned short bg_color, int x, int y) 
+void print_string(const char *s, const  unsigned short fg_color, const unsigned short bg_color, short x, const short y) 
 {
 	int i, j = strlen(s);
 	for(i = 0; i < j; i++, x += 6) screen_showchar(actualScreen, x, y, s[i], fg_color, bg_color);
 }
 
-void print_string_video(int x, int y, const char *s) 
-{
-	int i, j = strlen(s);
-	for(i = 0; i < j; i++, x += 8) screen_showchar(actualScreen, x, y, s[i], SDL_MapRGB(actualScreen->format,255, 0, 0), 0);
-}
-
-void screen_showitem(int x, int y, MENUITEM *m, int fg_color) 
+void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color) 
 {
 	static char i_str[24];
 
@@ -143,19 +136,19 @@ void screen_showitem(int x, int y, MENUITEM *m, int fg_color)
 	else {
 		if(m->itemParName == NULL) {
 			// if parameter is a digit
-			sprintf(i_str, "%s%i", m->itemName, *m->itemPar);
+			snprintf(i_str, sizeof(i_str), "%s%i", m->itemName, *m->itemPar);
 		} else {
 			// if parameter is a name in array
-			sprintf(i_str, "%s%s", m->itemName, m->itemParName+(*m->itemPar)*16);
+			snprintf(i_str, sizeof(i_str), "%s%s", m->itemName, m->itemParName+(*m->itemPar)*16);
 		}
 		print_string(i_str, fg_color, COLOR_BG, x, y);
 	}
 }
 
-// flip the layer to screen
-void screen_flip(void) 
+void print_string_video(short x, const short y, const char *s) 
 {
-	flip_screen(actualScreen);
+	int i, j = strlen(s);
+	for(i = 0; i < j; i++, x += 8) screen_showchar(actualScreen, x, y, s[i], SDL_MapRGB(actualScreen->format,255, 0, 0), 0);
 }
 
 // Clear screen
@@ -163,13 +156,6 @@ void screen_prepback(SDL_Surface *s)
 {
 	// load logo, Convert the image to optimal display format and Free the temporary surface
 	SDL_FillRect(s, NULL, 0);
-}
-
-// draw main emulator design
-void screen_prepbackground(void) 
-{
-	// draw default background
-	screen_prepback(actualScreen);
 }
 
 // Shows menu items and pointing arrow
@@ -203,20 +189,20 @@ void screen_showmenu(MENU *menu)
 	
 	if (cartridge_IsLoaded()) 
 	{
-		sprintf(szVal,"Game:%s",strrchr(gameName,'/')+1);
+		snprintf(szVal, sizeof(szVal), "Game:%s",strrchr(gameName,'/')+1);
 		szVal[(320/6)-2] = '\0'; 
 		print_string(szVal, COLOR_LIGHT, COLOR_BG, 8,240-2-10-10);
 		/*sprintf(szVal,"CRC:%08X",gameCRC); 
 		print_string(szVal, COLOR_LIGHT, COLOR_BG,8,240-2-10);*/
 	}
 	
-	screen_flip();
+	flip_screen(actualScreen);
 }
 
 // wait for a key
 void screen_waitkey(void) 
 {
-	bool akey=false;
+	unsigned char akey=false;
 		
 	while (!akey) {
 		while(SDL_PollEvent(&event)) {
@@ -239,7 +225,7 @@ void screen_waitkeyarelease(void)
 	}
 }
 
-unsigned char ifactive(unsigned char *keys)
+unsigned char ifactive(const unsigned char *keys)
 {
 	if (keys[PAD_A] || keys[PAD_B] || keys[PAD_UP] || keys[PAD_DOWN] || keys[PAD_LEFT] || keys[PAD_RIGHT]) 
 		return 1; 	// Yes, active
@@ -254,8 +240,8 @@ void screen_showmainmenu(MENU *menu)
 	static unsigned char button_state[5], button_time[5];
 	unsigned short pad, i;
 	unsigned char *keys;
+	unsigned char keya=0, keyb=0, keyup=0, keydown=0, keyleft=0, keyright=0;
 	MENUITEM *mi;
-	unsigned int keya=0, keyb=0, keyup=0, keydown=0, keyleft=0, keyright=0;
 
 	/* Show Menu on-screen (Load ROM, Reset...)*/
 	screen_showmenu(menu);
@@ -352,7 +338,7 @@ void screen_showmainmenu(MENU *menu)
 			if (!keyup) 
 			{
 				keyup = 1; 
-				screen_prepbackground();
+				SDL_FillRect(actualScreen, NULL, 0);
 				if(--menu->itemCur < 0)
 				{
 					menu->itemCur = menu->itemNum - 1;
@@ -371,7 +357,7 @@ void screen_showmainmenu(MENU *menu)
 			if (!keydown) 
 			{
 				keydown = 1; 
-				screen_prepbackground();
+				SDL_FillRect(actualScreen, NULL, 0);
 				if(++menu->itemCur == menu->itemNum) 
 				{
 					menu->itemCur = 0;
@@ -393,7 +379,7 @@ void screen_showmainmenu(MENU *menu)
 				if(mi->itemPar != NULL && *mi->itemPar > 0)
 				{ 
 					 *mi->itemPar -= 1;
-				      screen_prepbackground();
+				      SDL_FillRect(actualScreen, NULL, 0);
 				}
 			}
 			else 
@@ -412,7 +398,7 @@ void screen_showmainmenu(MENU *menu)
 				if(mi->itemPar != NULL && *mi->itemPar < mi->itemParMaxValue) 
 				{ 
 					*mi->itemPar += 1;
-					screen_prepbackground();
+					SDL_FillRect(actualScreen, NULL, 0);
 				}
 				
 			}
@@ -453,7 +439,7 @@ void screen_showtopmenu(void)
 	}
 #endif
 
-	screen_prepbackground();
+	SDL_FillRect(actualScreen, NULL, 0);
 
 	// Display and manage main menu
 	screen_showmainmenu(&mnuMainMenu);
@@ -473,18 +459,14 @@ void screen_showtopmenu(void)
 }
 
 // find a filename for bmp or state saving 
-void findNextFilename(char *szFileFormat, char *szFilename) 
+void findNextFilename(const char *szFileFormat, char *szFilename) 
 {
-#if defined(DREAMCAST) || defined(KOLIBRI)
-	int uBcl;
-#else
-	uint32_t uBcl;
-#endif
+	unsigned short uBcl;
+	short fp;
 	
-	int fp;
-  
-	for (uBcl = 0; uBcl<999; uBcl++) {
-		sprintf(szFilename,szFileFormat,uBcl);
+	for (uBcl = 0; uBcl<999; uBcl++) 
+	{
+		snprintf(szFilename, 512, szFileFormat, uBcl);
 		fp = open(szFilename,O_RDONLY | O_BINARY);
 		if (fp <0) break;
 		close(fp);
@@ -541,11 +523,10 @@ int sort_function(const void *src_str_ptr, const void *dest_str_ptr)
   return strcmp (p1->name, p2->name);
 }
 
-int strcmp_function(const char *s1, const char *s2)
+char strcmp_function(const char *s1, const char *s2)
 {
 	int i;
-	/*int c;*/
-	
+
 	if (strlen(s1) != strlen(s2)) return 1;
 
 	for(i=0; i<strlen(s1); i++) {
@@ -781,7 +762,7 @@ signed int load_file(const char **wildcards, char *result)
 					{
 						repeat = 0;
 						return_value = 0;
-						sprintf(result, "%s/%s", current_dir_name, filedir_list[current_filedir_selection].name);
+						snprintf(result, sizeof(gameName), "%s/%s", current_dir_name, filedir_list[current_filedir_selection].name);
 					}
 				}
 			}
@@ -860,7 +841,7 @@ signed int load_file(const char **wildcards, char *result)
 				kepdfl = 8; 
 			}
 			
-			screen_flip();
+			flip_screen(actualScreen);
 #ifdef _TINSPIRE
 		sleep(1);
 #else
@@ -875,7 +856,7 @@ signed int load_file(const char **wildcards, char *result)
 		strcpy(GameConf.current_dir_rom,current_dir_name);
 	}
 
-	screen_prepbackground();
+	SDL_FillRect(actualScreen, NULL, 0);
 
 	return return_value;
 }
@@ -927,11 +908,11 @@ void menuSaveBmp(void)
 #endif
 
 		print_string("Saving...", COLOR_OK, COLOR_BG, 8,240-5 -10*3);
-		screen_flip();
+		flip_screen(actualScreen);
 		findNextFilename(szFile,szFile1);
 		SDL_SaveBMP(screenshots, szFile1);
 		print_string("Screen saved !", COLOR_OK, COLOR_BG, 8+10*8,240-5 -10*3);
-		screen_flip();
+		flip_screen(actualScreen);
 		screen_waitkey();
 	}
 }
@@ -953,7 +934,7 @@ void menuSaveState(void)
 		print_string("Saving...", COLOR_OK, COLOR_BG, 8,240-5 -10*3);
 		WsSaveState(szFile, GameConf.reserved2);
 		print_string("Save OK",COLOR_OK,COLOR_BG, 8+10*8,240-5 -10*3);
-		screen_flip();
+		flip_screen(actualScreen);
 		screen_waitkey();
 	}
 }
@@ -974,7 +955,7 @@ void menuLoadState(void)
 		print_string("Loading...", COLOR_OK, COLOR_BG, 8,240-5 -10*3);
 		WsLoadState(szFile, GameConf.reserved1);
 		print_string("Load OK",COLOR_OK,COLOR_BG, 8+10*8,240-5 -10*3);
-		screen_flip();
+		flip_screen(actualScreen);
 		screen_waitkey();
 		gameMenu=false;
 		m_Flag = GF_GAMERUNNING;
@@ -988,7 +969,7 @@ void menuReturn(void)
 }
 
 
-void system_loadcfg(char *cfg_name) 
+void system_loadcfg(const char *cfg_name) 
 {
   int fd;
   fd = open(cfg_name, O_RDONLY | O_BINARY);
@@ -996,7 +977,6 @@ void system_loadcfg(char *cfg_name)
   {
 	read(fd, &GameConf, sizeof(GameConf));
     close(fd);
-    printf("closed...");
     /*To remove in the future...*/
 #ifndef NOSAVE_HACK
 	if (GameConf.save_oldoswan_check!=128) 
@@ -1038,7 +1018,7 @@ void system_loadcfg(char *cfg_name)
 	}
 }
 
-void system_savecfg(char *cfg_name) 
+void system_savecfg(const char *cfg_name) 
 {
 	int fd;
 	fd = open(cfg_name, O_CREAT | O_RDWR | O_BINARY | O_TRUNC, S_IREAD | S_IWRITE);

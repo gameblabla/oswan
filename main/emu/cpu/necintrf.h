@@ -12,10 +12,10 @@ extern int nec_ICount;
 
 /* Public functions */
 
-void nec_set_reg(int,unsigned);
-int nec_execute(int cycles);	
-unsigned nec_get_reg(int regnum);
+void inline nec_set_reg(const int regnum, const unsigned val);
+unsigned short inline nec_execute(const unsigned short cycles);
+short inline nec_get_reg(const int regnum);
 void nec_reset (void *param);
-void nec_int(DWORD wektor);
+void inline nec_int(DWORD wektor);
 
 #endif

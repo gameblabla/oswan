@@ -96,21 +96,8 @@ int WsInputGetState(int mode)
 		}
 	}
 
-	
-	// Save (L button)
+	// Load (L button)
 	if (button_time[0] == 1) 
-	{
-		strcpy(szFile, gameName);
-#ifdef _TINSPIRE
-		strcpy(strrchr(szFile, '.'), ".sta.tns");
-#else
-		strcpy(strrchr(szFile, '.'), ".sta");
-#endif
-		WsLoadState(szFile, GameConf.reserved2);
-	}
-		
-	// Load (R button)
-	if (button_time[1] == 1) 
 	{
 		strcpy(szFile, gameName);
 #ifdef _TINSPIRE
@@ -120,6 +107,18 @@ int WsInputGetState(int mode)
 #endif
 		WsSaveState(szFile, GameConf.reserved1);
 	}
+	// Save (R button)
+	if (button_time[1] == 1) 
+	{
+		strcpy(szFile, gameName);
+#ifdef _TINSPIRE
+		strcpy(strrchr(szFile, '.'), ".sta.tns");
+#else
+		strcpy(strrchr(szFile, '.'), ".sta");
+#endif
+		WsLoadState(szFile, GameConf.reserved2);
+	}
+	
 
 	if (GameConf.input_layout == 0)
 	{
@@ -185,13 +184,13 @@ int WsInputGetState(int mode)
 				button |= (1<<11); 
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
-				button |= (1<<7); // RIGHT -> X2
+				button |= (1<<6); 
 			if (keys[PAD_B] == SDL_PRESSED) 
-				button |= (1<<5); // LEFT -> X4
+				button |= (1<<5); 
 			if (keys[PAD_X] == SDL_PRESSED) 
-				button |= (1<<6); // DOWN -> X3
+				button |= (1<<7); 
 			if (keys[PAD_Y] == SDL_PRESSED) 
-				button |= (1<<4); // UP -> X1
+				button |= (1<<4); 
 			
 			#ifdef JOYSTICK
 			if (x_joy > 7500) 

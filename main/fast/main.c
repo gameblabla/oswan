@@ -18,7 +18,6 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 unsigned int m_Flag;
 unsigned int interval;
 
-unsigned int gameCRC;
 gamecfg GameConf;
 char gameName[512];
 char current_conf_app[MAX__PATH];
@@ -26,8 +25,6 @@ char current_conf_app[MAX__PATH];
 void exit_oswan();
 void msleep(unsigned char milisec);
 extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
-unsigned long nextTick, lastTick = 0, newTick, currentTick, wait;
-int pastFPS = 0; 
 
 #ifndef NOFRAMERATE_LIMIT	
 	#ifdef NO_FLOAT

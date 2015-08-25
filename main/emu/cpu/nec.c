@@ -25,8 +25,6 @@
 	may	be a slower core.
 
 ****************************************************************************/
-
-
 #include <stdio.h>
 #include <string.h>
 
@@ -36,7 +34,6 @@
 #define INT8 signed char
 #define INT16 signed short
 #define INT32 signed int
-#define BOOLEAN	int
 
 #include "nec.h"
 #include "necintrf.h"
@@ -92,8 +89,8 @@ static UINT8 parity_table[256];
 
 void nec_reset (void *param)
 {
-	unsigned int i,j,c;
-	BREGS reg_name[8]={ AL, CL, DL, BL, AH, CH, DH, BH };
+	unsigned short i,j,c;
+	const BREGS reg_name[8]={ AL, CL, DL, BL, AH, CH, DH, BH };
 
 
 	memset( &I, 0, sizeof(I) );
@@ -110,7 +107,6 @@ void nec_reset (void *param)
 	}
 
 	I.ZeroVal = I.ParityVal = 1;
-	SetMD(1);						/* set the mode-flag = native mode */
 
 	for (i = 0; i < 256; i++)
 	{
@@ -123,9 +119,13 @@ void nec_reset (void *param)
 		Mod_RM.RM.w[i] = (WREGS)( i & 7 );
 		Mod_RM.RM.b[i] = (BREGS)reg_name[i & 7];
 	}
+	
+	prefix_base = 0;
+	seg_prefix = 0;
+	
 }
 
-void nec_int(DWORD wektor)
+void inline nec_int(const DWORD wektor)
 {
   
 	DWORD dest_seg, dest_off;
@@ -143,7 +143,7 @@ void nec_int(DWORD wektor)
 	}
 }
 
-static void nec_interrupt(unsigned int_num,BOOLEAN md_flag)
+static void inline nec_interrupt(const unsigned int_num)
 {
 	UINT32 dest_seg, dest_off;
 
@@ -169,7 +169,7 @@ static void nec_interrupt(unsigned int_num,BOOLEAN md_flag)
 /*							   OPCODES										*/
 /****************************************************************************/
 
-#define OP(num,func_name) static void func_name(void)
+#define OP(num,func_name) static void inline func_name(void)
 
 
 OP( 0x00, i_add_br8  ) { DEF_br8;	ADDB;	PutbackRMByte(ModRM,dst);	CLKM(3,1);	 	}
@@ -280,23 +280,25 @@ OP( 0x5e, i_pop_si	) { POP(I.regs.w[IX]);					CLK(1); }
 OP( 0x5f, i_pop_di	) { POP(I.regs.w[IY]);					CLK(1); }
 
 OP( 0x60, i_pusha  ) {
-	unsigned tmp=I.regs.w[SP];
+	/*unsigned tmp=I.regs.w[SP];*/
 	PUSH(I.regs.w[AW]);
 	PUSH(I.regs.w[CW]);
 	PUSH(I.regs.w[DW]);
 	PUSH(I.regs.w[BW]);
-	PUSH(tmp);
+	PUSH(I.regs.w[SP]);
 	PUSH(I.regs.w[BP]);
 	PUSH(I.regs.w[IX]);
 	PUSH(I.regs.w[IY]);
 	CLK(9);
 }
 OP( 0x61, i_popa  ) {
-	unsigned tmp;
+	/*unsigned tmp;*/
 	POP(I.regs.w[IY]);
 	POP(I.regs.w[IX]);
 	POP(I.regs.w[BP]);
-	POP(tmp);
+	
+	POP(I.regs.w[SP]);
+	/*POP(tmp);*/
 	POP(I.regs.w[BW]);
 	POP(I.regs.w[DW]);
 	POP(I.regs.w[CW]);
@@ -310,67 +312,10 @@ OP( 0x62, i_chkind	) {
 	high= GetnextRMWord;
 	tmp= RegWord(ModRM);
 	if (tmp<low || tmp>high) {
-		nec_interrupt(5,0);
+		nec_interrupt(5);
 		CLK(7);
 	}
  	CLK(13);
-}
-
-/* OP 0x64 - 0x67 is nop at V30MZ */
-OP( 0x64, i_repnc  ) { 	UINT32 next = FETCHOP;	UINT16 c = I.regs.w[CW];
-	switch(next) { /* Segments */
-		case 0x26:	seg_prefix=TRUE;	prefix_base=I.sregs[ES]<<4;	next = FETCHOP;	CLK(2); break;
-		case 0x2e:	seg_prefix=TRUE;	prefix_base=I.sregs[CS]<<4;	next = FETCHOP;	CLK(2); break;
-		case 0x36:	seg_prefix=TRUE;	prefix_base=I.sregs[SS]<<4;	next = FETCHOP;	CLK(2); break;
-		case 0x3e:	seg_prefix=TRUE;	prefix_base=I.sregs[DS]<<4;	next = FETCHOP;	CLK(2); break;
-	}
-
-	switch(next) {
-		case 0x6c:	CLK(2); if (c) do { i_insb();  c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0x6d:	CLK(2); if (c) do { i_insw();  c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0x6e:	CLK(2); if (c) do { i_outsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0x6f:	CLK(2); if (c) do { i_outsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xa4:	CLK(2); if (c) do { i_movsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xa5:	CLK(2); if (c) do { i_movsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xa6:	CLK(2); if (c) do { i_cmpsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xa7:	CLK(2); if (c) do { i_cmpsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xaa:	CLK(2); if (c) do { i_stosb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xab:	CLK(2); if (c) do { i_stosw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xac:	CLK(2); if (c) do { i_lodsb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xad:	CLK(2); if (c) do { i_lodsw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xae:	CLK(2); if (c) do { i_scasb(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		case 0xaf:	CLK(2); if (c) do { i_scasw(); c--; } while (c>0 && !CF); I.regs.w[CW]=c; break;
-		default:		nec_instruction[next]();
-	}
-	seg_prefix=FALSE;
-}
-
-OP( 0x65, i_repc  ) { 	UINT32 next = FETCHOP;	UINT16 c = I.regs.w[CW];
-	switch(next) { /* Segments */
-		case 0x26:	seg_prefix=TRUE;	prefix_base=I.sregs[ES]<<4;	next = FETCHOP;	CLK(2); break;
-		case 0x2e:	seg_prefix=TRUE;	prefix_base=I.sregs[CS]<<4;	next = FETCHOP;	CLK(2); break;
-		case 0x36:	seg_prefix=TRUE;	prefix_base=I.sregs[SS]<<4;	next = FETCHOP;	CLK(2); break;
-		case 0x3e:	seg_prefix=TRUE;	prefix_base=I.sregs[DS]<<4;	next = FETCHOP;	CLK(2); break;
-	}
-
-	switch(next) {
-		case 0x6c:	CLK(2); if (c) do { i_insb();  c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0x6d:	CLK(2); if (c) do { i_insw();  c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0x6e:	CLK(2); if (c) do { i_outsb(); c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0x6f:	CLK(2); if (c) do { i_outsw(); c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0xa4:	CLK(2); if (c) do { i_movsb(); c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0xa5:	CLK(2); if (c) do { i_movsw(); c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0xa6:	CLK(2); if (c) do { i_cmpsb(); c--; } while (c>0 && CF);	I.regs.w[CW]=c; break;
-		case 0xa7:	CLK(2); if (c) do { i_cmpsw(); c--; } while (c>0 && CF);	I.regs.w[CW]=c; break;
-		case 0xaa:	CLK(2); if (c) do { i_stosb(); c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0xab:	CLK(2); if (c) do { i_stosw(); c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0xac:	CLK(2); if (c) do { i_lodsb(); c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0xad:	CLK(2); if (c) do { i_lodsw(); c--; } while (c>0 && CF);	I.regs.w[CW]=c;	break;
-		case 0xae:	CLK(2); if (c) do { i_scasb(); c--; } while (c>0 && CF);	I.regs.w[CW]=c; break;
-		case 0xaf:	CLK(2); if (c) do { i_scasw(); c--; } while (c>0 && CF);	I.regs.w[CW]=c; break;
-		default:	nec_instruction[next]();
-	}
-	seg_prefix=FALSE;
 }
 
 OP( 0x68, i_push_d16 ) { UINT32 tmp;	FETCHWORD(tmp); PUSH(tmp);	CLK(1);	}
@@ -477,10 +422,12 @@ OP( 0x8e, i_mov_sregw ) { UINT16 src; GetModRM; src = GetRMWord(ModRM); CLKM(3,2
 	no_interrupt=1;
 }
 OP( 0x8f, i_popw ) { UINT16 tmp; GetModRM; POP(tmp); PutRMWord(ModRM,tmp); CLKM(3,1); }
-OP( 0x90, i_nop  ) { CLK(1);
+OP( 0x90, i_nop  ) { 
+	CLK(3);
+	/*CLK(1);*/
 	/* Cycle skip for idle loops (0: NOP  1:  JMP 0) */
-	if (no_interrupt==0 && nec_ICount>0 && (PEEKOP((I.sregs[CS]<<4)+I.ip))==0xeb && (PEEK((I.sregs[CS]<<4)+I.ip+1))==0xfd)
-		nec_ICount%=15;
+	/*if (no_interrupt==0 && nec_ICount>0 && (PEEKOP((I.sregs[CS]<<4)+I.ip))==0xeb && (PEEK((I.sregs[CS]<<4)+I.ip+1))==0xfd)
+		nec_ICount%=15;*/
 }
 OP( 0x91, i_xchg_axcx ) { XchgAWReg(CW); CLK(3); }
 OP( 0x92, i_xchg_axdx ) { XchgAWReg(DW); CLK(3); }
@@ -601,9 +548,9 @@ OP( 0xc9, i_leave ) {
 }
 OP( 0xca, i_retf_d16  ) { UINT32 count = FETCH; count += FETCH << 8; POP(I.ip); POP(I.sregs[CS]); I.regs.w[SP]+=count; CLK(9); }
 OP( 0xcb, i_retf	  ) { POP(I.ip); POP(I.sregs[CS]); CLK(8); }
-OP( 0xcc, i_int3	  ) { nec_interrupt(3,0); CLK(9); }
-OP( 0xcd, i_int 	  ) { nec_interrupt(FETCH,0); CLK(10); }
-OP( 0xce, i_into	  ) { if (OF) { nec_interrupt(4,0); CLK(13); } else CLK(6); }
+OP( 0xcc, i_int3	  ) { nec_interrupt(3); CLK(9); }
+OP( 0xcd, i_int 	  ) { nec_interrupt(FETCH); CLK(10); }
+OP( 0xce, i_into	  ) { if (OF) { nec_interrupt(4); CLK(13); } else CLK(6); }
 OP( 0xcf, i_iret	  ) { POP(I.ip); POP(I.sregs[CS]); i_popf(); CLK(10); }
 
 OP( 0xd0, i_rotshft_b ) {
@@ -688,8 +635,9 @@ OP( 0xe7, i_outax  ) { UINT8 port = FETCH; write_port(port, I.regs.b[AL]); write
 OP( 0xe8, i_call_d16 ) { UINT32 tmp; FETCHWORD(tmp); PUSH(I.ip); I.ip = (WORD)(I.ip+(INT16)tmp); CLK(5); }
 OP( 0xe9, i_jmp_d16  ) { UINT32 tmp; FETCHWORD(tmp); I.ip = (WORD)(I.ip+(INT16)tmp); CLK(4); }
 OP( 0xea, i_jmp_far  ) { UINT32 tmp,tmp1; FETCHWORD(tmp); FETCHWORD(tmp1); I.sregs[CS] = (WORD)tmp1; 	I.ip = (WORD)tmp; CLK(7);	}
-OP( 0xeb, i_jmp_d8	 ) { int tmp = (int)((INT8)FETCH); CLK(4);
-	if (tmp==-2 && no_interrupt==0 && nec_ICount>0) nec_ICount%=12; /* cycle skip */
+OP( 0xeb, i_jmp_d8	 ) { 
+	int tmp = (int)((INT8)FETCH); CLK(4);
+	if (tmp==-2 && no_interrupt==0 && nec_ICount>0) nec_ICount%=12; // cycle skip/
 	I.ip = (WORD)(I.ip+tmp);
 }
 OP( 0xec, i_inaldx	 ) { I.regs.b[AL] = read_port(I.regs.w[DW]); CLK(6);}
@@ -698,6 +646,7 @@ OP( 0xee, i_outdxal  ) { write_port(I.regs.w[DW], I.regs.b[AL]); CLK(6);	}
 OP( 0xef, i_outdxax  ) { UINT32 port = I.regs.w[DW];	write_port(port, I.regs.b[AL]);	write_port(port+1, I.regs.b[AH]); CLK(6); }
 
 OP( 0xf0, i_lock	 ) {  no_interrupt=1; CLK(1); }
+
 #define THROUGH 				\
 	if(nec_ICount<0){			\
 		if(seg_prefix)			\
@@ -706,7 +655,8 @@ OP( 0xf0, i_lock	 ) {  no_interrupt=1; CLK(1); }
 			I.ip-=(UINT16)2;	\
 		break;}
 
-OP( 0xf2, i_repne	 ) { UINT32 next = FETCHOP; UINT16 c = I.regs.w[CW];
+OP( 0xf2, i_repne	 ) { 
+	UINT32 next = FETCHOP; UINT16 c = I.regs.w[CW];
 	switch(next) { /* Segments */
 		case 0x26:	seg_prefix=TRUE;	prefix_base=I.sregs[ES]<<4;	next = FETCHOP;	CLK(2); break;
 		case 0x2e:	seg_prefix=TRUE;	prefix_base=I.sregs[CS]<<4;	next = FETCHOP;	CLK(2); break;
@@ -777,8 +727,8 @@ OP( 0xf6, i_f6pre ) { UINT32 tmp; UINT32 uresult,uresult2; INT32 result,result2;
 		case 0x18: I.CarryVal=(tmp!=0);tmp=(~tmp)+1; SetSZPF_Byte(tmp); PutbackRMByte(ModRM,tmp&0xff); CLKM(3,1); break; /* NEG */
 		case 0x20: uresult = I.regs.b[AL]*tmp; I.regs.w[AW]=(WORD)uresult; I.CarryVal=I.OverVal=(I.regs.b[AH]!=0); CLKM(4,3); break; /* MULU */
 		case 0x28: result = (INT16)((INT8)I.regs.b[AL])*(INT16)((INT8)tmp); I.regs.w[AW]=(WORD)result; I.CarryVal=I.OverVal=(I.regs.b[AH]!=0); CLKM(4,3); break; /* MUL */
-		case 0x30: if (tmp) { DIVUB; } else nec_interrupt(0,0); CLKM(16,15); break;
-		case 0x38: if (tmp) { DIVB;  } else nec_interrupt(0,0); CLKM(18,17); break;
+		case 0x30: if (tmp) { DIVUB; } else nec_interrupt(0); CLKM(16,15); break;
+		case 0x38: if (tmp) { DIVB;  } else nec_interrupt(0); CLKM(18,17); break;
    }
 }
 
@@ -791,8 +741,8 @@ OP( 0xf7, i_f7pre	) { UINT32 tmp,tmp2; UINT32 uresult,uresult2; INT32 result,res
 		case 0x18: I.CarryVal=(tmp!=0); tmp=(~tmp)+1; SetSZPF_Word(tmp); PutbackRMWord(ModRM,tmp&0xffff); CLKM(3,1); break; /* NEG */
 		case 0x20: uresult = I.regs.w[AW]*tmp; I.regs.w[AW]=uresult&0xffff; I.regs.w[DW]=((UINT32)uresult)>>16; I.CarryVal=I.OverVal=(I.regs.w[DW]!=0); CLKM(4,3); break; /* MULU */
 		case 0x28: result = (INT32)((INT16)I.regs.w[AW])*(INT32)((INT16)tmp); I.regs.w[AW]=result&0xffff; I.regs.w[DW]=result>>16; I.CarryVal=I.OverVal=(I.regs.w[DW]!=0); CLKM(4,3); break; /* MUL */
-		case 0x30: if (tmp) { DIVUW; } else nec_interrupt(0,0); CLKM(24,23); break;
-		case 0x38: if (tmp) { DIVW;  } else nec_interrupt(0,0); CLKM(25,24); break;
+		case 0x30: if (tmp) { DIVUW; } else nec_interrupt(0); CLKM(24,23); break;
+		case 0x38: if (tmp) { DIVW;  } else nec_interrupt(0); CLKM(25,24); break;
  	}
 }
 
@@ -823,13 +773,13 @@ OP( 0xff, i_ffpre ) { UINT32 tmp, tmp1; GetModRM; tmp=GetRMWord(ModRM);
 
 static void i_invalid(void)
 {
-	CLK(10);
+	/*CLK(10);*/
 }
 
 /*****************************************************************************/
 
 
-unsigned nec_get_reg(int regnum)
+short inline nec_get_reg(const int regnum)
 {
 	switch( regnum )
 	{
@@ -855,9 +805,9 @@ unsigned nec_get_reg(int regnum)
 	return 0;
 }
 
-void nec_set_irq_line(int irqline, int state);
+void nec_set_irq_line(const int irqline, const int state);
 
-void nec_set_reg(int regnum, unsigned val)
+void inline nec_set_reg(const int regnum, const unsigned val)
 {
 	switch( regnum )
 	{
@@ -880,7 +830,7 @@ void nec_set_reg(int regnum, unsigned val)
 }
 
 
-int nec_execute(int cycles)
+unsigned short inline nec_execute(const unsigned short cycles)
 {
 	nec_ICount=cycles;
 

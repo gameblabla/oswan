@@ -5,6 +5,7 @@
 *.cfg
 *.map
 *.wsc
+*.out
 ./oswan
 /opk/oswan
 main/sdl/*.o

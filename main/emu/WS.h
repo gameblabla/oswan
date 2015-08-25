@@ -20,24 +20,24 @@ extern BYTE IRAM[0x10000];
 extern BYTE IO[0x100];
 extern BYTE MemDummy[0x10000];
 extern BYTE *ROMMap[0x100];     // C-ROMバンクマップ
-extern int ROMBanks;            // C-ROMバンク数
+extern unsigned short ROMBanks;            // C-ROMバンク数
 extern BYTE *RAMMap[0x100];     // C-RAMバンクマップ
-extern int RAMBanks;            // C-RAMバンク数
+extern unsigned char RAMBanks;            // C-RAMバンク数
 extern int RAMSize;             // C-RAM総容量
 extern WORD IEep[64];
 extern struct EEPROM sIEep;
 extern struct EEPROM sCEep;
 
 #define CK_EEP 1
-extern int CartKind;
+extern unsigned char CartKind;
 
-void WriteIO(DWORD A, BYTE V);
+void WriteIO(const DWORD A, BYTE V);
 void WsReset (void);
-void WsRomPatch(BYTE *buf);
+void WsRomPatch(const BYTE *buf);
 void WsSetDir(void);
 int WsRun(void);
 void WsInit(void);
 void WsDeInit(void);
-void SetHVMode(int Mode);
+void SetHVMode(const unsigned char Mode);
 
 #endif

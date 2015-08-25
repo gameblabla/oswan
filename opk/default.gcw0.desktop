@@ -2,8 +2,9 @@
 Type=Application
 Name=Oswan
 Comment=Wonderswan emulator
-Exec=oswan
+Exec=oswan %f
 Icon=icon
 Terminal=false
+selectorfilter=ws,wsc
+selectordir=/media/
 Categories=emulators;
-

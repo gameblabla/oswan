@@ -1,13 +1,13 @@
 CC = clang-3.6
 
-CFLAGS = -O0 -g -pg -Wall -Werror -g -I./main/emu -I./main/emu/cpu -I./main/sdl -I./main/fast ${DEFINES} 
-DEFINES = -DSMOOTH -DSWITCHING_GRAPHICS -DHOME_SUPPORT
-LDFLAGS = -lSDLmain -lSDL -lm -Wl,--as-needed -g -pg
+CFLAGS = -O3 -Wall -Werror -I./main/emu -I./main/emu/cpu -I./main/sdl -I./main/fast ${DEFINES} 
+DEFINES = -DHOME_SUPPORT -DSOUND_ON -DSOUND_ON -DSWITCHING_GRAPHICS
+LDFLAGS = -lSDLmain -lSDL -lm -Wl,--as-needed
 OUTPUT = oswan
 
 SDL = main/sdl/main.c main/sdl/menu.c main/sdl/hack.c main/sdl/gfx/SDL_rotozoom.c main/sdl/drawing.c main/sdl/input.c main/sdl/md5.c
 CPU = main/emu/cpu/nec.c
-EMU_CORE = main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
+EMU_CORE = main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c
 SOURCES = ${SDL} ${CPU} ${EMU_CORE}
 OBJS = ${SOURCES:.c=.o}
 

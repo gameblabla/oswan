@@ -12,6 +12,8 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 #include "drawing.h"
 #include "hack.h"
 
+void exit_oswan();
+extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 #ifdef SWITCHING_GRAPHICS
 	extern void screen_prepback(SDL_Surface *s);
 #else
@@ -21,17 +23,13 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 unsigned int m_Flag;
 unsigned int interval;
 
-unsigned int gameCRC;
 gamecfg GameConf;
 char gameName[512];
 char current_conf_app[MAX__PATH];
 
-void exit_oswan();
-void msleep(unsigned char milisec);
-extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 unsigned long nextTick, lastTick = 0, newTick, currentTick, wait;
-int FPS = 60; 
-int pastFPS = 0; 
+unsigned char FPS = 60; 
+unsigned char pastFPS = 0; 
 
 SDL_Surface *actualScreen, *screenshots;
 SDL_Event event;
@@ -63,20 +61,19 @@ int SetupCallbacks(void) {
 }
 #endif
 
-unsigned long SDL_UXTimerRead(void) {
+unsigned long SDL_UXTimerRead(void) 
+{
 	struct timeval tval; // timing
-  
   	gettimeofday(&tval, 0);
 	return (((tval.tv_sec*1000000) + (tval.tv_usec )));
 }
 
 void graphics_paint(void) 
 {
-	if(SDL_MUSTLOCK(actualScreen)) SDL_LockSurface(actualScreen);
+	SDL_LockSurface(actualScreen);
 	screen_draw();
-	if (SDL_MUSTLOCK(actualScreen)) SDL_UnlockSurface(actualScreen);
+	SDL_UnlockSurface(actualScreen);
 
-#if !defined(SMOOTH)
 	pastFPS++;
 	newTick = SDL_UXTimerRead();
 	if ((newTick-lastTick)>1000000) {
@@ -84,11 +81,6 @@ void graphics_paint(void)
 		pastFPS = 0;
 		lastTick = newTick;
 	}
-
-	FrameSkip = 60 - FPS;
-	if (FrameSkip<0) FrameSkip = 0;
-	else if (FrameSkip>4) FrameSkip=4;
-#endif
 
 	flip_screen(actualScreen);
 }
@@ -105,15 +97,24 @@ void initSDL(void)
 
 #ifdef SOUND_ON
 	SDL_Init(SDL_INIT_AUDIO);
+	SDL_AudioSpec fmt, retFmt;
 	
 	 //set up SDL sound 
-    SDL_AudioSpec fmt, retFmt;
+#ifdef NATIVE_AUDIO
 	fmt.freq = 12000;   
     fmt.format = AUDIO_S16SYS;
     fmt.channels = 2;
     fmt.samples = 512;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
+#else
+	fmt.freq = 48000;   
+    fmt.format = AUDIO_S16SYS;
+    fmt.channels = 2;
+    fmt.samples = 1024;
+    fmt.callback = mixaudioCallback;
+    fmt.userdata = NULL;
+#endif
 
     /* Open the audio device and start playing sound! */
     if ( SDL_OpenAudio(&fmt, &retFmt) < 0 )
@@ -127,7 +128,6 @@ void initSDL(void)
 
 int main(int argc, char *argv[]) 
 {
-	/*int lostfps;*/
 	double period;
 #ifdef _TINSPIRE
 	enable_relative_paths(argv);
@@ -179,11 +179,9 @@ int main(int argc, char *argv[])
 		switch (m_Flag) 
 		{
 			case GF_MAINUI:
-			
 				#ifdef SOUND_ON
 				SDL_PauseAudio(1);
 				#endif
-				
 				screen_showtopmenu();
 				if (cartridge_IsLoaded()) 
 				{
@@ -217,6 +215,7 @@ int main(int argc, char *argv[])
 		
 			case GF_GAMERUNNING:	
 				currentTick = SDL_UXTimerRead(); 
+				#ifndef _TINSPIRE
 				wait = (nextTick - currentTick);
 				if (wait > 0) {
 					if (wait < 1000000) 
@@ -224,6 +223,7 @@ int main(int argc, char *argv[])
 						usleep(wait);
 					}
 				}
+				#endif
 				WsRun();
 				nextTick += interval;
 				break;
