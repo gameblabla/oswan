@@ -3,7 +3,6 @@
 #include <SDL/SDL.h>
 #include "WSRender.h"
 #include "WS.h"
-#include "WSDraw.h"
 #include "WSSegment.h"
 #include "shared.h"
 

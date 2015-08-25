@@ -4,7 +4,6 @@
 
 #include "WSHard.h"
 #include "WS.h"
-#include "WSDraw.h"
 #include "WSFileio.h"
 #include "WSRender.h"
 #include "cpu/necintrf.h"
@@ -15,14 +14,24 @@
 int result;
 
 // ファイル操作は表などとディレクトリセパレータがかぶるのでUNICODEを使います
-static char SaveName[256];   // ".sav"
-static char StateName[256];
+char SaveName[512];   // ".sav"
+char StateName[512];
+char IEepPath[512]; 
 
-#ifdef _TINSPIRE
-static char* IEepPath = "./oswan.dat.tns";
-#else
-static char* IEepPath = "./oswan.dat";
-#endif
+
+char *
+strrchr_new (s, c)
+  register const char *s;
+  int c;
+{
+  char *rtnval = 0;
+
+  do {
+    if (*s == c)
+      rtnval = (char*) s;
+  } while (*s++);
+  return (rtnval);
+}
 
 int WsSetPdata(void)
 {
@@ -220,7 +229,7 @@ int WsCreate(char *CartName)
     }
     if (RAMSize)
     {
-		snprintf(SaveName, sizeof(SaveName), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(CartName,'/')+1, EXTENSION);
+		snprintf(SaveName, sizeof(SaveName), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(CartName, '/')+1, EXTENSION);
         
         if ((fp = fopen(SaveName, "rb")) != NULL)
         {
@@ -231,7 +240,7 @@ int WsCreate(char *CartName)
                     if (fread(RAMMap[i], 1, RAMSize, fp) != RAMSize)
                     {
                         //ErrorMsg(ERR_FREAD_SAVE);
-						fprintf(stderr,"ERR_FREAD_SAVE\n");
+						/*fprintf(stderr,"ERR_FREAD_SAVE\n");*/
 						break;
                     }
                 }
@@ -240,7 +249,7 @@ int WsCreate(char *CartName)
                     if (fread(RAMMap[i], 1, 0x10000, fp) != 0x10000)
                     {
                         //ErrorMsg(ERR_FREAD_SAVE);
-						fprintf(stderr,"ERR_FREAD_SAVE 1\n");
+						/*fprintf(stderr,"ERR_FREAD_SAVE 1\n");*/
                         break;
                     }
                 }
@@ -315,6 +324,8 @@ void WsLoadEeprom(void)
 {
     FILE* fp;
 
+	snprintf(IEepPath, sizeof(IEepPath), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, "oswan.dat", EXTENSION);
+
     if ((fp = fopen(IEepPath, "rb")) != NULL)
     {
         result = fread(IEep, sizeof(WORD), 64, fp);
@@ -337,6 +348,8 @@ void WsLoadEeprom(void)
 void WsSaveEeprom(void)
 {
     FILE* fp;
+
+	snprintf(IEepPath, sizeof(IEepPath), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, "oswan.dat", EXTENSION);
 
     if ((fp = fopen(IEepPath, "wb")) != NULL)
     {

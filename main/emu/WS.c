@@ -4,13 +4,13 @@
 
 // SDL drawing screen
 extern void graphics_paint(void);
-extern unsigned long SDL_UXTimerRead(void);
 
 #include "WSRender.h"
 #include "WS.h"
-#include "WSDraw.h"
 #include "input.h"
+#ifdef SOUND_ON
 #include "WSApu.h"
+#endif
 #include "WSFileio.h"
 #include "cpu/necintrf.h"
 
@@ -151,7 +151,7 @@ void  ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
     }
 }
 
-BYTE  ReadMem(DWORD A)
+inline BYTE ReadMem(DWORD A)
 {
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
@@ -175,10 +175,12 @@ static void  WriteIRam(DWORD A, BYTE V)
     {
         SetPalette(A);
     }
+#ifdef SOUND_ON
     if(!((A - WaveMap) & 0xFFC0))
     {
         apuSetPData(A & 0x003F, V);
     }
+#endif
 }
 
 #define FLASH_CMD_ADDR1         0x0AAA
@@ -425,6 +427,7 @@ void  WriteIO(DWORD A, BYTE V)
             V &= 0x7F;
         }
         break;
+#ifdef SOUND_ON
     case 0x80:
     case 0x81:
         IO[A] = V;
@@ -485,6 +488,7 @@ void  WriteIO(DWORD A, BYTE V)
         Swp.on    = V & 0x40;
         Noise.on  = V & 0x80;
         break;
+#endif
     case 0x91:
         V |= 0x80; // ヘッドホンは常にオン
         break;
@@ -790,7 +794,9 @@ void WsReset (void)
     IRAM[0x75B1]=0x5F;
     IRAM[0x75B2]=0x63;
     IRAM[0x75B3]=0x31;
+#ifdef SOUND_ON
     apuWaveClear();
+#endif
     ButtonState = 0x0000;
     for (i = 0; i < 11; i++)
     {
@@ -822,12 +828,184 @@ void WsRomPatch(BYTE *buf)
     }
 }
 
+int Interrupt(void)
+{
+    static int LCount=0, Joyz=0x0000;
+    int i, j;
+
+    if(++LCount>=8) // 8回で1Hblank期間
+    {
+        LCount=0;
+    }
+    switch(LCount)
+    {
+        case 0:
+            if (IO[RSTRL] == 144)
+            {
+                DWORD VCounter;
+
+                ButtonState = WsInputGetState(HVMode);
+                if((ButtonState ^ Joyz) & Joyz)
+                {
+                    if(IO[IRQENA] & KEY_IFLAG)
+                    {
+                        IO[IRQACK] |= KEY_IFLAG;
+                    }
+                }
+                Joyz = ButtonState;
+                // Vblankカウントアップ
+                VCounter = *(WORD*)(IO + VCNTH) << 16 | *(WORD*)(IO + VCNTL);
+                VCounter++;
+                *(WORD*)(IO + VCNTL) = (WORD)VCounter;
+                *(WORD*)(IO + VCNTH) = (WORD)(VCounter >> 16);
+            }
+            break;
+#ifdef SOUND_ON
+        case 2:
+            // Hblank毎に1サンプルセットすることで12KHzのwaveデータが出来る
+            apuWaveSet();
+            *(WORD*)(IO + NCSR) = apuShiftReg();
+            break;
+#endif
+        case 4:
+            if(IO[RSTRL] == 142)
+            {
+                i = (IO[SPRTAB] & 0x1F) << 9;
+                i += IO[SPRBGN] << 2;
+                j = IO[SPRCNT] << 2;
+                memcpy(SprTMap, IRAM + i, j);
+                SprTTMap = SprTMap;
+                SprETMap= SprTMap + j - 4;
+            }
+
+            if(IO[LCDSLP] & 0x01)
+            {
+                if(IO[RSTRL] == 0)
+                {
+                    SkipCnt--;
+                    if(SkipCnt < 0)
+                    {
+                        SkipCnt = 4;
+                    }
+                }
+#ifdef SMOOTH
+				if(IO[RSTRL] < 144)
+				{
+					RefreshLine(IO[RSTRL]);
+				}
+				else if(IO[RSTRL] == 144)
+				{
+					graphics_paint();
+				}
+#else
+                if(TblSkip[FrameSkip][SkipCnt])
+                {
+                    if(IO[RSTRL] < 144)
+                    {
+                        RefreshLine(IO[RSTRL]);
+                    }
+                    else if(IO[RSTRL] == 144)
+                    {
+                        graphics_paint();
+                    }
+                }
+#endif
+            }
+            break;
+        case 6:
+            if((IO[TIMCTL] & 0x01) && HTimer)
+            {
+                HTimer--;
+                if(!HTimer)
+                {
+                    if(IO[TIMCTL] & 0x02)
+                    {
+                        HTimer = *(WORD*)(IO + HPRE);
+                    }
+                    if(IO[IRQENA] & HTM_IFLAG)
+                    {
+                        IO[IRQACK] |= HTM_IFLAG;
+                    }
+                }
+            }
+            else if(*(WORD*)(IO + HPRE) == 1)
+            {
+                if(IO[IRQENA] & HTM_IFLAG)
+                {
+                    IO[IRQACK] |= HTM_IFLAG;
+                }
+            }
+            if((IO[IRQENA] & VBB_IFLAG) && (IO[RSTRL] == 144))
+            {
+                IO[IRQACK] |= VBB_IFLAG;
+            }
+            if((IO[TIMCTL] & 0x04) && (IO[RSTRL] == 144) && VTimer)
+            {
+                VTimer--;
+                if(!VTimer)
+                {
+                    if(IO[TIMCTL] & 0x08)
+                    {
+                        VTimer = *(WORD*)(IO + VPRE);
+                    }
+                    if(IO[IRQENA] & VTM_IFLAG)
+                    {
+                        IO[IRQACK] |= VTM_IFLAG;
+                    }
+                }
+            }
+            if((IO[IRQENA] & RST_IFLAG) && (IO[RSTRL] == IO[RSTRLC]))
+            {
+                IO[IRQACK] |= RST_IFLAG;
+            }
+            break;
+        case 7:
+            IO[RSTRL]++;
+            if(IO[RSTRL] >= 159)
+            {
+                IO[RSTRL] = 0;
+            }
+            // Hblankカウントアップ
+            (*(WORD*)(IO + HCNT))++;
+            break;
+        default:
+            break;
+    }
+    return IO[IRQACK];
+}
+
 int WsRun(void)
 {
-    int iack, inum;
+    static int period = IPeriod;
+    int i, iack, inum;
+#ifndef SPEEDHACKS
+	int cycle;
+#endif
 
-	nec_execute(256);
-
+	// 1/75s
+    for(i = 0; i < 159*8; i++)
+    {
+#ifdef SPEEDHACKS
+		nec_execute(period);
+        period = period_hack;
+#else
+        cycle = nec_execute(period);
+        period += IPeriod - cycle;
+#endif
+        if(Interrupt())
+        {
+            iack = IO[IRQACK];
+            for(inum = 7; inum >= 0; inum--)
+            {
+                if(iack & 0x80)
+                {
+                    break;
+                }
+                iack <<= 1;
+            }
+            nec_int((inum + IO[IRQBSE]) << 2);
+        }
+    }
     return 0;
 }
 

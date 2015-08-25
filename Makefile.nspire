@@ -2,7 +2,7 @@ CC = nspire-gcc
 
 CFLAGS = -Ofast -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -I./main/emu -I./main/sdl
 CFLAGS += ${DEFINES} 
-DEFINES = -DSWITCHING_GRAPHICS -DSPEEDHACKS
+DEFINES = -DSWITCHING_GRAPHICS
 LDFLAGS = -Wl,--as-needed -flto
 OUTPUT = oswan
 

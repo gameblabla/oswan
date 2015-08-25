@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 	if(argc > 1) 
 	{
 #ifdef SWITCHING_GRAPHICS
-		SetVideo(1);
+		if (!GameConf.m_ScreenRatio) SetVideo(1);
 		screen_prepback(actualScreen);
 #endif
 		flip_screen(actualScreen);

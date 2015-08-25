@@ -8,7 +8,6 @@ extern unsigned long SDL_UXTimerRead(void);
 
 #include "WSRender.h"
 #include "WS.h"
-#include "WSDraw.h"
 #include "input.h"
 #include "WSApu.h"
 #include "WSFileio.h"
@@ -151,7 +150,7 @@ void  ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
     }
 }
 
-BYTE  ReadMem(DWORD A)
+inline BYTE ReadMem(DWORD A)
 {
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
@@ -822,6 +821,7 @@ void WsRomPatch(BYTE *buf)
     }
 }
 
+
 int Interrupt(void)
 {
     static int LCount=0, Joyz=0x0000;
@@ -854,11 +854,13 @@ int Interrupt(void)
                 *(WORD*)(IO + VCNTH) = (WORD)(VCounter >> 16);
             }
             break;
+#ifdef SOUND_ON
         case 2:
             // Hblank毎に1サンプルセットすることで12KHzのwaveデータが出来る
             apuWaveSet();
             *(WORD*)(IO + NCSR) = apuShiftReg();
             break;
+#endif
         case 4:
             if(IO[RSTRL] == 142)
             {
@@ -968,36 +970,24 @@ int Interrupt(void)
 
 int WsRun(void)
 {
-    static int period = IPeriod;
-    int i, iack, inum;
-#ifndef SPEEDHACKS
-	int cycle;
-#endif
+    int iack, inum;
 
-	// 1/75s
-    for(i = 0; i < 159*8; i++)
-    {
-#ifdef SPEEDHACKS
-		nec_execute(period);
-        period = period_hack;
-#else
-        cycle = nec_execute(period);
-        period += IPeriod - cycle;
-#endif
-        if(Interrupt())
-        {
-            iack = IO[IRQACK];
-            for(inum = 7; inum >= 0; inum--)
-            {
-                if(iack & 0x80)
-                {
-                    break;
-                }
+	nec_execute(256);
+
+	if(Interrupt())
+	{
+		iack = IO[IRQACK];
+		for(inum = 7; inum >= 0; inum--)
+		{
+			if(iack & 0x80)
+			{
+				break;
+			}
                 iack <<= 1;
-            }
+		}
             nec_int((inum + IO[IRQBSE]) << 2);
-        }
-    }
+	}
+
     return 0;
 }
 

@@ -34,13 +34,11 @@
 	#ifndef NOFRAMERATE_LIMIT
 		#define NOFRAMERATE_LIMIT
 	#endif
-	#ifndef JOYSTICK
-		#define JOYSTICK
-	#endif
 #endif
 
 #ifdef _TINSPIRE
-	#define BITDEPTH_OSWAN has_colors ? 16 : 8
+	//#define BITDEPTH_OSWAN has_colors ? 16 : 8
+	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
 #elif defined(GCW)
 	#define BITDEPTH_OSWAN 16

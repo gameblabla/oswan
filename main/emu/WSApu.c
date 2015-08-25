@@ -49,9 +49,11 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 
 	SDL_LockMutex(sound_mutex);
 	
+	/*
 	printf("len : %d \n", len );
 	printf("SND_RNGSIZE : %d \n", SND_RNGSIZE );
 	printf("apuBufLen : %d \n", apuBufLen() );
+	*/
 	
 	if (apuBufLen() < len) 
 	{

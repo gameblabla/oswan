@@ -2,7 +2,7 @@
 Type=Application
 Name=Oswan
 Comment=Wonderswan emulator
-Exec=oswan %f
+Exec=oswan
 Icon=icon
 Terminal=false
 Categories=emulators;
