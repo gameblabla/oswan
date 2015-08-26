@@ -13,7 +13,7 @@ extern SDL_Event event;
 	short x_joy = 0, y_joy = 0;
 #endif
 
-int WsInputGetState(int mode)
+inline int WsInputGetState(int mode)
 {
 	char szFile[512];
 	static unsigned char button_state[2], button_time[2];
@@ -184,9 +184,9 @@ int WsInputGetState(int mode)
 				button |= (1<<11); 
 				
 			if (keys[PAD_A] == SDL_PRESSED) 
-				button |= (1<<6); 
-			if (keys[PAD_B] == SDL_PRESSED) 
 				button |= (1<<5); 
+			if (keys[PAD_B] == SDL_PRESSED) 
+				button |= (1<<6); 
 			if (keys[PAD_X] == SDL_PRESSED) 
 				button |= (1<<7); 
 			if (keys[PAD_Y] == SDL_PRESSED) 
@@ -252,7 +252,7 @@ int WsInputGetState(int mode)
 	return button;
 }
 
-int Fire_buttons(unsigned char * keys)
+inline int Fire_buttons(unsigned char * keys)
 {
 	static unsigned char x_button = 0, y_button = 0;
 	int button = 0;

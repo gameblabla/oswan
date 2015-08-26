@@ -7,10 +7,10 @@ typedef unsigned long DWORD;
 
 typedef void  (*WriteMemFn) (DWORD A, BYTE V);
 extern WriteMemFn WriteMemFnTable[0x10];
-BYTE  ReadMem(DWORD A);
-void  WriteMem(DWORD A, BYTE V);
-void  WriteIO(DWORD A, BYTE V);
-BYTE  ReadIO(DWORD A);
+inline BYTE ReadMem(DWORD A);
+inline void WriteMem(DWORD A, BYTE V);
+inline void WriteIO(DWORD A, BYTE V);
+inline BYTE ReadIO(DWORD A);
 
 #define cpu_readop(A)               (ReadMem(A))
 #define cpu_readop_arg(A)           (ReadMem(A))

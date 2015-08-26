@@ -39,7 +39,7 @@ void menuFileBrowse(void);
 void menuSaveState(void);
 void menuLoadState(void);
 void screen_showkeymenu(void);
-unsigned char ifactive(const unsigned char *keys);
+inline unsigned char ifactive(const unsigned char *keys);
 void menuReturn(void);
 #if !defined(NOSCREENSHOTS)
 void menuSaveBmp(void);
@@ -62,7 +62,7 @@ typedef struct {
 
 const char mnuABXY[4][16] = {"Normal", "Wonderswan-like", "Swap DPAD,ABXY", "Swap ABXY,Stick"};
 const char mnuYesNo[2][16] = {"No", "Yes"};
-const char mnuRatio[2][16] = { "1x size","Full screen"};
+const char mnuRatio[3][16] = { "1x size","Full screen", "Keep Aspect"};
 const char mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
 
 
@@ -76,7 +76,7 @@ MENUITEM MainMenuItems[] = {
 #if !defined(NOSCREENSHOTS)
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 #endif
-	{"Ratio: ", (short *) &GameConf.m_ScreenRatio, 1, (char *) &mnuRatio, NULL},
+	{"Ratio: ", (short *) &GameConf.m_ScreenRatio, 2, (char *) &mnuRatio, NULL},
 	{"", (short *) &GameConf.input_layout, 3, (char *) &mnuABXY, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
@@ -92,7 +92,7 @@ MENU mnuMainMenu = {
 
 //----------------------------------------------------------------------------------------------------
 // Prints char on a given surface
-void screen_showchar(SDL_Surface *s, const short x, const short y, unsigned char a, const int fg_color, const int bg_color) 
+inline void screen_showchar(SDL_Surface *s, const short x, const short y, unsigned char a, const int fg_color, const int bg_color) 
 {
 	unsigned short *dst;
 	unsigned short w, h;
@@ -121,13 +121,13 @@ void screen_showchar(SDL_Surface *s, const short x, const short y, unsigned char
 }
 
 // copy-pasted mostly from gpsp emulator by Exophaze. 	thanks for it
-void print_string(const char *s, const  unsigned short fg_color, const unsigned short bg_color, short x, const short y) 
+inline void print_string(const char *s, const  unsigned short fg_color, const unsigned short bg_color, short x, const short y) 
 {
 	int i, j = strlen(s);
 	for(i = 0; i < j; i++, x += 6) screen_showchar(actualScreen, x, y, s[i], fg_color, bg_color);
 }
 
-void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color) 
+inline void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color) 
 {
 	static char i_str[24];
 
@@ -145,17 +145,10 @@ void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color)
 	}
 }
 
-void print_string_video(short x, const short y, const char *s) 
+inline void print_string_video(short x, const short y, const char *s) 
 {
 	int i, j = strlen(s);
 	for(i = 0; i < j; i++, x += 8) screen_showchar(actualScreen, x, y, s[i], SDL_MapRGB(actualScreen->format,255, 0, 0), 0);
-}
-
-// Clear screen
-void screen_prepback(SDL_Surface *s) 
-{
-	// load logo, Convert the image to optimal display format and Free the temporary surface
-	SDL_FillRect(s, NULL, 0);
 }
 
 // Shows menu items and pointing arrow
@@ -200,7 +193,7 @@ void screen_showmenu(MENU *menu)
 }
 
 // wait for a key
-void screen_waitkey(void) 
+inline void screen_waitkey(void) 
 {
 	unsigned char akey=false;
 		
@@ -212,7 +205,7 @@ void screen_waitkey(void)
 	}
 }
 
-void screen_waitkeyarelease(void) 
+inline void screen_waitkeyarelease(void) 
 {
 	unsigned char *keys;
 		
@@ -225,7 +218,7 @@ void screen_waitkeyarelease(void)
 	}
 }
 
-unsigned char ifactive(const unsigned char *keys)
+inline unsigned char ifactive(const unsigned char *keys)
 {
 	if (keys[PAD_A] || keys[PAD_B] || keys[PAD_UP] || keys[PAD_DOWN] || keys[PAD_LEFT] || keys[PAD_RIGHT]) 
 		return 1; 	// Yes, active
@@ -452,14 +445,14 @@ void screen_showtopmenu(void)
 #ifdef SWITCHING_GRAPHICS
 		SetVideo(1);
 #endif
-		screen_prepback(actualScreen);
+		SDL_FillRect(actualScreen, NULL, 0);
 		flip_screen(actualScreen);
 	}
 	
 }
 
 // find a filename for bmp or state saving 
-void findNextFilename(const char *szFileFormat, char *szFilename) 
+inline void findNextFilename(const char *szFileFormat, char *szFilename) 
 {
 	unsigned short uBcl;
 	short fp;
@@ -477,9 +470,10 @@ void findNextFilename(const char *szFileFormat, char *szFilename)
 }
 
 // Reset current game
-void menuReset(void) 
+inline void menuReset(void) 
 {
 	if (cartridge_IsLoaded()) {
+		Set_DrawRegion();
 		WsReset();
 		gameMenu=false;
 		m_Flag = GF_GAMERUNNING;
@@ -501,6 +495,7 @@ void menuContinue(void)
 {
 	if (cartridge_IsLoaded()) 
 	{
+		Set_DrawRegion();
 		gameMenu=false;
 		m_Flag = GF_GAMERUNNING;
 	}
@@ -515,7 +510,7 @@ typedef struct
 } filedirtype;
 filedirtype filedir_list[MAX_FILES];
 
-int sort_function(const void *src_str_ptr, const void *dest_str_ptr) 
+inline int sort_function(const void *src_str_ptr, const void *dest_str_ptr) 
 {
   filedirtype *p1 = (filedirtype *) src_str_ptr;
   filedirtype *p2 = (filedirtype *) dest_str_ptr;
@@ -523,7 +518,7 @@ int sort_function(const void *src_str_ptr, const void *dest_str_ptr)
   return strcmp (p1->name, p2->name);
 }
 
-char strcmp_function(const char *s1, const char *s2)
+inline char strcmp_function(const char *s1, const char *s2)
 {
 	int i;
 
@@ -536,7 +531,7 @@ char strcmp_function(const char *s1, const char *s2)
 	return 0;
 }
 
-signed int load_file(const char **wildcards, char *result) 
+inline signed int load_file(const char **wildcards, char *result) 
 {
 	unsigned char *keys;
 	unsigned int keya=0, keyb=0, keyup=0, kepufl=8, keydown=0, kepdfl=8 /*keyleft=0, keyright=0,*/;
@@ -649,7 +644,7 @@ signed int load_file(const char **wildcards, char *result)
 		{
 			#define CHARLEN ((320/6)-2)
 			
-			screen_prepback(actualScreen);
+			SDL_FillRect(actualScreen, NULL, 0);
 			
 			print_string(current_dir_short, COLOR_ACTIVE_ITEM, COLOR_BG, 4, 10*3);
 			print_string("Press B to return to the main menu", COLOR_ACTIVE_ITEM, COLOR_BG, 160-(34*8/2), 240-5 -10*3);
@@ -764,6 +759,7 @@ signed int load_file(const char **wildcards, char *result)
 						return_value = 0;
 						snprintf(result, sizeof(gameName), "%s/%s", current_dir_name, filedir_list[current_filedir_selection].name);
 					}
+					flip_screen(actualScreen);
 				}
 			}
 			else keya=0;
@@ -774,12 +770,13 @@ signed int load_file(const char **wildcards, char *result)
 					keyb = 1; 
 					return_value = -1;
 					repeat = 0;
+					flip_screen(actualScreen);
 				}
 			}
 			else keyb=0;
 
-			// UP or (L shoulder) - arrow up
-			if (button_state[2]==1 || button_state[4]==2) 
+			// UP or (L shoulder) or Left button - arrow up
+			if (button_state[2]==1 || (button_state[4]==2 || button_state[0]==2)) 
 			{ 
 				if (!keyup) 
 				{
@@ -804,15 +801,17 @@ signed int load_file(const char **wildcards, char *result)
 					if (keyup>kepufl) keyup=0;
 					if (kepufl>2) kepufl--; 
 				}
+				flip_screen(actualScreen);
 			}
 			else 
 			{ 
 				keyup=0; 
 				kepufl = 8; 
+				flip_screen(actualScreen);
 			}
 
-			//DOWN or (R shoulder) - arrow down
-			if (button_state[3]==1 || button_state[5]==2) 
+			//DOWN or (R shoulder) or Right button - arrow down
+			if (button_state[3]==1 || (button_state[5]==2 || button_state[1]==2)) 
 			{ 
 				if (!keydown) {
 					keydown = 1; 
@@ -830,18 +829,20 @@ signed int load_file(const char **wildcards, char *result)
 						}
 					}
 				}
-				else {
+				else 
+				{
 					keydown++; if (keydown>kepdfl) keydown=0;
 					if (kepdfl>2) kepdfl--; 
 				}
+				flip_screen(actualScreen);
 			}
 			else
 			{ 
 				keydown=0;	
 				kepdfl = 8; 
+				flip_screen(actualScreen);
 			}
 			
-			flip_screen(actualScreen);
 #ifdef _TINSPIRE
 		sleep(1);
 #else
@@ -876,7 +877,7 @@ void menuFileBrowse(void)
 
 // Take a screenshot of current game
 #if !defined(NOSCREENSHOTS)
-void menuSaveBmp(void) 
+inline void menuSaveBmp(void) 
 {
     char szFile[512], szFile1[512];
 	
@@ -990,7 +991,7 @@ void system_loadcfg(const char *cfg_name)
 #ifndef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio) 
 	{
-		screen_prepback(actualScreen);
+		SDL_FillRect(actualScreen, NULL, 0);
 		flip_screen(actualScreen);
 	}
 #else

@@ -5,34 +5,28 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <time.h>
 
 #include "shared.h"
 #include "drawing.h"
 #include "hack.h"
 
+void exit_oswan();
+extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 #ifdef SWITCHING_GRAPHICS
 	extern void screen_prepback(SDL_Surface *s);
+#else
+	extern void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize);
 #endif
 
 unsigned int m_Flag;
 unsigned int interval;
+unsigned char FPS = 60;
 
 gamecfg GameConf;
 char gameName[512];
 char current_conf_app[MAX__PATH];
-
-void exit_oswan();
-void msleep(unsigned char milisec);
-extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
-
-#ifndef NOFRAMERATE_LIMIT	
-	#ifdef NO_FLOAT
-	const int real_FPS = 1000/75.47;
-	#else
-	const float real_FPS = 1000/75.47;
-	#endif
-#endif
 
 SDL_Surface *actualScreen, *screenshots;
 SDL_Event event;
@@ -64,38 +58,18 @@ int SetupCallbacks(void) {
 }
 #endif
 
-void msleep(unsigned char milisec)
+unsigned long SDL_UXTimerRead(void) 
 {
-#ifdef UNIX
-	struct timespec req={0};
-	time_t sec=(unsigned short)(milisec/1000);
-
-	milisec=milisec-(sec*1000);
-	req.tv_sec=sec;
-	req.tv_nsec=milisec*1000000L;
-	while(nanosleep(&req,&req)==-1)
-	continue;
-#else
-	SDL_Delay(milisec);
- #endif
+	struct timeval tval; // timing
+  	gettimeofday(&tval, 0);
+	return (((tval.tv_sec*1000000) + (tval.tv_usec )));
 }
 
 void graphics_paint(void) 
 {
-	Uint32 start;
-	if(SDL_MUSTLOCK(actualScreen)) SDL_LockSurface(actualScreen);
-
+	SDL_LockSurface(actualScreen);
 	screen_draw();
-
-#ifndef NOFRAMERATE_LIMIT	
-	start = SDL_GetTicks();
-	if(real_FPS > SDL_GetTicks()-start) 
-	{
-		msleep(real_FPS-(SDL_GetTicks()-start));
-	}
-#endif
-	
-	if (SDL_MUSTLOCK(actualScreen)) SDL_UnlockSurface(actualScreen);
+	SDL_UnlockSurface(actualScreen);
 	flip_screen(actualScreen);
 }
 
@@ -111,16 +85,25 @@ void initSDL(void)
 
 #ifdef SOUND_ON
 	SDL_Init(SDL_INIT_AUDIO);
+	SDL_AudioSpec fmt, retFmt;
 	
 	 //set up SDL sound 
-    SDL_AudioSpec fmt, retFmt;
+#ifdef NATIVE_AUDIO
 	fmt.freq = 12000;   
     fmt.format = AUDIO_S16SYS;
     fmt.channels = 2;
     fmt.samples = 512;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
-    
+#else
+	fmt.freq = 48000;   
+    fmt.format = AUDIO_S16SYS;
+    fmt.channels = 2;
+    fmt.samples = 1024;
+    fmt.callback = mixaudioCallback;
+    fmt.userdata = NULL;
+#endif
+
     /* Open the audio device and start playing sound! */
     if ( SDL_OpenAudio(&fmt, &retFmt) < 0 )
 	{
@@ -133,6 +116,7 @@ void initSDL(void)
 
 int main(int argc, char *argv[]) 
 {
+	double period;
 #ifdef _TINSPIRE
 	enable_relative_paths(argv);
 #endif
@@ -170,8 +154,7 @@ int main(int argc, char *argv[])
 	if(argc > 1) 
 	{
 #ifdef SWITCHING_GRAPHICS
-		SetVideo(1);
-		screen_prepback(actualScreen);
+		if (!GameConf.m_ScreenRatio) SetVideo(1);
 #endif
 		flip_screen(actualScreen);
 		strcpy(gameName,argv[1]);
@@ -183,11 +166,9 @@ int main(int argc, char *argv[])
 		switch (m_Flag) 
 		{
 			case GF_MAINUI:
-			
 				#ifdef SOUND_ON
 				SDL_PauseAudio(1);
 				#endif
-				
 				screen_showtopmenu();
 				if (cartridge_IsLoaded()) 
 				{
@@ -198,6 +179,9 @@ int main(int argc, char *argv[])
 				break;
 
 			case GF_GAMEINIT:
+			
+				Set_DrawRegion();
+				
 				if (WsCreate(gameName)) 
 				{
 					WsInit();

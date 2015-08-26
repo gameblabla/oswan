@@ -38,7 +38,10 @@ static unsigned char HVMode;
 static WORD HTimer;
 static WORD VTimer;
 static unsigned char RtcCount;
+
+#ifdef SOUND_ON
 static unsigned long WaveMap;
+#endif
 
 #if BITDEPTH_OSWAN == 32
 #define MONO(C) 0xF000 | (C)<<8 | (C)<<4 | (C)
@@ -50,7 +53,7 @@ static WORD DefColor[] = {
     MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
 };
 
-void ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
+void inline ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
 {
     int i, j, op, addr;
     const int tblmask[16][5]=
@@ -144,19 +147,17 @@ inline BYTE ReadMem(const DWORD A)
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
 
-void  WriteMem(const DWORD A, const BYTE V)
+inline void WriteMem(const DWORD A, const BYTE V)
 {
     (*WriteMemFnTable[(A >> 16) & 0x0F])(A, V);
 }
 
-typedef void (*WriteMemFn)(const DWORD A, const BYTE V);
-
-static void  WriteRom(const DWORD A, const BYTE V)
+static void WriteRom(const DWORD A, const BYTE V)
 {
     //ErrorMsg(ERR_WRITE_ROM);
 }
 
-static void  WriteIRam(const DWORD A, const BYTE V)
+static inline void WriteIRam(const DWORD A, const BYTE V)
 {
     IRAM[A & 0xFFFF] = V;
     if((A & 0xFE00) == 0xFE00)
@@ -184,7 +185,7 @@ static void  WriteIRam(const DWORD A, const BYTE V)
 #define FLASH_CMD_CONTINUE_RES2 0xF0
 #define FLASH_CMD_CONTINUE_RES3 0x00
 #define FLASH_CMD_WRITE         0xA0
-static void  WriteCRam(const DWORD A, const BYTE V)
+static inline void WriteCRam(const DWORD A, const BYTE V)
 {
     static int flashCommand1 = 0;
     static int flashCommand2 = 0;
@@ -276,7 +277,7 @@ static void  WriteCRam(const DWORD A, const BYTE V)
     }
 }
 
-void  WriteIO(const DWORD A, BYTE V)
+inline void WriteIO(const DWORD A, BYTE V)
 {
     int i, j, k;
 
@@ -547,7 +548,7 @@ void  WriteIO(const DWORD A, BYTE V)
 }
 
 #define  BCD(value) ((value / 10) << 4) | (value % 10)
-BYTE ReadIO(const DWORD A)
+inline BYTE ReadIO(const DWORD A)
 {
     switch(A)
     {
@@ -876,7 +877,7 @@ int Interrupt(void)
     return IO[IRQACK];
 }
 
-int WsRun(void)
+inline int WsRun(void)
 {
     static int period = IPeriod;
     int i, iack, inum;
@@ -911,7 +912,7 @@ int WsRun(void)
     return 0;
 }
 
-void SetHVMode(const unsigned char Mode)
+inline void SetHVMode(const unsigned char Mode)
 {
     HVMode = Mode;
 }

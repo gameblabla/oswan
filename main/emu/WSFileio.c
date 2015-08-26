@@ -12,33 +12,16 @@
 #include "shared.h"
 
 int result;
-
-// ファイル操作は表などとディレクトリセパレータがかぶるのでUNICODEを使います
-char SaveName[512];   // ".sav"
+char SaveName[512]; 
 char StateName[512];
 char IEepPath[512]; 
 
-
-char *
-strrchr_new (s, c)
-  register const char *s;
-  int c;
-{
-  char *rtnval = 0;
-
-  do {
-    if (*s == c)
-      rtnval = (char*) s;
-  } while (*s++);
-  return (rtnval);
-}
-
 int WsSetPdata(void)
 {
-    ROMBanks = 1;
-    RAMBanks = 0;
-    RAMSize = 0;
-    CartKind = 0;
+    ROMBanks = 4;
+	RAMBanks = 1;
+	RAMSize = 0x2000;
+	CartKind = 0;
     if ((ROMMap[0xFF] = (BYTE*)malloc(0x10000)) == NULL)
     {
 		fprintf(stderr,"WsSetPdata\n");

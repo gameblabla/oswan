@@ -53,7 +53,7 @@ const unsigned char tab_periods[128] =
  * The less it is, the faster the emulator will run.
 */
 
-void Check_MD5(unsigned char* buf, FILE* fp)
+inline void Check_MD5(unsigned char* buf, FILE* fp)
 {
 	char *out = (char*)malloc(33);
 	unsigned char digest[16];

@@ -111,7 +111,7 @@ void initSDL(void)
 	fmt.freq = 48000;   
     fmt.format = AUDIO_S16SYS;
     fmt.channels = 2;
-    fmt.samples = 1024;
+    fmt.samples = 2048;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
 #endif
@@ -167,7 +167,6 @@ int main(int argc, char *argv[])
 	{
 #ifdef SWITCHING_GRAPHICS
 		if (!GameConf.m_ScreenRatio) SetVideo(1);
-		screen_prepback(actualScreen);
 #endif
 		flip_screen(actualScreen);
 		strcpy(gameName,argv[1]);
@@ -193,6 +192,9 @@ int main(int argc, char *argv[])
 				break;
 
 			case GF_GAMEINIT:
+			
+				Set_DrawRegion();
+				
 				if (WsCreate(gameName)) 
 				{
 					WsInit();

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 
 // SDL drawing screen
 extern void graphics_paint(void);
@@ -37,8 +36,10 @@ static int ButtonState = 0x0000;    // Button state: B.A.START.OPTION.X4.X3.X2.X
 static unsigned char HVMode;
 static WORD HTimer;
 static WORD VTimer;
-static unsigned char RtcCount;
+
+#ifdef SOUND_ON
 static unsigned long WaveMap;
+#endif
 
 #if BITDEPTH_OSWAN == 32
 #define MONO(C) 0xF000 | (C)<<8 | (C)<<4 | (C)
@@ -50,114 +51,17 @@ static WORD DefColor[] = {
     MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
 };
 
-
-void ComEeprom(struct EEPROM *eeprom, WORD *cmd, WORD *data)
-{
-    int i, j, op, addr;
-    const int tblmask[16][5]=
-    {
-        {0x0000, 0, 0x0000, 0, 0x0000}, // dummy
-        {0x0000, 0, 0x0000, 0, 0x0000},
-        {0x0000, 0, 0x0000, 0, 0x0000},
-        {0x0000, 0, 0x0000, 0, 0x0000},
-        {0x000C, 2, 0x0003, 0, 0x0003},
-        {0x0018, 3, 0x0006, 1, 0x0007},
-        {0x0030, 4, 0x000C, 2, 0x000F},
-        {0x0060, 5, 0x0018, 3, 0x001F},
-        {0x00C0, 6, 0x0030, 4, 0x003F}, // 1Kbits IEEPROM
-        {0x0180, 7, 0x0060, 5, 0x007F},
-        {0x0300, 8, 0x00C0, 6, 0x00FF},
-        {0x0600, 9, 0x0180, 7, 0x01FF},
-        {0x0C00, 10, 0x0300, 8, 0x03FF}, // 16Kbits
-        {0x1800, 11, 0x0600, 9, 0x07FF},
-        {0x3000, 12, 0x0C00, 10, 0x0FFF},
-        {0x6000, 13, 0x1800, 11, 0x1FFF},
-    };
-    if(eeprom->data == NULL)
-    {
-        return;
-    }
-    for(i = 15, j = 0x8000; i >= 0; i--, j >>= 1)
-    {
-        if(*cmd & j)
-        {
-            break;
-        }
-    }
-    op = (*cmd & tblmask[i][0]) >> tblmask[i][1];
-    switch(op)
-    {
-    case 0:
-        addr = (*cmd & tblmask[i][2]) >> tblmask[i][3];
-        switch(addr)
-        {
-        case 0: // 書込み禁止
-            eeprom->we = 0;
-            break;
-        case 1: // 全アドレス書き込み
-            for(j = tblmask[i][4]; j >= 0; j--)
-            {
-                eeprom->data[j] = *data;
-            }
-            break;
-        case 2: // チップ消去
-            if(eeprom->we)
-            {
-                memset(eeprom->data, 0xFF, sizeof(eeprom->data)*2);
-            }
-            break;
-        case 3: // 書き込み可能
-            eeprom->we = 1;
-            break;
-        }
-        *data = 0;
-        break;
-    case 1: // 書き込み
-        if(eeprom->we)
-        {
-            addr = *cmd & tblmask[i][4];
-            eeprom->data[addr] = *data;
-            /*if (ROMBanks == 1 && addr == 0x3A) // アナザヘブンも書き込んでた
-            {
-                Run = 0; // パーソナルデータ最後の書き込みなので終了
-            }*/
-        }
-        *data = 0;
-        break;
-    case 2: // 読み出し
-        addr = *cmd & tblmask[i][4];
-        *data = eeprom->data[addr];
-        break;
-    case 3: // 消去
-        if(eeprom->we)
-        {
-            addr = *cmd & tblmask[i][4];
-            eeprom->data[addr] = 0xFFFF;
-        }
-        *data = 0;
-        break;
-    default: break;
-    }
-}
-
-inline BYTE ReadMem(DWORD A)
+inline BYTE ReadMem(const DWORD A)
 {
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
 
-void  WriteMem(DWORD A, BYTE V)
+void  WriteMem(const DWORD A, const BYTE V)
 {
     (*WriteMemFnTable[(A >> 16) & 0x0F])(A, V);
 }
 
-typedef void (*WriteMemFn)(DWORD A, BYTE V);
-
-static void  WriteRom(DWORD A, BYTE V)
-{
-    //ErrorMsg(ERR_WRITE_ROM);
-}
-
-static void  WriteIRam(DWORD A, BYTE V)
+static void  WriteIRam(const DWORD A, const BYTE V)
 {
     IRAM[A & 0xFFFF] = V;
     if((A & 0xFE00) == 0xFE00)
@@ -185,7 +89,7 @@ static void  WriteIRam(DWORD A, BYTE V)
 #define FLASH_CMD_CONTINUE_RES2 0xF0
 #define FLASH_CMD_CONTINUE_RES3 0x00
 #define FLASH_CMD_WRITE         0xA0
-static void  WriteCRam(DWORD A, BYTE V)
+static void  WriteCRam(const DWORD A, const BYTE V)
 {
     static int flashCommand1 = 0;
     static int flashCommand2 = 0;
@@ -195,48 +99,6 @@ static void  WriteCRam(DWORD A, BYTE V)
     static int flashWriteEnable = 0;
     int offset = A & 0xFFFF;
 
-    if (offset >= RAMSize)
-    {
-        //ErrorMsg(ERR_OVER_RAMSIZE);
-    }
-    // WonderWitch
-    // FLASH ROM command sequence
-    if (flashCommand2)
-    {
-        if (offset == FLASH_CMD_ADDR1)
-        {
-            switch (V) {
-            case FLASH_CMD_CONTINUE_SET:
-                flashWriteSet   = 1;
-                flashWriteReset = 0;
-                break;
-            case FLASH_CMD_WRITE:
-                flashWriteOne = 1;
-                break;
-            case FLASH_CMD_RESET:
-                break;
-            case FLASH_CMD_ERASE:
-                break;
-            case FLASH_CMD_ERASE_CHIP:
-                break;
-            case FLASH_CMD_ERASE_SECT:
-                break;
-            }
-        }
-        flashCommand2 = 0;
-    }
-    else if (flashCommand1)
-    {
-        if (offset == FLASH_CMD_ADDR2 && V == FLASH_CMD_DATA2)
-        {
-            flashCommand2 = 1;
-        }
-        flashCommand1 = 0;
-    }
-    else if (offset == FLASH_CMD_ADDR1 && V == FLASH_CMD_DATA1)
-    {
-        flashCommand1 = 1;
-    }
     if (RAMSize != 0x40000 || IO[BNK1SLCT] < 8)
     {
         // normal sram
@@ -277,7 +139,7 @@ static void  WriteCRam(DWORD A, BYTE V)
     }
 }
 
-void  WriteIO(DWORD A, BYTE V)
+void  WriteIO(const DWORD A, BYTE V)
 {
     int i, j, k;
 
@@ -480,7 +342,6 @@ void  WriteIO(DWORD A, BYTE V)
         IO[IRQACK] &= (BYTE)~V;
         return;
     case 0xBE:
-        ComEeprom(&sIEep, (WORD*)(IO + EEPCMD), (WORD*)(IO + EEPDATA));
         V >>= 4;
         break;
     case 0xC0:
@@ -519,7 +380,6 @@ void  WriteIO(DWORD A, BYTE V)
         Page[3] = ROMMap[V];
         break;
     case 0xC8:
-        ComEeprom(&sCEep, (WORD*)(IO + CEEPCMD), (WORD*)(IO + CEEPDATA));
         if(V & 0x10)
         {
             V >>= 4;
@@ -533,99 +393,34 @@ void  WriteIO(DWORD A, BYTE V)
             V >>= 5;
         }
         break;
-    case 0xCA: // RTC Command
-        if (V == 0x15)
-        {
-            RtcCount = 0;
-        }
-        break;
-    case 0xCB: //RTC DATA
-        break;
     default:
         break;
     }
     IO[A] = V;
 }
 
-#define  BCD(value) ((value / 10) << 4) | (value % 10)
-BYTE ReadIO(DWORD A)
+BYTE ReadIO(const DWORD A)
 {
-    switch(A)
-    {
-    case 0xCA:
-        return IO[RTCCMD] | 0x80;
-    case 0xCB:
-        if (IO[RTCCMD] == 0x15)  // get time command
-        { 
-            BYTE year, mon, mday, wday, hour, min, sec, j;
-            struct tm *newtime;
-            time_t long_time;
-
-            time(&long_time);
-            newtime = localtime(&long_time);
-            switch(RtcCount)
-            {
-            case 0:
-                RtcCount++;
-                year = newtime->tm_year;
-                year %= 100;
-                return BCD(year);
-            case 1:
-                RtcCount++;
-                mon = newtime->tm_mon;
-                mon++;
-                return BCD(mon);
-            case 2:
-                RtcCount++;
-                mday = newtime->tm_mday;
-                return BCD(mday);
-            case 3:
-                RtcCount++;
-                wday = newtime->tm_wday;
-                return BCD(wday);
-            case 4:
-                RtcCount++;
-                hour = newtime->tm_hour;
-                j = BCD(hour);
-                if (hour > 11)
-                    j |= 0x80;
-                return j;
-            case 5:
-                RtcCount++;
-                min = newtime->tm_min;
-                return BCD(min);
-            case 6:
-                RtcCount = 0;
-                sec = newtime->tm_sec;
-                return BCD(sec);
-            }
-            return 0;
-        }
-        else {
-            // set ack
-            return (IO[RTCDATA] | 0x80);
-        }
-    }
     return IO[A];
 }
 
 WriteMemFn WriteMemFnTable[16]= {
     WriteIRam,
     WriteCRam,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
-    WriteRom,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
 };
 
 void WsReset (void)
@@ -726,15 +521,12 @@ void WsReset (void)
     IRAM[0x75B1]=0x5F;
     IRAM[0x75B2]=0x63;
     IRAM[0x75B3]=0x31;
-#ifdef SOUND_ON
-    apuWaveClear();
-#endif
     ButtonState = 0x0000;
     nec_reset(NULL);
     nec_set_reg(NEC_SP, 0x2000);
 }
 
-void WsRomPatch(BYTE *buf)
+void WsRomPatch(const BYTE *buf)
 {
     if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x16)) // SWJ-BANC16 STAR HEARTS
     {
@@ -880,12 +672,15 @@ int Interrupt(void)
     return IO[IRQACK];
 }
 
-int WsRun(void)
+int inline WsRun(void)
 {
-	int period = IPeriod;
-    int iack, inum;
-    int i;
+    static int period = IPeriod;
+    int i, iack, inum;
+#ifndef SPEEDHACKS
+	int cycle;
+#endif
 
+	// 1/75s
     for(i = 0; i < 159*8; i++)
     {
 #ifdef SPEEDHACKS
@@ -912,7 +707,7 @@ int WsRun(void)
     return 0;
 }
 
-void SetHVMode(int Mode)
+void SetHVMode(const unsigned char Mode)
 {
     HVMode = Mode;
 }

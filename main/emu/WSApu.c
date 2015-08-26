@@ -36,10 +36,13 @@ extern BYTE IO[0x100];
 SDL_mutex *sound_mutex;
 SDL_cond *sound_cv;
 
-int apuBufLen(void)
+static unsigned long read_pos;
+
+inline int apuBufLen(void)
 {
 	if (wBuf >= rBuf) 
 	{
+		read_pos = 0;
 		return (wBuf - rBuf);
 	}
 	return SND_RNGSIZE + wBuf - rBuf;
@@ -50,14 +53,18 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 {
 	int i = len;
 	unsigned short *buffer = (unsigned short *) stream;
-
+	
+    if(len <= 0 || !buffer)
+        return;
+        
 	SDL_LockMutex(sound_mutex);
-	
-	/*printf("len : %d \n", len );
-	printf("SND_RNGSIZE : %d \n", SND_RNGSIZE );
-	printf("apuBufLen : %d \n", apuBufLen() );*/
-	
-	if (apuBufLen() < len) 
+
+	/*
+	 * For smoother audio playback, disable the comment below.
+	 * It still has problems with the buffer though... 
+	*/
+
+	if (/*SDL_GetAudioStatus() == SDL_AUDIO_PAUSED && */apuBufLen() < len) 
 	{
 		memset(stream,0,len);
 	}
@@ -79,18 +86,17 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 	SDL_CondSignal(sound_cv);
 }
 
-void apuWaveCreate(void)
+inline void apuWaveCreate(void)
 {
     memset(sndbuffer,0x00, SND_RNGSIZE);
 }
 
-void apuWaveRelease(void)
+inline void apuWaveRelease(void)
 {
 	SDL_PauseAudio(1);
-    return;
 }
 
-int apuInit(void)
+inline void apuInit(void)
 {
     int i, j;
 
@@ -117,11 +123,9 @@ int apuInit(void)
     
 	sound_mutex = SDL_CreateMutex();
 	sound_cv = SDL_CreateCond();
-    
-    return 0;
 }
 
-void apuEnd(void)
+inline void apuEnd(void)
 {
     apuWaveRelease();
 	SDL_CondSignal(sound_cv);
@@ -198,7 +202,7 @@ unsigned int apuMrand(unsigned int Degree)
     return ShiftReg;
 }
 
-void apuSetPData(int addr, unsigned char val)
+inline void apuSetPData(int addr, unsigned char val)
 {
     int i, j;
 
@@ -253,7 +257,7 @@ unsigned char apuVoice(void)
     return ((VoiceOn && Sound[4]) ? IO[SND2VOL] : 0x80);
 }
 
-void apuSweep(void)
+inline void apuSweep(void)
 {
     if ((Swp.step) && Swp.on) // Sweep on
     {
@@ -278,7 +282,7 @@ WORD apuShiftReg(void)
     return RandData[nPos];
 }
 
-void apuWaveSet(void)
+inline void apuWaveSet(void)
 {
     static  int point[] = {0, 0, 0, 0};
     static  int preindex[] = {0, 0, 0, 0};

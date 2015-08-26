@@ -8,7 +8,7 @@
 
 #include "drawing.h"
 
-void Get_resolution(void)
+inline void  Get_resolution(void)
 {
 #ifdef SCALING
 	#ifdef SYLLABLE
@@ -27,7 +27,7 @@ void Get_resolution(void)
 #endif
 }
 
-void Set_resolution(unsigned short w, unsigned short h)
+inline void Set_resolution(unsigned short w, unsigned short h)
 {
 #ifdef SCALING
 	screen_scale.w_scale = screen_scale.w_display / w;
@@ -42,9 +42,10 @@ void Set_resolution(unsigned short w, unsigned short h)
 	screen_scale.w_display = w;
 	screen_scale.h_display = h;
 #endif
+
 }
 
-void SetVideo(unsigned char mode)
+inline void SetVideo(unsigned char mode)
 {
 #ifdef SCALING	
 	int flags = FLAG_VIDEO | SDL_NOFRAME | SDL_FULLSCREEN;
@@ -84,118 +85,104 @@ void SetVideo(unsigned char mode)
 	#endif
 }
 
-void screen_draw(void)
+inline void Set_DrawRegion(void)
+{
+	/* Clear screen too to avoid graphical glitches */
+	SDL_FillRect(actualScreen, NULL, 0);
+
+	if (GameConf.m_ScreenRatio == 2)
+	{
+		screen_to_draw_region.w	= 320;
+		screen_to_draw_region.h	= 204;
+		screen_to_draw_region.offset_x = 0;
+		screen_to_draw_region.offset_y = 18; 
+	}
+	else if (GameConf.m_ScreenRatio == 1)
+	{
+		screen_to_draw_region.w	= 320;
+		screen_to_draw_region.h	= 240;
+		screen_to_draw_region.offset_x = 0;
+		screen_to_draw_region.offset_y = 0; 
+	}
+	else if (GameConf.m_ScreenRatio == 0)
+	{
+		screen_to_draw_region.w	= 224;
+		screen_to_draw_region.h	= 144;
+#ifdef SWITCHING_GRAPHICS
+		screen_to_draw_region.offset_x = 0;
+		screen_to_draw_region.offset_y = 0; 
+#else
+		screen_to_draw_region.offset_x = ((actualScreen->w - SYSVID_WIDTH)/2);
+		screen_to_draw_region.offset_y = ((actualScreen->h - SYSVID_HEIGHT)/2); 
+#endif
+	}
+}
+
+inline void screen_draw(void)
 {
 	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
-	unsigned int W,H,ix,iy,x,y, xfp,yfp;
+	unsigned int W,H,ix,iy,x,y;
 	
-	// Fullscreen
-	if (GameConf.m_ScreenRatio)
+	x=screen_to_draw_region.offset_x;
+	y=screen_to_draw_region.offset_y; 
+	W=screen_to_draw_region.w;
+	H=screen_to_draw_region.h;
+	ix=(SYSVID_WIDTH<<16)/W;
+	iy=(SYSVID_HEIGHT<<16)/H;
+	
+	buffer_scr += (y)*320;
+	buffer_scr += (x);
+	do   
 	{
-		x=0;
-		y=0; 
-		W=320;
-		H=240;
-		ix=(SYSVID_WIDTH<<16)/W;
-		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = 300;
-		yfp = 1;
-
-		do   
+		unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
+		W=screen_to_draw_region.w; x=0;
+		do 
 		{
-			unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-			W=320; x=0;
-			do {
-
-				*buffer_scr++=buffer_mem[x>>16];
+			*buffer_scr++=buffer_mem[x>>16];
 #if BITDEPTH_OSWAN == 32
-				*buffer_scr++=buffer_mem[x>>16];
+			*buffer_scr++=buffer_mem[x>>16];
 #endif
-				x+=ix;
-			} while (--W);
-			y+=iy;
-		} while (--H);
-	}
-	else // 1x Size
-	{ 
-#ifdef SWITCHING_GRAPHICS
-		x=0;
-		y=0; 
-		W=SYSVID_WIDTH;
-		H=SYSVID_HEIGHT;
-		ix=(SYSVID_WIDTH<<16)/W;
-		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = (x+SYSVID_WIDTH)-20;
-		yfp = y+1;
-		
-		buffer_scr += (y)*224;
-		buffer_scr += (x);
-		do   
-		{
-			unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-			W=224; x=0;
-			do 
-			{
-				*buffer_scr++=buffer_mem[x>>16];
-#if BITDEPTH_OSWAN == 32
-				*buffer_scr++=buffer_mem[x>>16];
+			x+=ix;
+		} while (--W);
+		y+=iy;
+#ifndef SWITCHING_GRAPHICS
+		if (screen_to_draw_region.w == 224) buffer_scr += actualScreen->pitch - 320 - SYSVID_WIDTH;
 #endif
-				x+=ix;
-			} while (--W);
-			y+=iy;
-			buffer_scr += actualScreen->pitch - 224 - SYSVID_WIDTH;
-		} while (--H);
-#else
-		x=((actualScreen->w - SYSVID_WIDTH)/2);
-		y=((actualScreen->h - SYSVID_HEIGHT)/2); 
-		W=SYSVID_WIDTH;
-		H=SYSVID_HEIGHT;
-		ix=(SYSVID_WIDTH<<16)/W;
-		iy=(SYSVID_HEIGHT<<16)/H;
-		xfp = (x+SYSVID_WIDTH)-20;
-		yfp = y+1;
-		
-		buffer_scr += (y)*320;
-		buffer_scr += (x);
-		do   
-		{
-			unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-			W=SYSVID_WIDTH; x=((actualScreen->w - SYSVID_WIDTH)/2);
-			do 
-			{
-				*buffer_scr++=buffer_mem[x>>16];
-#if BITDEPTH_OSWAN == 32
-				*buffer_scr++=buffer_mem[x>>16];
-#endif
-				x+=ix;
-			} while (--W);
-			y+=iy;
-			buffer_scr += actualScreen->pitch - 320 - SYSVID_WIDTH;
-		} while (--H);
-#endif
-	}
+	} while (--H);
 	
 	static char buffer[4];
 	if (GameConf.m_DisplayFPS) 
 	{
-		/*snprintf(buffer, sizeof(buffer), "%02d",FPS);*/
+#ifndef SWITCHING_GRAPHICS
+		if (GameConf.m_ScreenRatio == 2 || GameConf.m_ScreenRatio == 0)
+#else
+		if (GameConf.m_ScreenRatio == 2)
+#endif
+		{
+			SDL_Rect pos;
+			pos.x = 0;
+			pos.y = 0;
+			pos.w = 16;
+			pos.h = 16;
+			SDL_FillRect(actualScreen, &pos, 0);
+		}
 		sprintf(buffer,"%d",FPS);
-		print_string_video(xfp,yfp,buffer);
+		print_string_video(2,2,buffer);
 	}
 }
 
 #if defined(SCALING)
-void flip_screen(SDL_Surface* screen)
+inline void flip_screen(SDL_Surface* screen)
 {
 	SDL_Surface* doble;
-	doble = zoomSurface(screen,screen_scale.w_scale,screen_scale.h_scale,0);
+	doble = zoomSurface(screen,screen_scale.w_scale,screen_scale.h_scale);
 	SDL_BlitSurface(doble,NULL,real_screen,&screen_position);
 	SDL_Flip(real_screen);
 	SDL_FreeSurface(doble);
 }
 #endif
 
-void take_screenshot(void)
+inline void take_screenshot(void)
 {
 #if !defined(NOSCREENSHOTS)
 	// Save current screen in screenshots's layer

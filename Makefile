@@ -1,11 +1,11 @@
 CC = gcc
 
-CFLAGS = -O3 -Wall ${DEFINES} -I./main/emu -I./main/sdl
-DEFINES = -DHOME_SUPPORT -DSWITCHING_GRAPHICS -DSOUND_ON -DSOUND_EMULATION -DNATIVE_AUDIO
-LDFLAGS = -lSDLmain -lSDL -Wl,--as-needed
+CFLAGS = -O3 -std=gnu89 -Wall ${DEFINES} -I./main/emu -I./main/sdl
+DEFINES = -DHOME_SUPPORT -DSWITCHING_GRAPHICS -DSOUND_ON -DSOUND_EMULATION
+LDFLAGS = -lSDLmain -lSDL -Wl,--as-needed 
 OUTPUT = oswan
 
-SDL = main/sdl/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c
+SDL = main/sdl/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c main/sdl/gfx/SDL_rotozoom.c
 CPU = main/emu/cpu/nec.c
 EMU_CORE = main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c
 SOURCES = ${SDL} ${CPU} ${EMU_CORE}

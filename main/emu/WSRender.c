@@ -26,7 +26,7 @@ WORD MonoColor[8];
 WORD FrameBuffer[320*240];
 const unsigned char Layer[3] = {1, 1, 1};
 
-void SetPalette(const int addr)
+inline void SetPalette(const int addr)
 {
     WORD color, r, g, b;
     unsigned short pal;
@@ -53,7 +53,7 @@ void SetPalette(const int addr)
     /*Palette[(addr & 0x1E0) >> 5][(addr & 0x1E) >> 1] = color | 0xF000;*/
 }
 
-void RefreshLine(const unsigned short Line)
+inline void RefreshLine(const unsigned short Line)
 {
     WORD *pSBuf;            // データ書き込みバッファ
     WORD *pSWrBuf;          // ↑の書き込み位置用ポインタ
@@ -768,7 +768,7 @@ void RefreshLine(const unsigned short Line)
     }
 }
 
-void RenderSleep(void)
+inline void RenderSleep(void)
 {
     unsigned char x, y;
     WORD* p;

@@ -31,7 +31,7 @@
 #endif
 
 #ifdef _TINSPIRE
-	//#define BITDEPTH_OSWAN has_colors ? 16 : 8
+	//#define BITDEPTH_OSWAN (has_colors ? 16 : 8)
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
 #elif defined(GCW)
@@ -263,6 +263,6 @@ extern void mainemuinit();
 
 // menu
 extern void screen_showtopmenu(void);
-extern void print_string_video(short x, const short y, const char *s);
+extern inline void print_string_video(short x, const short y, const char *s);
 
 #endif

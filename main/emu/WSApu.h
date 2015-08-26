@@ -1,8 +1,3 @@
-/*
-$Date: 2009-10-30 05:26:46 +0100 (ven., 30 oct. 2009) $
-$Rev: 71 $
-*/
-
 typedef struct sound {
     int on;
     int freq;
@@ -27,21 +22,17 @@ extern NOISE Noise;
 extern char VoiceOn;
 extern short Sound[7];
 
-/*
-extern int VoiceOn;
-extern int Sound[7];
-*/
-int apuBufLen(void);
-void apuWaveVolume(int);
-void apuWaveCreate(void);
-void apuWaveDel(void);
-void apuWaveClear(void);
-int apuInit(void);
-void apuEnd(void);
+inline int apuBufLen(void);
+inline void apuWaveVolume(int);
+inline void apuWaveCreate(void);
+inline void apuWaveDel(void);
+inline void apuWaveClear(void);
+inline void apuInit(void);
+inline void apuEnd(void);
 unsigned int apuMrand(unsigned int);
-void apuSetPData(int, unsigned char);
+inline void apuSetPData(int, unsigned char);
 unsigned char apuVoice(void);
-void apuSweep(void);
+inline void apuSweep(void);
 WORD apuShiftReg(void);
-void apuWaveSet(void);
-void apuStartupSound(void);
+inline void apuWaveSet(void);
+inline void apuStartupSound(void);

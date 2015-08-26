@@ -1,14 +1,14 @@
 CC = nspire-gcc
 
-CFLAGS = -O3 -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -I./main/emu -I./main/sdl
+CFLAGS = -O3 -std=gnu89 -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -I./main/emu -I./main/sdl
 CFLAGS += ${DEFINES} 
 DEFINES = -DSWITCHING_GRAPHICS
 LDFLAGS = -Wl,--as-needed -flto
 OUTPUT = oswan
 
-SDL = main/sdl/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c
+SDL = main/fast/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c
 CPU = main/emu/cpu/nec.c
-EMU_CORE = main/emu/WS.c main/emu/WSFileio.c main/fast/WSRender.c
+EMU_CORE = main/fast/WS.c main/emu/WSFileio.c main/emu/WSRender.c
 SOURCES = ${SDL} ${EMU_CORE} ${CPU}
 OBJS = ${SOURCES:.c=.o}
 

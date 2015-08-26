@@ -31,13 +31,13 @@ extern struct EEPROM sCEep;
 #define CK_EEP 1
 extern unsigned char CartKind;
 
-void WriteIO(const DWORD A, BYTE V);
+inline void WriteIO(const DWORD A, BYTE V);
 void WsReset (void);
 void WsRomPatch(const BYTE *buf);
 void WsSetDir(void);
-int WsRun(void);
+inline int WsRun(void);
 void WsInit(void);
 void WsDeInit(void);
-void SetHVMode(const unsigned char Mode);
+inline void SetHVMode(const unsigned char Mode);
 
 #endif

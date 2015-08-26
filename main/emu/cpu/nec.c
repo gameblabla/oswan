@@ -82,7 +82,6 @@ char seg_prefix;		/* prefix segment indicator */
 #include "necmodrm.h"
 
 static int no_interrupt;
-
 static UINT8 parity_table[256];
 
 /***************************************************************************/
@@ -125,7 +124,7 @@ void nec_reset (void *param)
 	
 }
 
-void inline nec_int(const DWORD wektor)
+inline void nec_int(const DWORD wektor)
 {
   
 	DWORD dest_seg, dest_off;
@@ -143,7 +142,7 @@ void inline nec_int(const DWORD wektor)
 	}
 }
 
-static void inline nec_interrupt(const unsigned int_num)
+inline void nec_interrupt(const unsigned int_num)
 {
 	UINT32 dest_seg, dest_off;
 
@@ -169,7 +168,7 @@ static void inline nec_interrupt(const unsigned int_num)
 /*							   OPCODES										*/
 /****************************************************************************/
 
-#define OP(num,func_name) static void inline func_name(void)
+#define OP(num,func_name) static inline void func_name(void)
 
 
 OP( 0x00, i_add_br8  ) { DEF_br8;	ADDB;	PutbackRMByte(ModRM,dst);	CLKM(3,1);	 	}
@@ -617,8 +616,8 @@ OP( 0xd3, i_rotshft_wcl ) {
 	}
 }
 
-OP( 0xd4, i_aam    ) { UINT32 mult=FETCH; mult=0; I.regs.b[AH] = I.regs.b[AL] / 10; I.regs.b[AL] %= 10; SetSZPF_Word(I.regs.w[AW]); CLK(17); }
-OP( 0xd5, i_aad    ) { UINT32 mult=FETCH; mult=0; I.regs.b[AL] = I.regs.b[AH] * 10 + I.regs.b[AL]; I.regs.b[AH] = 0; SetSZPF_Byte(I.regs.b[AL]); CLK(6); }
+OP( 0xd4, i_aam    ) { FETCH; I.regs.b[AH] = I.regs.b[AL] / 10; I.regs.b[AL] %= 10; SetSZPF_Word(I.regs.w[AW]); CLK(17); }
+OP( 0xd5, i_aad    ) { FETCH; I.regs.b[AL] = I.regs.b[AH] * 10 + I.regs.b[AL]; I.regs.b[AH] = 0; SetSZPF_Byte(I.regs.b[AL]); CLK(6); }
 OP( 0xd6, i_setalc ) { I.regs.b[AL] = (CF)?0xff:0x00; CLK(3);  } /* nop at V30MZ? */
 OP( 0xd7, i_trans  ) { UINT32 dest = (I.regs.w[BW]+I.regs.b[AL])&0xffff; I.regs.b[AL] = GetMemB(DS, dest); CLK(5); }
 OP( 0xd8, i_fpo    ) { /*GetModRM; Apparently unused according to clang*/ CLK(3);	 } 
@@ -773,13 +772,13 @@ OP( 0xff, i_ffpre ) { UINT32 tmp, tmp1; GetModRM; tmp=GetRMWord(ModRM);
 
 static void i_invalid(void)
 {
-	/*CLK(10);*/
+	CLK(10);
 }
 
 /*****************************************************************************/
 
 
-short inline nec_get_reg(const int regnum)
+inline short nec_get_reg(const int regnum)
 {
 	switch( regnum )
 	{
@@ -807,7 +806,7 @@ short inline nec_get_reg(const int regnum)
 
 void nec_set_irq_line(const int irqline, const int state);
 
-void inline nec_set_reg(const int regnum, const unsigned val)
+inline void nec_set_reg(const int regnum, const unsigned val)
 {
 	switch( regnum )
 	{
@@ -830,7 +829,7 @@ void inline nec_set_reg(const int regnum, const unsigned val)
 }
 
 
-unsigned short inline nec_execute(const unsigned short cycles)
+inline unsigned short nec_execute(const unsigned short cycles)
 {
 	nec_ICount=cycles;
 
