@@ -53,6 +53,10 @@
 	#define PATH_DIRECTORY getenv("HOME")
 	#define SAVE_DIRECTORY "/.oswan/"
 	#define EXTENSION ""
+#elif defined(DREAMCAST)
+	#define PATH_DIRECTORY "/ram/"
+	#define SAVE_DIRECTORY ""
+	#define EXTENSION ""
 #else
 	#ifdef HOME_SUPPORT
 		#define PATH_DIRECTORY getenv("HOME")

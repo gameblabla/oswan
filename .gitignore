@@ -9,6 +9,7 @@
 ./oswan
 /opk/oswan
 main/sdl/*.o
+minizip/*.o
 main/emu/*.o
 main/fast/*.o
 main/emu/cpu/*.o

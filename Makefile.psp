@@ -1,12 +1,17 @@
 TARGET = Oswan
-OBJS = main/sdl/main.o main/sdl/menu.o main/sdl/hack.o main/sdl/gfx/SDL_rotozoom.o main/sdl/drawing.o main/sdl/input.o
-OBJS += main/emu/cpu/nec.o main/emu/WS.o main/emu/WSApu.o main/emu/WSFileio.o main/emu/WSRender.o
 
-INCDIR =
 CFLAGS = -O2 -std=gnu89 -fomit-frame-pointer -s -Wall -I/usr/local/pspdev/psp/include/SDL
 CFLAGS += -DSOUND_ON -DSOUND_EMULATION -DSMOOTH -DPSP -DSWITCHING_GRAPHICS
 ASFLAGS = $(CFLAGS)
 
+OBJS = main/sdl/main.o main/sdl/menu.o main/sdl/hack.o main/sdl/gfx/SDL_rotozoom.o main/sdl/drawing.o main/sdl/input.o
+OBJS += main/emu/cpu/nec.o main/emu/WS.o main/emu/WSApu.o main/emu/WSFileio.o main/emu/WSRender.o
+
+# Enable this to support zip files
+# Here, Support for zips is enabled
+CFLAGS+=-DZIP_SUPPORT -I./minizip
+LDFLAGS+=-lz
+OBJS = minizip/unzip.o minizip/ioapi.o
 
 PSPSDK=$(shell psp-config --pspsdk-path)
 PSPBIN = $(PSPSDK)/../bin

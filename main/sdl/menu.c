@@ -25,7 +25,13 @@ SDL_Rect position_select;
 #define COLOR_ACTIVE_ITEM   SDL_MapRGB(actualScreen->format,255, 255, 255)
 #define COLOR_INACTIVE_ITEM SDL_MapRGB(actualScreen->format,255,255,255)
 
-const char *file_ext[] = { (const char *) ".ws",  (const char *) ".wsc",  (const char *) ".WSC",  (const char *) ".WS", 
+
+
+const char *file_ext[] = { 
+	(const char *) ".ws",  (const char *) ".wsc", 
+#ifdef ZIP_SUPPORT  
+	(const char *) ".zip",
+#endif
 #ifdef _TINSPIRE
 	 (const char *) ".tns", 
 #endif

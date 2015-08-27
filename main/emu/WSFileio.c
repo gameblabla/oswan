@@ -1,7 +1,6 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "WSHard.h"
 #include "WS.h"
 #include "WSFileio.h"
@@ -10,11 +9,28 @@
 
 #include "hack.h"
 #include "shared.h"
+#ifdef ZIP_SUPPORT  
+#include "unzip.h"
+#endif
 
 int result;
 char SaveName[512]; 
 char StateName[512];
 char IEepPath[512]; 
+
+#ifdef ZIP_SUPPORT  
+int check_zip(char *filename)
+{
+    unsigned char buf[2];
+    FILE *fd = NULL;
+    fd = fopen(filename, "rb");
+    if(!fd) return (0);
+    fread(buf, 2, 1, fd);
+    fclose(fd);
+    if(memcmp(buf, "PK", 2) == 0) return (1);
+    return (0);
+}
+#endif
 
 int WsSetPdata(void)
 {
@@ -47,17 +63,106 @@ int WsCreate(char *CartName)
     memset(IRAM, 0, sizeof(IRAM));
     memset(MemDummy, 0xA0, sizeof(MemDummy));
     memset(IO, 0, sizeof(IO));
+    
     if (CartName == NULL)
     {
         return WsSetPdata();
     }
-    
-    if ((fp = fopen(CartName, "rb")) == NULL)
-    {
-        //ErrorMsg(ERR_FOPEN);
-		fprintf(stderr,"ERR_FOPEN\n");
-        return 1;
-    }
+ 
+#ifdef ZIP_SUPPORT   
+	if(check_zip(CartName))
+	{
+		#define READ_SIZE 8192
+		char read_buffer[READ_SIZE];
+		unzFile *zipfile = unzOpen(CartName);
+		unz_global_info global_info;
+		if ( unzGetGlobalInfo( zipfile, &global_info ) != UNZ_OK )
+		{
+			printf( "could not read file global info\n" );
+			unzClose( zipfile );
+			return -1;
+		}
+
+        // Get info about current file.
+        unz_file_info file_info;
+        char filename[512];
+        if ( unzGetCurrentFileInfo( zipfile, &file_info, filename, 512, NULL, 0, NULL, 0 ) != UNZ_OK )
+        {
+            printf( "could not read file info\n" );
+            unzClose( zipfile );
+            return -1;
+        }
+        
+		// Entry is a file, so extract it.
+		if ( unzOpenCurrentFile( zipfile ) != UNZ_OK )
+		{
+			printf( "could not open file\n" );
+			unzClose( zipfile );
+			return -1;
+		}
+		
+		// Open a file to write out the data.
+		char tempfilename[512];
+		snprintf(tempfilename, sizeof(tempfilename), "%s%stemp.rom%s", PATH_DIRECTORY, SAVE_DIRECTORY, EXTENSION);
+		
+		FILE *out = fopen( tempfilename, "wb" );
+		if ( out == NULL )
+		{
+			printf( "could not open destination file\n" );
+			unzCloseCurrentFile( zipfile );
+			unzClose( zipfile );
+			return -1;
+		}
+		
+		short error = UNZ_OK;
+		do    
+		{
+			error = unzReadCurrentFile( zipfile, read_buffer, READ_SIZE );
+			if ( error < 0 )
+			{
+				printf( "Error %d\n", error );
+				unzCloseCurrentFile( zipfile );
+				unzClose( zipfile );
+				return -1;
+			}
+			if ( error > 0 )
+			{
+				//Write data to file.
+				fwrite( read_buffer, error, 1, out );
+			}
+		} while ( error > 0 );
+
+        fclose( out );
+        unzCloseCurrentFile( zipfile );
+        
+        /*
+         * This could be improved, obviously.
+         * It should read from memory instead of writing to a file
+         * and then reading a from it.
+         * Sure, it is deleted right afterwards but on read-only systems,
+         * this is not even a possibility.
+         * It still works on Sega Dreamcast because it is put in RAM.
+         * It might not be able to load big roms though...
+        */
+        
+		if ((fp = fopen(tempfilename, "rb")) == NULL)
+		{
+			fprintf(stderr,"ERR_FOPEN\n");
+			return 1;
+		}
+		remove(tempfilename);
+	}
+	else
+	{
+#endif
+		if ((fp = fopen(CartName, "rb")) == NULL)
+		{
+			fprintf(stderr,"ERR_FOPEN\n");
+			return 1;
+		}
+#ifdef ZIP_SUPPORT
+	}
+#endif
     
     /*ws_romsize = sizeof(fp);*/
 
@@ -171,9 +276,8 @@ int WsCreate(char *CartName)
             }
             else
             {
-                //ErrorMsg(ERR_FREAD_ROM);
-                printf("ERROR: ERR_FREAD_ROM\n");
-                printf("Are you playing a homebrew game ?\n");
+                /*printf("ERROR: ERR_FREAD_ROM\n");
+                printf("Are you playing a homebrew game ?\n");*/
 				/*fprintf(stderr,"ERR_FREAD_ROM\n");*/
                 /*break;*/
             }
