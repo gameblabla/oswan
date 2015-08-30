@@ -8,7 +8,7 @@
 
 #include "drawing.h"
 
-inline void  Get_resolution(void)
+void Get_resolution(void)
 {
 #ifdef SCALING
 	#ifdef SYLLABLE
@@ -27,7 +27,7 @@ inline void  Get_resolution(void)
 #endif
 }
 
-inline void Set_resolution(unsigned short w, unsigned short h)
+void Set_resolution(unsigned short w, unsigned short h)
 {
 #ifdef SCALING
 	screen_scale.w_scale = screen_scale.w_display / w;
@@ -45,7 +45,7 @@ inline void Set_resolution(unsigned short w, unsigned short h)
 
 }
 
-inline void SetVideo(unsigned char mode)
+void SetVideo(unsigned char mode)
 {
 #ifdef SCALING	
 	int flags = FLAG_VIDEO | SDL_NOFRAME | SDL_FULLSCREEN;
@@ -85,7 +85,7 @@ inline void SetVideo(unsigned char mode)
 	#endif
 }
 
-inline void Set_DrawRegion(void)
+void Set_DrawRegion(void)
 {
 	/* Clear screen too to avoid graphical glitches */
 	SDL_FillRect(actualScreen, NULL, 0);
@@ -118,7 +118,7 @@ inline void Set_DrawRegion(void)
 	}
 }
 
-inline void screen_draw(void)
+void screen_draw(void)
 {
 	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
 	unsigned int W,H,ix,iy,x,y;
@@ -172,7 +172,7 @@ inline void screen_draw(void)
 }
 
 #if defined(SCALING)
-inline void flip_screen(SDL_Surface* screen)
+void flip_screen(SDL_Surface* screen)
 {
 	SDL_Surface* doble;
 	doble = zoomSurface(screen,screen_scale.w_scale,screen_scale.h_scale);
@@ -182,7 +182,7 @@ inline void flip_screen(SDL_Surface* screen)
 }
 #endif
 
-inline void take_screenshot(void)
+void take_screenshot(void)
 {
 #if !defined(NOSCREENSHOTS)
 	// Save current screen in screenshots's layer

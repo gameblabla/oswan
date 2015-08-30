@@ -124,7 +124,7 @@ void nec_reset (void *param)
 	
 }
 
-inline void nec_int(const DWORD wektor)
+void nec_int(const DWORD wektor)
 {
   
 	DWORD dest_seg, dest_off;
@@ -142,7 +142,7 @@ inline void nec_int(const DWORD wektor)
 	}
 }
 
-inline void nec_interrupt(const unsigned int_num)
+void nec_interrupt(const unsigned int_num)
 {
 	UINT32 dest_seg, dest_off;
 
@@ -168,7 +168,7 @@ inline void nec_interrupt(const unsigned int_num)
 /*							   OPCODES										*/
 /****************************************************************************/
 
-#define OP(num,func_name) static inline void func_name(void)
+#define OP(num,func_name) static void func_name(void)
 
 
 OP( 0x00, i_add_br8  ) { DEF_br8;	ADDB;	PutbackRMByte(ModRM,dst);	CLKM(3,1);	 	}
@@ -492,8 +492,8 @@ OP( 0xc0, i_rotshft_bd8 ) {
 		case 0x08: do { ROR_BYTE;  c--; } while (c>0); PutbackRMByte(ModRM,(BYTE)dst); break;
 		case 0x10: do { ROLC_BYTE; c--; } while (c>0); PutbackRMByte(ModRM,(BYTE)dst); break;
 		case 0x18: do { RORC_BYTE; c--; } while (c>0); PutbackRMByte(ModRM,(BYTE)dst); break;
-		case 0x20: SHL_BYTE(c);	I.AuxVal = 1; break;//
-		case 0x28: SHR_BYTE(c);	I.AuxVal = 1; break;//
+		case 0x20: SHL_BYTE(c);	I.AuxVal = 1; break;
+		case 0x28: SHR_BYTE(c);	I.AuxVal = 1; break;
 		case 0x30:	break;
 		case 0x38: SHRA_BYTE(c); break;
 	}
@@ -636,7 +636,7 @@ OP( 0xe9, i_jmp_d16  ) { UINT32 tmp; FETCHWORD(tmp); I.ip = (WORD)(I.ip+(INT16)t
 OP( 0xea, i_jmp_far  ) { UINT32 tmp,tmp1; FETCHWORD(tmp); FETCHWORD(tmp1); I.sregs[CS] = (WORD)tmp1; 	I.ip = (WORD)tmp; CLK(7);	}
 OP( 0xeb, i_jmp_d8	 ) { 
 	int tmp = (int)((INT8)FETCH); CLK(4);
-	if (tmp==-2 && no_interrupt==0 && nec_ICount>0) nec_ICount%=12; // cycle skip/
+	if (tmp==-2 && no_interrupt==0 && nec_ICount>0) nec_ICount%=12; /* cycle skip */
 	I.ip = (WORD)(I.ip+tmp);
 }
 OP( 0xec, i_inaldx	 ) { I.regs.b[AL] = read_port(I.regs.w[DW]); CLK(6);}
@@ -778,7 +778,7 @@ static void i_invalid(void)
 /*****************************************************************************/
 
 
-inline short nec_get_reg(const int regnum)
+short nec_get_reg(const int regnum)
 {
 	switch( regnum )
 	{
@@ -806,7 +806,7 @@ inline short nec_get_reg(const int regnum)
 
 void nec_set_irq_line(const int irqline, const int state);
 
-inline void nec_set_reg(const int regnum, const unsigned val)
+void nec_set_reg(const int regnum, const unsigned val)
 {
 	switch( regnum )
 	{
@@ -829,7 +829,7 @@ inline void nec_set_reg(const int regnum, const unsigned val)
 }
 
 
-inline unsigned short nec_execute(const unsigned short cycles)
+unsigned short nec_execute(const unsigned short cycles)
 {
 	nec_ICount=cycles;
 

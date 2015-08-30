@@ -1,8 +1,4 @@
-- Improve Sound output
-It's pretty bad and sounds very scratchy.
-
 - Proper 32-bits support
-On Linux, if the bpp is different from the display, it will be converted
-but there will be a significant drop in speed.
+On Linux, if the bpp is different from the display, it will be converted but there will be a significant drop in speed.
 The only problem is the palette : it is not properly converted to 32 bits and it's DIFFICULT !
 Look at emu/WSRender.c and SetPalette function for more info.

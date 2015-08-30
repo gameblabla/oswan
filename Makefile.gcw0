@@ -1,35 +1,33 @@
-CC = mipsel-linux-gcc
+CC 				= mipsel-linux-gcc
 
-CFLAGS = -O3 -std=gnu89 -fomit-frame-pointer -mips32r2 -Wall -I./main/emu -I./main/sdl ${DEFINES} 
-DEFINES = -DSOUND_ON -DSOUND_EMULATION -DGCW -DJOYSTICK -DHOME_SUPPORT
-LDFLAGS = -lSDL -Wl,--as-needed -flto -s
-OUTPUT = oswan
+CFLAGS 		= -O2 -fomit-frame-pointer -std=gnu89 -fomit-frame-pointer -mips32r2 -Wall -I./main/emu -I./main/sdl ${DEFINES} 
+DEFINES 		= -DSOUND_ON -DSOUND_EMULATION -DGCW -DJOYSTICK -DHOME_SUPPORT
+LDFLAGS 		= -lSDL -Wl,--as-needed -flto -s
+OUT	 		= oswan
 
-SDL = main/sdl/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c
-CPU = main/emu/cpu/nec.c
-EMU_CORE = main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
-SOURCES = ${SDL} ${CPU} ${EMU_CORE} 
-OBJS = ${SOURCES:.c=.o}
+SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c
+CPU 		= main/emu/cpu/nec.c
+CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
+SOURCES 	= ${SDL} ${CPU} ${CORE} 
 
 # Enable this to support zip files
 # Here, Support for zips is enabled
-CFLAGS+=-DZIP_SUPPORT -I./minizip
-LDFLAGS+=-lz
+CFLAGS 	   +=-DZIP_SUPPORT -I./minizip
+LDFLAGS	   +=-lz
 THIRD_PARTY = minizip/unzip.o minizip/ioapi.o
-SOURCES+= ${THIRD_PARTY}
+SOURCES	   += ${THIRD_PARTY}
 
-all: ${OUTPUT} pack
+OBJS 		= ${SOURCES:.c=.o}
 
-pack:
-	mv oswan ./opk/oswan
-	mksquashfs ./opk oswan.opk -all-root -noappend -no-exports -no-xattrs
+all		: ${OUT} pack
 
-${OUTPUT}:${OBJS}
-	${CC} -o ${OUTPUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
+pack	:
+		mv oswan ./opk/oswan
+		mksquashfs ./opk oswan.opk -all-root -noappend -no-exports -no-xattrs
+
+${OUT}	: ${OBJS}
+		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
 	
-clean:
-	rm ${OBJS}
-	rm ${OUTPUT}
-
-install:
-	mv $(OUTPUT) /usr/bin/$(OUTPUT)
+clean	:
+		rm ${OBJS}
+		rm ${OUT}

@@ -3,16 +3,13 @@
 
 #include "WSHard.h"
 #include "WSApu.h"
-#include "input.h"
 
 #define BUFSIZEN    0x10000
-#define BPSWAV      12000 // WSのHblankが12KHz
+#define BPSWAV      12000 /* WSのHblankが12KHz */
 
-#ifdef NATIVE_AUDIO
-#define SND_BNKSIZE 256
-#else
-#define SND_BNKSIZE 4096
-#endif
+/*4096*/
+#define SND_BNKSIZE 2048
+#define MULT 3
 
 #define SND_RNGSIZE (10 * SND_BNKSIZE)
 #define WAV_VOLUME 30
@@ -26,7 +23,7 @@ short Sound[7] = {1, 1, 1, 1, 1, 1, 1};
 static unsigned char PData[4][32];
 static unsigned char PDataN[8][BUFSIZEN];
 static unsigned int RandData[BUFSIZEN];
-static short sndbuffer[SND_RNGSIZE][2]; // Sound Ring Buffer
+static short sndbuffer[SND_RNGSIZE][2]; /* Sound Ring Buffer */
 
 static int  rBuf, wBuf;
 
@@ -38,7 +35,7 @@ SDL_cond *sound_cv;
 
 static unsigned long read_pos;
 
-inline int apuBufLen(void)
+int apuBufLen(void)
 {
 	if (wBuf >= rBuf) 
 	{
@@ -86,17 +83,17 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 	SDL_CondSignal(sound_cv);
 }
 
-inline void apuWaveCreate(void)
+void apuWaveCreate(void)
 {
     memset(sndbuffer,0x00, SND_RNGSIZE);
 }
 
-inline void apuWaveRelease(void)
+void apuWaveRelease(void)
 {
 	SDL_PauseAudio(1);
 }
 
-inline void apuInit(void)
+void apuInit(void)
 {
     int i, j;
 
@@ -125,7 +122,7 @@ inline void apuInit(void)
 	sound_cv = SDL_CreateCond();
 }
 
-inline void apuEnd(void)
+void apuEnd(void)
 {
     apuWaveRelease();
 	SDL_CondSignal(sound_cv);
@@ -202,7 +199,7 @@ unsigned int apuMrand(unsigned int Degree)
     return ShiftReg;
 }
 
-inline void apuSetPData(int addr, unsigned char val)
+void apuSetPData(int addr, unsigned char val)
 {
     int i, j;
 
@@ -217,7 +214,7 @@ unsigned char apuVoice(void)
     static int index = 0, b = 0;
     unsigned char v;
 
-    if ((IO[SDMACTL] & 0x98) == 0x98) // Hyper voice
+    if ((IO[SDMACTL] & 0x98) == 0x98) /* Hyper voice */
     { 
         v = Page[IO[SDMASH] + b][*(WORD*)(IO + SDMASL) + index++];
         if ((*(WORD*)(IO + SDMASL) + index) == 0)
@@ -239,7 +236,7 @@ unsigned char apuVoice(void)
         }
         return v;
     }
-    else if ((IO[SDMACTL] & 0x88) == 0x80) // DMA start
+    else if ((IO[SDMACTL] & 0x88) == 0x80) /* DMA start */
     { 
         IO[SND2VOL] = Page[IO[SDMASH] + b][*(WORD*)(IO + SDMASL) + index++];
         if ((*(WORD*)(IO + SDMASL) + index) == 0)
@@ -248,7 +245,7 @@ unsigned char apuVoice(void)
         }
         if (*(WORD*)(IO + SDMACNT) <= index)
         {
-            IO[SDMACTL] &= 0x7F; // DMA end
+            IO[SDMACTL] &= 0x7F; /* DMA end */
             *(WORD*)(IO + SDMACNT) = 0;
             index = 0;
             b = 0;
@@ -257,9 +254,9 @@ unsigned char apuVoice(void)
     return ((VoiceOn && Sound[4]) ? IO[SND2VOL] : 0x80);
 }
 
-inline void apuSweep(void)
+void apuSweep(void)
 {
-    if ((Swp.step) && Swp.on) // Sweep on
+    if ((Swp.step) && Swp.on) /* Sweep on */
     {
         if (Swp.cnt < 0)
         {
@@ -282,7 +279,7 @@ WORD apuShiftReg(void)
     return RandData[nPos];
 }
 
-inline void apuWaveSet(void)
+void apuWaveSet(void)
 {
     static  int point[] = {0, 0, 0, 0};
     static  int preindex[] = {0, 0, 0, 0};
@@ -297,11 +294,8 @@ inline void apuWaveSet(void)
      * It seems like it just can't keep up.
      * I need someone to improve this...
     */
-    #ifndef NATIVE_AUDIO
-	#define MULT 4
 	static int conv=MULT;
     int i;
-    #endif
 
     /*if (WsInputGetNowait())
     {
@@ -363,24 +357,16 @@ inline void apuWaveSet(void)
     }
     
     vVol = ((short)apuVoice() - 0x80);
-    // mix 16bits wave -32768 ～ +32767 32768/120 = 273
+    /* mix 16bits wave -32768 ～ +32767 32768/120 = 273 */
     LL = (lVol[0] + lVol[1] + lVol[2] + lVol[3] + vVol) * WAV_VOLUME;
     RR = (rVol[0] + rVol[1] + rVol[2] + rVol[3] + vVol) * WAV_VOLUME;
 
-	#ifdef NATIVE_AUDIO
-	sndbuffer[wBuf][0] = LL;
-	sndbuffer[wBuf][1] = RR;
-	if (++wBuf >= SND_RNGSIZE)
-	{
-		wBuf = 0;
-	}
-	#else
 	if (conv == MULT) 
 		conv = (MULT+1);
 	else
 		conv = MULT;
 
-	for (i=0;i<conv;i++)	// 48000/12000
+	for (i=0;i<conv;i++)	/* 48000/12000 */
 	{ 
 		sndbuffer[wBuf][0] = LL;
 		sndbuffer[wBuf][1] = RR;
@@ -389,7 +375,6 @@ inline void apuWaveSet(void)
 			wBuf = 0;
 		}
 	}
-	#endif
     
 #ifdef SOUND_ON
 	SDL_UnlockMutex(sound_mutex);

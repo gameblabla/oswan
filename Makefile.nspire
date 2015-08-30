@@ -1,39 +1,41 @@
-CC = nspire-gcc
+CC			= nspire-gcc
 
-CFLAGS = -O3 -std=gnu89 -fomit-frame-pointer -marm -march=armv5te -mtune=arm926ej-s -I./main/emu -I./main/sdl
-CFLAGS += ${DEFINES} 
-DEFINES = -DSWITCHING_GRAPHICS
-LDFLAGS = -Wl,--as-needed -flto
-OUTPUT = oswan
+CFLAGS  	= -O3 -Wall -Werror -std=gnu89 -I./main/emu -I./main/sdl 
+CFLAGS 	   += -marm -march=armv5te -mtune=arm926ej-s
+CFLAGS 	   += ${DEFINES}
+DEFINES 	= -DSWITCHING_GRAPHICS
+LDFLAGS 	= -lSDL -Wl,--as-needed -flto
+OUT  		= oswan
 
-SDL = main/fast/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c
-CPU = main/emu/cpu/nec.c
-EMU_CORE = main/fast/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
-SOURCES = ${SDL} ${CPU} ${EMU_CORE} 
-OBJS = ${SOURCES:.c=.o}
+SDL 		= main/emu/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c
+CPU 		= main/emu/cpu/nec.c
+CORE 		= main/fast/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
+SOURCES 	= ${SDL} ${CPU} ${CORE} 
 
-# Enable this to support zip files
-#CFLAGS+=-DZIP_SUPPORT -I./minizip
-#LDFLAGS+=-lz
-#THIRD_PARTY = minizip/unzip.o minizip/ioapi.o
-#SOURCES+= ${THIRD_PARTY}
+# Comment the 4 lines below to disable zip support
+CFLAGS 	   += -DZIP_SUPPORT -I./minizip
+LDFLAGS	   += -lz
+THIRD_PARTY	= minizip/unzip.o minizip/ioapi.o
+SOURCES    += ${THIRD_PARTY}
 
-all : ${OUTPUT} gen mkprg
+OBJS 		= ${SOURCES:.c=.o}
 
-gen :
-	genzehn --input ${OUTPUT} --output ${OUTPUT}.tns --compress
+all 	: ${OUT} gen mkprg
+
+gen 	:
+		genzehn --input ${OUT} --output ${OUT}.tns --compress
 	
-mkprg:
-	make-prg ${OUTPUT}.tns ${OUTPUT}.prg.tns
-	rm ${OUTPUT}.tns
-	rm ${OUTPUT}
-	mv  ${OUTPUT}.prg.tns ${OUTPUT}.tns
+mkprg	:
+		make-prg ${OUT}.tns ${OUT}.prg.tns
+		rm ${OUT}.tns
+		rm ${OUT}
+		mv  ${OUT}.prg.tns ${OUT}.tns
 
-${OUTPUT}:${OBJS}
-	${CC} -o ${OUTPUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
+${OUT}	: ${OBJS}
+		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
 	
 clean:
-	rm ${OBJS}
-	rm ${OUTPUT}
-	rm ${OUTPUT}.prg.tns
-	rm ${OUTPUT}.tns
+		rm ${OBJS}
+		rm ${OUT}
+		rm ${OUT}.prg.tns
+		rm ${OUT}.tns

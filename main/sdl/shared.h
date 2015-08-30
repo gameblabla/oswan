@@ -19,30 +19,52 @@
 #define SCREEN_HEIGHT 240
 
 #ifdef GCW
+
 	#ifndef HOME_SUPPORT
-		#define HOME_SUPPORT
+	#define HOME_SUPPORT
 	#endif
+	
 	#ifndef JOYSTICK
-		#define JOYSTICK
+	#define JOYSTICK
 	#endif
+	
 	#ifndef UNIX
-		#define UNIX
+	#define UNIX
+	#endif
+	
+#endif
+
+#ifdef _TINSPIRE
+	#ifndef NO_WAIT
+	#define NO_WAIT
 	#endif
 #endif
 
 #ifdef _TINSPIRE
-	//#define BITDEPTH_OSWAN (has_colors ? 16 : 8)
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
+	#define REAL_SCREEN_WIDTH 320
+	#define REAL_SCREEN_HEIGHT 240
 #elif defined(GCW)
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
+	#define REAL_SCREEN_WIDTH 320
+	#define REAL_SCREEN_HEIGHT 240
+#elif defined(PSP)
+	#define BITDEPTH_OSWAN 16
+	#define FLAG_VIDEO SDL_SWSURFACE
+	#define REAL_SCREEN_WIDTH 480
+	#define REAL_SCREEN_HEIGHT 272
 #elif defined(DREAMCAST)
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
+	#define REAL_SCREEN_WIDTH 320
+	#define REAL_SCREEN_HEIGHT 240
 #else
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
+	#define REAL_SCREEN_WIDTH 320
+	#define REAL_SCREEN_HEIGHT 240
 #endif
 
 #ifdef _TINSPIRE
@@ -52,6 +74,10 @@
 #elif defined(GCW)
 	#define PATH_DIRECTORY getenv("HOME")
 	#define SAVE_DIRECTORY "/.oswan/"
+	#define EXTENSION ""
+#elif defined(PSP)
+	#define PATH_DIRECTORY ""
+	#define SAVE_DIRECTORY ""
 	#define EXTENSION ""
 #elif defined(DREAMCAST)
 	#define PATH_DIRECTORY "/ram/"
@@ -66,25 +92,6 @@
 		#define SAVE_DIRECTORY ""
 	#endif
 	#define EXTENSION ""
-#endif
-
-
-#ifdef PSP
-	#include <pspkernel.h>
-	#include <pspctrl.h>
-	#include <pspdisplay.h>
-	#include <psppower.h>
-	#define keys[x] keys(x)
-	int keys(int controls);
-	int keys(int controls)
-	{
-		SceCtrlData pad;
-		sceCtrlPeekBufferPositive(&pad, 1);
-		if (pad.Buttons & controls)
-			return 1;
-		else
-			return 0;
-	}
 #endif
 
 #ifdef _TINSPIRE
@@ -114,6 +121,8 @@
 
 	#define PAD_START		SDLK_LSHIFT
 	#define PAD_SELECT		SDLK_LSHIFT
+	
+	#define PAD_SLIDER		0
 	
 	#define PAD_QUIT		SDLK_ESCAPE
 
@@ -162,15 +171,15 @@
 	#define PAD_X		PSP_CTRL_SQUARE
 	#define PAD_Y		PSP_CTRL_TRIANGLE
 	
-	#define PAD_L		PSP_CTRL_L
-	#define PAD_R		PSP_CTRL_R
+	#define PAD_L		PSP_CTRL_LTRIGGER
+	#define PAD_R		PSP_CTRL_RTRIGGER
 	
 	#define PAD_START		PSP_CTRL_START
 	#define PAD_SELECT		0
 	
 	#define PAD_SLIDER		0
 	
-	#define PAD_QUIT		PSP_CTRL_HOME
+	#define PAD_QUIT		PSP_CTRL_SELECT
 
 #else
 
@@ -201,10 +210,11 @@
 	#define PAD_START		SDLK_RETURN
 	#define PAD_SELECT		SDLK_BACKSPACE
 	
+	#define PAD_SLIDER		0
+	
 	#define PAD_QUIT		SDLK_ESCAPE
 #endif
 
-// defines and macros
 #define MAX__PATH 1024
 #define FILE_LIST_ROWS 19
 
@@ -225,7 +235,7 @@
 
 #define PIX_TO_RGB(fmt, r, g, b) (((r*8>>fmt->Rloss)<<fmt->Rshift)| ((g*6>>fmt->Gloss)<<fmt->Gshift)|((b*8>>fmt->Bloss)<<fmt->Bshift))
 
-// osWan dependencies
+/* Oswan dependencies */
 #include "../emu/WS.h"
 #include "../emu/WSApu.h"
 #include "../emu/WSFileio.h"
@@ -235,8 +245,8 @@
 
 typedef struct {
 	unsigned short sndLevel;
-	unsigned short m_ScreenRatio; // 0 = original show, 1 = full screen
-	unsigned short OD_Joy[12]; // each key mapping
+	unsigned short m_ScreenRatio; 	/* 0 = 1x size, 1 = full screen, 2 = Keep Aspect */
+	unsigned short OD_Joy[12]; 		/* each key mapping	*/
 	unsigned short m_DisplayFPS;
 	char current_dir_rom[MAX__PATH];
 	unsigned short input_layout;
@@ -249,8 +259,11 @@ typedef struct {
 #endif
 } gamecfg;
 
-extern SDL_Surface* screen;						// Main program screen
-extern SDL_Surface* actualScreen, *screenshots;						// Main program screen
+extern SDL_Surface* actualScreen;	/* Main program screen */
+
+#if !defined(NOSCREENSHOTS)
+extern SDL_Surface* screenshots;	
+#endif	
 
 extern SDL_Event event;
 
@@ -265,8 +278,11 @@ extern void system_savecfg(const char *cfg_name);
 
 extern void mainemuinit();
 
-// menu
+/* menu */
 extern void screen_showtopmenu(void);
-extern inline void print_string_video(short x, const short y, const char *s);
+extern void print_string_video(short x, const short y, const char *s);
+
+extern void Buttons(void);
+extern char button_state[18], button_time[18];
 
 #endif

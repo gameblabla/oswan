@@ -5,6 +5,7 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -20,6 +21,33 @@ extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 	extern void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize);
 #endif
 
+#ifdef PSP
+#include <pspkernel.h>
+#include <pspdisplay.h>
+#include <psppower.h>
+PSP_MODULE_INFO("OSWAN", 0, 1, 1);
+PSP_HEAP_SIZE_MAX();
+PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
+int exit_callback(int arg1, int arg2, void *common);
+int CallbackThread(SceSize args, void *argp);
+int SetupCallbacks(void);
+int exit_callback(int arg1, int arg2, void *common) 
+{
+	exit_oswan(); return 0;
+}
+int CallbackThread(SceSize args, void *argp) 
+{
+	int cbid = sceKernelCreateCallback("Exit Callback", exit_callback, NULL);
+	sceKernelRegisterExitCallback(cbid);	sceKernelSleepThreadCB();
+	return 0;
+}
+int SetupCallbacks(void) 
+{
+	int thid = sceKernelCreateThread("CallbackThread", CallbackThread, 0x11, 0xFA0, PSP_THREAD_ATTR_USER, 0);
+	if (thid >= 0) sceKernelStartThread(thid, 0, 0); return thid;
+}
+#endif
+
 unsigned int m_Flag;
 unsigned int interval;
 
@@ -32,38 +60,10 @@ unsigned char FPS = 60;
 unsigned char pastFPS = 0; 
 
 SDL_Surface *actualScreen, *screenshots;
-SDL_Event event;
-
-#ifdef PSP
-#include <pspkernel.h>
-#include <pspctrl.h>
-#include <pspdisplay.h>
-#include <psppower.h>
-/* Define the module info section */
-PSP_MODULE_INFO("OSWAN", 0, 1, 1);
-PSP_HEAP_SIZE_MAX();
-/* Define the main thread's attribute value (optional) */
-PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU)
-int exit_callback(int arg1, int arg2, void *common) {
-			m_Flag = GF_GAMEQUIT;
-			return 0;
-}
-int CallbackThread(SceSize args, void *argp) {
-			int cbid = sceKernelCreateCallback("Exit Callback", exit_callback, NULL);
-			sceKernelRegisterExitCallback(cbid);
-			sceKernelSleepThreadCB();
-			return 0;
-}
-int SetupCallbacks(void) {
-			int thid = sceKernelCreateThread("CallbackThread", CallbackThread, 0x11, 0xFA0, PSP_THREAD_ATTR_USER, 0);
-			if (thid >= 0) sceKernelStartThread(thid, 0, 0);
-			return thid;
-}
-#endif
 
 unsigned long SDL_UXTimerRead(void) 
 {
-	struct timeval tval; // timing
+	struct timeval tval; /* timing	*/
   	gettimeofday(&tval, 0);
 	return (((tval.tv_sec*1000000) + (tval.tv_usec )));
 }
@@ -99,22 +99,13 @@ void initSDL(void)
 	SDL_Init(SDL_INIT_AUDIO);
 	SDL_AudioSpec fmt, retFmt;
 	
-	 //set up SDL sound 
-#ifdef NATIVE_AUDIO
-	fmt.freq = 12000;   
-    fmt.format = AUDIO_S16SYS;
-    fmt.channels = 2;
-    fmt.samples = 512;
-    fmt.callback = mixaudioCallback;
-    fmt.userdata = NULL;
-#else
+	/*	Set up SDL sound */
 	fmt.freq = 48000;   
     fmt.format = AUDIO_S16SYS;
     fmt.channels = 2;
     fmt.samples = 2048;
     fmt.callback = mixaudioCallback;
     fmt.userdata = NULL;
-#endif
 
     /* Open the audio device and start playing sound! */
     if ( SDL_OpenAudio(&fmt, &retFmt) < 0 )
@@ -129,15 +120,17 @@ void initSDL(void)
 int main(int argc, char *argv[]) 
 {
 	double period;
+	
 #ifdef _TINSPIRE
 	enable_relative_paths(argv);
 #endif
 
 #ifdef PSP
 	SetupCallbacks();
+	scePowerSetClockFrequency(333, 333, 166);
 #endif
 	
-	// Init graphics & sound
+	/* Init graphics & sound	*/
 	initSDL();
 	
 #ifdef JOYSTICK
@@ -161,8 +154,9 @@ int main(int argc, char *argv[])
 
 	SDL_WM_SetCaption("Oswan", NULL);
 
-    //load rom file via args if a rom path is supplied
+    /*	load rom file via args if a rom path is supplied	*/
 	strcpy(gameName,"");
+	
 	if(argc > 1) 
 	{
 #ifdef SWITCHING_GRAPHICS
@@ -202,7 +196,7 @@ int main(int argc, char *argv[])
 					#ifdef SOUND_ON
 					SDL_PauseAudio(0);
 					#endif
-					// Init timing
+					/* Init timing */
 					period = 1.0 / 60;
 					period = period * 1000000;
 					interval = (int) period;
@@ -217,12 +211,13 @@ int main(int argc, char *argv[])
 		
 			case GF_GAMERUNNING:	
 				currentTick = SDL_UXTimerRead(); 
-				#ifndef _TINSPIRE
+				#ifndef NO_WAIT
 				wait = (nextTick - currentTick);
-				if (wait > 0) {
+				if (wait > 0) 
+				{
 					if (wait < 1000000) 
 					{
-						usleep(wait);
+						SDL_Delay(wait/1000);
 					}
 				}
 				#endif
@@ -242,7 +237,7 @@ void exit_oswan()
 		SDL_PauseAudio(1);
 	#endif
 
-	// Free memory
+	/* Free memory	*/
 	#ifndef NOSCREENSHOTS
 	if (screenshots != NULL) SDL_FreeSurface(screenshots);
 	#endif
@@ -257,6 +252,11 @@ void exit_oswan()
 	#endif
 	
 	SDL_Quit();
+	
+#ifdef PSP
+	sceDisplayWaitVblankStart();
+	sceKernelExitGame(); 	
+#endif
 	
 	exit(0);
 }

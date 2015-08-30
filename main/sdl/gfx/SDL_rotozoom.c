@@ -27,7 +27,7 @@
  
 */
 
-inline int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int flipx, int flipy)
+int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int flipx, int flipy)
 {
     int x, y, sx, sy, *sax, *say, *csax, *csay, csx, csy, ex, ey, t1, t2, sstep;
     tColorRGBA *c00, *c01, *c10, *c11;
@@ -140,7 +140,7 @@ inline int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int flipx, int 
  
 */
 
-inline void transformSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int cx, int cy, int isin, int icos, int flipx, int flipy)
+void transformSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int cx, int cy, int isin, int icos, int flipx, int flipy)
 {
     int x, y, t1, t2, dx, dy, xd, yd, sdx, sdy, ax, ay, ex, ey, sw, sh;
     tColorRGBA c00, c01, c10, c11;
@@ -198,7 +198,7 @@ inline void transformSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int cx, i
 
 /* Local rotozoom-size function with trig result return */
 
-inline void rotozoomSurfaceSizeTrig(int width, int height, double angle, double zoomx, double zoomy, int *dstwidth, int *dstheight, 
+void rotozoomSurfaceSizeTrig(int width, int height, double angle, double zoomx, double zoomy, int *dstwidth, int *dstheight, 
 			     double *canglezoom, double *sanglezoom)
 {
     double x, y, cx, cy, sx, sy;
@@ -228,7 +228,7 @@ inline void rotozoomSurfaceSizeTrig(int width, int height, double angle, double 
 
 /* Publically available rotozoom-size function */
 
-inline void rotozoomSurfaceSizeXY(int width, int height, double angle, double zoomx, double zoomy, int *dstwidth, int *dstheight)
+void rotozoomSurfaceSizeXY(int width, int height, double angle, double zoomx, double zoomy, int *dstwidth, int *dstheight)
 {
     double dummy_sanglezoom, dummy_canglezoom;
 
@@ -237,7 +237,7 @@ inline void rotozoomSurfaceSizeXY(int width, int height, double angle, double zo
 
 /* Publically available rotozoom-size function */
 
-inline void rotozoomSurfaceSize(int width, int height, double angle, double zoom, int *dstwidth, int *dstheight)
+void rotozoomSurfaceSize(int width, int height, double angle, double zoom, int *dstwidth, int *dstheight)
 {
     double dummy_sanglezoom, dummy_canglezoom;
 
@@ -246,14 +246,14 @@ inline void rotozoomSurfaceSize(int width, int height, double angle, double zoom
 
 /* Publically available rotozoom function */
 
-inline SDL_Surface *rotozoomSurface(SDL_Surface * src, double angle, double zoom)
+SDL_Surface *rotozoomSurface(SDL_Surface * src, double angle, double zoom)
 {
   return rotozoomSurfaceXY(src, angle, zoom, zoom);
 }
 
 /* Publically available rotozoom function */
 
-inline SDL_Surface *rotozoomSurfaceXY(SDL_Surface * src, double angle, double zoomx, double zoomy)
+SDL_Surface *rotozoomSurfaceXY(SDL_Surface * src, double angle, double zoomx, double zoomy)
 {
     SDL_Surface *rz_src;
     SDL_Surface *rz_dst;
@@ -428,7 +428,7 @@ inline SDL_Surface *rotozoomSurfaceXY(SDL_Surface * src, double angle, double zo
 
 #define VALUE_LIMIT	0.001
 
-inline void zoomSurfaceSize(int width, int height, double zoomx, double zoomy, int *dstwidth, int *dstheight)
+void zoomSurfaceSize(int width, int height, double zoomx, double zoomy, int *dstwidth, int *dstheight)
 {
     /*
      * Sanity check zoom factors 
@@ -453,7 +453,7 @@ inline void zoomSurfaceSize(int width, int height, double zoomx, double zoomy, i
     }
 }
 
-inline SDL_Surface *zoomSurface(SDL_Surface * src, double zoomx, double zoomy)
+SDL_Surface *zoomSurface(SDL_Surface * src, double zoomx, double zoomy)
 {
     SDL_Surface *rz_src;
     SDL_Surface *rz_dst;

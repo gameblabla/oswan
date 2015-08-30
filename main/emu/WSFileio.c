@@ -41,7 +41,6 @@ int WsSetPdata(void)
     if ((ROMMap[0xFF] = (BYTE*)malloc(0x10000)) == NULL)
     {
 		fprintf(stderr,"WsSetPdata\n");
-        //ErrorMsg(ERR_MALLOC);
         return 0;
     }
     WsReset();
@@ -83,7 +82,7 @@ int WsCreate(char *CartName)
 			return -1;
 		}
 
-        // Get info about current file.
+        /* Get info about current file. */
         unz_file_info file_info;
         char filename[512];
         if ( unzGetCurrentFileInfo( zipfile, &file_info, filename, 512, NULL, 0, NULL, 0 ) != UNZ_OK )
@@ -93,7 +92,7 @@ int WsCreate(char *CartName)
             return -1;
         }
         
-		// Entry is a file, so extract it.
+		/* Entry is a file, so extract it. */
 		if ( unzOpenCurrentFile( zipfile ) != UNZ_OK )
 		{
 			printf( "could not open file\n" );
@@ -101,7 +100,7 @@ int WsCreate(char *CartName)
 			return -1;
 		}
 		
-		// Open a file to write out the data.
+		/* Open a file to write out the data. */
 		char tempfilename[512];
 		snprintf(tempfilename, sizeof(tempfilename), "%s%stemp.rom%s", PATH_DIRECTORY, SAVE_DIRECTORY, EXTENSION);
 		
@@ -127,7 +126,7 @@ int WsCreate(char *CartName)
 			}
 			if ( error > 0 )
 			{
-				//Write data to file.
+				/* Write data to file. */
 				fwrite( read_buffer, error, 1, out );
 			}
 		} while ( error > 0 );
@@ -164,12 +163,11 @@ int WsCreate(char *CartName)
 	}
 #endif
     
-    /*ws_romsize = sizeof(fp);*/
+    /* ws_romsize = sizeof(fp); */
 
     result = fseek(fp, -10, SEEK_END);
     if (fread(buf, 1, 10, fp) != 10)
     {
-        //ErrorMsg(ERR_FREAD_ROMINFO);
 		fprintf(stderr,"ERR_FREAD_ROMINFO\n");
         return 1;
     }
@@ -208,7 +206,6 @@ int WsCreate(char *CartName)
     }
     if (ROMBanks == 0)
     {
-        //ErrorMsg(ERR_ILLEGAL_ROMSIZE);
 		fprintf(stderr,"ERR_ILLEGAL_ROMSIZE\n");
         return 1;
     }
@@ -274,17 +271,16 @@ int WsCreate(char *CartName)
                     Checksum -= ROMMap[0x100 - ROMBanks + i][j];
                 }
             }
-            else
+			/* 
+			else
             {
-                /*printf("ERROR: ERR_FREAD_ROM\n");
-                printf("Are you playing a homebrew game ?\n");*/
-				/*fprintf(stderr,"ERR_FREAD_ROM\n");*/
-                /*break;*/
+				fprintf(stderr,"ERR_FREAD_ROM\n");
+                break;
             }
+			*/
         }
         else
         {
-            //ErrorMsg(ERR_MALLOC);
 			fprintf(stderr,"ERR_MALLOC\n");
             return 1;
         }
@@ -296,7 +292,6 @@ int WsCreate(char *CartName)
     }
     if (Checksum & 0xFFFF)
     {
-        //ErrorMsg(ERR_CHECKSUM);
 		fprintf(stderr,"ERR_CHECKSUM\n");
     }
     if (RAMBanks)
@@ -309,7 +304,6 @@ int WsCreate(char *CartName)
             }
             else
             {
-                //ErrorMsg(ERR_MALLOC);
 				fprintf(stderr,"ERR_MALLOC 1\n");
 				return 1;
             }
@@ -327,8 +321,7 @@ int WsCreate(char *CartName)
                 {
                     if (fread(RAMMap[i], 1, RAMSize, fp) != RAMSize)
                     {
-                        //ErrorMsg(ERR_FREAD_SAVE);
-						/*fprintf(stderr,"ERR_FREAD_SAVE\n");*/
+						fprintf(stderr,"ERR_FREAD_SAVE\n");
 						break;
                     }
                 }
@@ -336,8 +329,7 @@ int WsCreate(char *CartName)
                 {
                     if (fread(RAMMap[i], 1, 0x10000, fp) != 0x10000)
                     {
-                        //ErrorMsg(ERR_FREAD_SAVE);
-						/*fprintf(stderr,"ERR_FREAD_SAVE 1\n");*/
+						fprintf(stderr,"ERR_FREAD_SAVE 1\n");
                         break;
                     }
                 }

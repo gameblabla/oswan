@@ -2,12 +2,12 @@
 #include <string.h>
 #include <time.h>
 
-// SDL drawing screen
+/* SDL drawing screen */
 extern void graphics_paint(void);
 
 #include "WSRender.h"
 #include "WS.h"
-#include "input.h"
+#include "game_input.h"
 #ifdef SOUND_ON
 #include "WSApu.h"
 #endif
@@ -16,24 +16,24 @@ extern void graphics_paint(void);
 
 #include "hack.h"
 
-#define IPeriod 32          // HBlank/8 (256/8)
+#define IPeriod 32          	/* HBlank/8 (256/8)					*/
 
 /*int Run;*/
-BYTE *Page[16];             // バンク割り当て
-BYTE IRAM[0x10000];         // 内部RAM 64kB = Page[0]
-BYTE IO[0x100];             // IO
-BYTE MemDummy[0x10000];     // ダミーバンク 64kB
-BYTE *ROMMap[0x100];        // C-ROMバンクマップ
-unsigned short ROMBanks;               // C-ROMバンク数
-BYTE *RAMMap[0x100];        // C-RAMバンクマップ
-unsigned char RAMBanks;               // C-RAMバンク数
-int RAMSize;                // C-RAM総容量
-WORD IEep[64];              // 内蔵EEPROM
-struct EEPROM sIEep;        // EEPROM読み書き用構造体（内蔵）
-struct EEPROM sCEep;        // EEPROM読み書き用構造体（カートリッジ）
-unsigned char CartKind;               // セーブメモリの種類（CK_EEP = EEPROM）
+BYTE *Page[16];             	/* バンク割り当て 						*/
+BYTE IRAM[0x10000];         	/* 内部RAM 64kB = Page[0]			*/
+BYTE IO[0x100];             	/* IO								*/
+BYTE MemDummy[0x10000];     	/* ダミーバンク 64kB					*/
+BYTE *ROMMap[0x100];        	/* C-ROMバンクマップ					*/
+unsigned short ROMBanks;    	/* C-ROMバンク数						*/
+BYTE *RAMMap[0x100];        	/* C-RAMバンクマップ					*/
+unsigned char RAMBanks;     	/* C-RAMバンク数						*/
+int RAMSize;               	 	/* C-RAM総容量						*/
+WORD IEep[64];              	/* 内蔵EEPROM						*/
+struct EEPROM sIEep;        	/* EEPROM読み書き用構造体（内蔵）		*/
+struct EEPROM sCEep;        	/* EEPROM読み書き用構造体（カートリッジ）	*/
+unsigned char CartKind;     	/* セーブメモリの種類（CK_EEP = EEPROM）	*/
 
-static int ButtonState = 0x0000;    // Button state: B.A.START.OPTION.X4.X3.X2.X1.Y4.Y3.Y2.Y1
+static int ButtonState = 0x0000;    /* Button state: B.A.START.OPTION.X4.X3.X2.X1.Y4.Y3.Y2.Y1	*/
 static unsigned char HVMode;
 static WORD HTimer;
 static WORD VTimer;
@@ -53,12 +53,12 @@ static WORD DefColor[] = {
     MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
 };
 
-void inline ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
+void ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
 {
     int i, j, op, addr;
     const int tblmask[16][5]=
     {
-        {0x0000, 0, 0x0000, 0, 0x0000}, // dummy
+        {0x0000, 0, 0x0000, 0, 0x0000}, /* dummy */
         {0x0000, 0, 0x0000, 0, 0x0000},
         {0x0000, 0, 0x0000, 0, 0x0000},
         {0x0000, 0, 0x0000, 0, 0x0000},
@@ -66,11 +66,11 @@ void inline ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
         {0x0018, 3, 0x0006, 1, 0x0007},
         {0x0030, 4, 0x000C, 2, 0x000F},
         {0x0060, 5, 0x0018, 3, 0x001F},
-        {0x00C0, 6, 0x0030, 4, 0x003F}, // 1Kbits IEEPROM
+        {0x00C0, 6, 0x0030, 4, 0x003F}, /* 1Kbits IEEPROM */
         {0x0180, 7, 0x0060, 5, 0x007F},
         {0x0300, 8, 0x00C0, 6, 0x00FF},
         {0x0600, 9, 0x0180, 7, 0x01FF},
-        {0x0C00, 10, 0x0300, 8, 0x03FF}, // 16Kbits
+        {0x0C00, 10, 0x0300, 8, 0x03FF}, /* 16Kbits */
         {0x1800, 11, 0x0600, 9, 0x07FF},
         {0x3000, 12, 0x0C00, 10, 0x0FFF},
         {0x6000, 13, 0x1800, 11, 0x1FFF},
@@ -93,44 +93,46 @@ void inline ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
         addr = (*cmd & tblmask[i][2]) >> tblmask[i][3];
         switch(addr)
         {
-        case 0: // 書込み禁止
+        case 0: /* 書込み禁止 */
             eeprom->we = 0;
             break;
-        case 1: // 全アドレス書き込み
+        case 1: /* 全アドレス書き込み */
             for(j = tblmask[i][4]; j >= 0; j--)
             {
                 eeprom->data[j] = *data;
             }
             break;
-        case 2: // チップ消去
+        case 2: /* チップ消去 */
             if(eeprom->we)
             {
                 memset(eeprom->data, 0xFF, sizeof(eeprom->data)*2);
             }
             break;
-        case 3: // 書き込み可能
+        case 3: /* 書き込み可能 */
             eeprom->we = 1;
             break;
         }
         *data = 0;
         break;
-    case 1: // 書き込み
+    case 1: /* 書き込み */
         if(eeprom->we)
         {
             addr = *cmd & tblmask[i][4];
             eeprom->data[addr] = *data;
-            /*if (ROMBanks == 1 && addr == 0x3A) // アナザヘブンも書き込んでた
+            /*
+            if (ROMBanks == 1 && addr == 0x3A) 
             {
-                Run = 0; // パーソナルデータ最後の書き込みなので終了
-            }*/
+                Run = 0; 
+            }
+            */
         }
         *data = 0;
         break;
-    case 2: // 読み出し
+    case 2: /* 読み出し*/
         addr = *cmd & tblmask[i][4];
         *data = eeprom->data[addr];
         break;
-    case 3: // 消去
+    case 3: /* 消去*/
         if(eeprom->we)
         {
             addr = *cmd & tblmask[i][4];
@@ -142,22 +144,22 @@ void inline ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
     }
 }
 
-inline BYTE ReadMem(const DWORD A)
+BYTE ReadMem(const DWORD A)
 {
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
 
-inline void WriteMem(const DWORD A, const BYTE V)
+void WriteMem(const DWORD A, const BYTE V)
 {
     (*WriteMemFnTable[(A >> 16) & 0x0F])(A, V);
 }
 
 static void WriteRom(const DWORD A, const BYTE V)
 {
-    //ErrorMsg(ERR_WRITE_ROM);
+    /*ErrorMsg(ERR_WRITE_ROM);*/
 }
 
-static inline void WriteIRam(const DWORD A, const BYTE V)
+static void WriteIRam(const DWORD A, const BYTE V)
 {
     IRAM[A & 0xFFFF] = V;
     if((A & 0xFE00) == 0xFE00)
@@ -185,7 +187,7 @@ static inline void WriteIRam(const DWORD A, const BYTE V)
 #define FLASH_CMD_CONTINUE_RES2 0xF0
 #define FLASH_CMD_CONTINUE_RES3 0x00
 #define FLASH_CMD_WRITE         0xA0
-static inline void WriteCRam(const DWORD A, const BYTE V)
+static void WriteCRam(const DWORD A, const BYTE V)
 {
     static int flashCommand1 = 0;
     static int flashCommand2 = 0;
@@ -195,12 +197,17 @@ static inline void WriteCRam(const DWORD A, const BYTE V)
     static int flashWriteEnable = 0;
     int offset = A & 0xFFFF;
 
+	/* 
     if (offset >= RAMSize)
     {
-        //ErrorMsg(ERR_OVER_RAMSIZE);
+        ErrorMsg(ERR_OVER_RAMSIZE);
     }
-    // WonderWitch
-    // FLASH ROM command sequence
+    */
+    
+    /* 
+    WonderWitch
+    FLASH ROM command sequence
+    */
     if (flashCommand2)
     {
         if (offset == FLASH_CMD_ADDR1)
@@ -239,12 +246,12 @@ static inline void WriteCRam(const DWORD A, const BYTE V)
     }
     if (RAMSize != 0x40000 || IO[BNK1SLCT] < 8)
     {
-        // normal sram
+        /* normal sram */
         Page[1][offset] = V;
     }
     else if (IO[BNK1SLCT] >= 8 && IO[BNK1SLCT] < 15)
     {
-        // FLASH ROM use SRAM bank(port 0xC1:8-14)(0xC1:15 0xF0000-0xFFFFF are write protected)
+        /* FLASH ROM use SRAM bank(port 0xC1:8-14)(0xC1:15 0xF0000-0xFFFFF are write protected) */
         if (flashWriteEnable || flashWriteOne)
         {
             Page[IO[BNK1SLCT]][offset] = V;
@@ -277,7 +284,7 @@ static inline void WriteCRam(const DWORD A, const BYTE V)
     }
 }
 
-inline void WriteIO(const DWORD A, BYTE V)
+void WriteIO(const DWORD A, BYTE V)
 {
     int i, j, k;
 
@@ -350,7 +357,7 @@ inline void WriteIO(const DWORD A, BYTE V)
     case 0x48:
         if(V & 0x80)
         {
-            i = *(DWORD*)(IO + DMASRC); // IO[]が4バイト境界にあることが必要
+            i = *(DWORD*)(IO + DMASRC); /* IO[]が4バイト境界にあることが必要 */
             j = *(WORD*)(IO + DMADST);
             k = *(WORD*)(IO + DMACNT);
             while(k--)
@@ -358,7 +365,7 @@ inline void WriteIO(const DWORD A, BYTE V)
                 WriteMem(j++, ReadMem(i++));
             }
             *(WORD*)(IO + DMACNT) = 0;
-            *(DWORD*)(IO + DMASRC) = i; // IO[]が4バイト境界にあることが必要
+            *(DWORD*)(IO + DMASRC) = i; /* IO[]が4バイト境界にあることが必要 */
             *(WORD*)(IO + DMADST) = j;
             V &= 0x7F;
         }
@@ -426,7 +433,7 @@ inline void WriteIO(const DWORD A, BYTE V)
         break;
 #endif
     case 0x91:
-        V |= 0x80; // ヘッドホンは常にオン
+        V |= 0x80; /* ヘッドホンは常にオン */
         break;
     case 0xA0:
         V=0x02;
@@ -452,12 +459,12 @@ inline void WriteIO(const DWORD A, BYTE V)
     case 0xA4:
     case 0xA5:
         IO[A] = V;
-        HTimer = *(WORD*)(IO + HPRE); // FF
+        HTimer = *(WORD*)(IO + HPRE); /* FF */
         return;
     case 0xA6:
     case 0xA7:
         IO[A] = V;
-        IO[A + 4] = V; // Dark eyes
+        IO[A + 4] = V; /* Dark eyes */
         if(IO[TIMCTL] & 0x04)
         {
             VTimer = *(WORD*)(IO + VPRE);
@@ -503,7 +510,7 @@ inline void WriteIO(const DWORD A, BYTE V)
         Page[0xF] = ROMMap[0xF | j];
         break;
     case 0xC1:
-        if (V >= 8) // WonderWitch
+        if (V >= 8) /* WonderWitch */
         {
             Page[1] = MemDummy;
         }
@@ -533,13 +540,13 @@ inline void WriteIO(const DWORD A, BYTE V)
             V >>= 5;
         }
         break;
-    case 0xCA: // RTC Command
+    case 0xCA: /* RTC Command */
         if (V == 0x15)
         {
             RtcCount = 0;
         }
         break;
-    case 0xCB: //RTC DATA
+    case 0xCB: /* RTC DATA */
         break;
     default:
         break;
@@ -548,14 +555,14 @@ inline void WriteIO(const DWORD A, BYTE V)
 }
 
 #define  BCD(value) ((value / 10) << 4) | (value % 10)
-inline BYTE ReadIO(const DWORD A)
+BYTE ReadIO(const DWORD A)
 {
     switch(A)
     {
     case 0xCA:
         return IO[RTCCMD] | 0x80;
     case 0xCB:
-        if (IO[RTCCMD] == 0x15)  // get time command
+        if (IO[RTCCMD] == 0x15)  /* Get time command */
         { 
             BYTE year, mon, mday, wday, hour, min, sec, j;
             struct tm *newtime;
@@ -602,7 +609,7 @@ inline BYTE ReadIO(const DWORD A)
             return 0;
         }
         else {
-            // set ack
+            /* set ack */
             return (IO[RTCDATA] | 0x80);
         }
     }
@@ -699,8 +706,8 @@ void WsReset (void)
     WriteIO(0xB3, 0x04);
     WriteIO(0xBA, 0x01);
     WriteIO(0xBB, 0x00);
-    WriteIO(0xBC, 0x30); // 内蔵EEPROM
-    WriteIO(0xBD, 0x01); // 書き込み可能
+    WriteIO(0xBC, 0x30); /* 内蔵EEPROM */
+    WriteIO(0xBD, 0x01); /* 書き込み可能 */
     WriteIO(0xBE, 0x83);
     IO[BNKSLCT] = 0x0F;
     j = 0xF0;
@@ -733,19 +740,19 @@ void WsReset (void)
 
 void WsRomPatch(const BYTE *buf)
 {
-    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x16)) // SWJ-BANC16 STAR HEARTS
+    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x16)) 					/* SWJ-BANC16 STAR HEARTS 			*/
     {
         RAMBanks = 1;
         RAMSize = 0x8000;
         CartKind = 0;
     }
-    if((buf[0] == 0x01) && (buf[1] == 0x00) && (buf[2] == 0x2C || buf[2] == 0x2F)) // SWJ-BAN02C,02F デジタルパートナー
+    if((buf[0] == 0x01) && (buf[1] == 0x00) && (buf[2] == 0x2C || buf[2] == 0x2F)) 	/* SWJ-BAN02C,02F デジタルパートナー 	*/
     {
         RAMBanks = 1;
         RAMSize = 0x8000;
         CartKind = 0;
     }
-    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x38)) // SWJ-BANC38 NARUTO 木ノ葉忍法帖
+    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x38)) 					/* SWJ-BANC38 NARUTO 木ノ葉忍法帖		*/
     {
         RAMBanks = 1;
         RAMSize = 0x10000;
@@ -758,7 +765,7 @@ int Interrupt(void)
     static int LCount=0, Joyz=0x0000;
     int i, j;
 
-    if(++LCount>=8) // 8回で1Hblank期間
+    if(++LCount>=8) 	/* 8回で1Hblank期間 */
     {
         LCount=0;
     }
@@ -778,7 +785,7 @@ int Interrupt(void)
                     }
                 }
                 Joyz = ButtonState;
-                // Vblankカウントアップ
+                /* Vblankカウントアップ */
                 VCounter = *(WORD*)(IO + VCNTH) << 16 | *(WORD*)(IO + VCNTL);
                 VCounter++;
                 *(WORD*)(IO + VCNTL) = (WORD)VCounter;
@@ -787,7 +794,7 @@ int Interrupt(void)
             break;
 #ifdef SOUND_ON
         case 2:
-            // Hblank毎に1サンプルセットすることで12KHzのwaveデータが出来る
+            /* Hblank毎に1サンプルセットすることで12KHzのwaveデータが出来る */
             apuWaveSet();
             *(WORD*)(IO + NCSR) = apuShiftReg();
             break;
@@ -868,7 +875,7 @@ int Interrupt(void)
             {
                 IO[RSTRL] = 0;
             }
-            // Hblankカウントアップ
+            /* Hblankカウントアップ */
             (*(WORD*)(IO + HCNT))++;
             break;
         default:
@@ -877,7 +884,7 @@ int Interrupt(void)
     return IO[IRQACK];
 }
 
-inline int WsRun(void)
+int WsRun(void)
 {
     static int period = IPeriod;
     int i, iack, inum;
@@ -885,8 +892,9 @@ inline int WsRun(void)
 	int cycle;
 #endif
 
-	// 1/75s
-    for(i = 0; i < 159*8; i++)
+	/* 1/75s */
+	/*9*/
+    for(i = 0; i < (159*11+(159/2)); i++)
     {
 #ifdef SPEEDHACKS
 		nec_execute(period);
@@ -912,7 +920,7 @@ inline int WsRun(void)
     return 0;
 }
 
-inline void SetHVMode(const unsigned char Mode)
+void SetHVMode(const unsigned char Mode)
 {
     HVMode = Mode;
 }

@@ -23,7 +23,7 @@
  * See md5.c for more information.
  */
  
-//_MD5_H 
+/*_MD5_H */
  
 /* Any 32-bit or wider unsigned integer data type will do */
 typedef unsigned int MD5_u32plus;

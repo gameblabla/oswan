@@ -2,6 +2,7 @@
 #include "WSRender.h"
 #include "WS.h"
 #include "shared.h"
+#include "cpu/necintrf.h"
 
 #define MAP_TILE 0x01FF
 #define MAP_PAL  0x1E00
@@ -26,15 +27,15 @@ WORD MonoColor[8];
 WORD FrameBuffer[320*240];
 const unsigned char Layer[3] = {1, 1, 1};
 
-inline void SetPalette(const int addr)
+void SetPalette(const int addr)
 {
     WORD color, r, g, b;
     unsigned short pal;
 
-    // RGB444 format
+    /* RGB444 format */
     color = *(WORD*)(IRAM + (addr & 0xFFFE));
   
-	// RGB565
+	/* RGB565 */
 	r = ((color & 0x0F00) << 4);
 	g = ((color & 0x00F0) << 3);
 	b = ((color & 0x000F) << 1);
@@ -53,24 +54,24 @@ inline void SetPalette(const int addr)
     /*Palette[(addr & 0x1E0) >> 5][(addr & 0x1E) >> 1] = color | 0xF000;*/
 }
 
-inline void RefreshLine(const unsigned short Line)
+void RefreshLine(const unsigned short Line)
 {
-    WORD *pSBuf;            // データ書き込みバッファ
-    WORD *pSWrBuf;          // ↑の書き込み位置用ポインタ
-    int *pZ;                // ↓のインクリメント用ポインタ
-    int ZBuf[0x100];        // FGレイヤーの非透明部を保存
-    int *pW;                // ↓のインクリメント用ポインタ
-    int WBuf[0x100];        // FGレイヤーのウィンドーを保存
-    int OffsetX;            // 
-    int OffsetY;            // 
-    BYTE *pbTMap;           // 
-    int TMap;               // 
-    int TMapX;              // 
-    int TMapXEnd;           // 
-    BYTE *pbTData;          // 
-    int PalIndex;               // 
+    WORD *pSBuf;            /* データ書き込みバッファ */
+    WORD *pSWrBuf;          /* ↑の書き込み位置用ポインタ*/
+    int *pZ;                /* ↓のインクリメント用ポインタ*/
+    int ZBuf[0x100];        /* FGレイヤーの非透明部を保存*/
+    int *pW;                /*↓のインクリメント用ポインタ*/
+    int WBuf[0x100];        /* FGレイヤーのウィンドーを保存*/
+    int OffsetX;             
+    int OffsetY;            
+    BYTE *pbTMap;           
+    int TMap;               
+    int TMapX;              
+    int TMapXEnd;           
+    BYTE *pbTData;          
+    int PalIndex;             
     short i, j, k, index[8];
-    WORD BaseCol;           // 
+    WORD BaseCol; 
     pSBuf = FrameBuffer + Line * 320;
     pSWrBuf = pSBuf;
 
@@ -97,7 +98,7 @@ inline void RefreshLine(const unsigned short Line)
     }
     if(!(IO[LCDSLP] & 0x01)) return;
 /*********************************************************************/
-    if((IO[DSPCTL] & 0x01) && Layer[0])                                 //BG layer
+    if((IO[DSPCTL] & 0x01) && Layer[0])                                 /* BG layer */
     {
         OffsetX = IO[SCR1X] & 0x07;
         pSWrBuf = pSBuf - OffsetX;
@@ -113,7 +114,7 @@ inline void RefreshLine(const unsigned short Line)
             TMap = *(pbTMap + (TMapX++ & 0x3F));
             TMap |= *(pbTMap + (TMapX++ & 0x3F)) << 8;
 
-            if(IO[COLCTL] & 0x40) // 16 colors
+            if(IO[COLCTL] & 0x40) /* 16 colors */
             {
                 if(TMap & MAP_BANK)
                 {
@@ -135,7 +136,7 @@ inline void RefreshLine(const unsigned short Line)
             }
             else
             {
-                if((IO[COLCTL] & 0x80) && (TMap & MAP_BANK))// 4 colors and bank 1
+                if((IO[COLCTL] & 0x80) && (TMap & MAP_BANK)) /* 4 colors and bank 1 */
                 {
                     pbTData = IRAM + 0x4000;
                 }
@@ -154,9 +155,9 @@ inline void RefreshLine(const unsigned short Line)
                 }
             }
 
-            if(IO[COLCTL] & 0x20)                       // Packed Mode
+            if(IO[COLCTL] & 0x20)                       /* Packed Mode */
             {
-                if(IO[COLCTL] & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   /* 16 Colors */
                 {
                     index[0] = (pbTData[0] & 0xF0) >> 4;
                     index[1] = pbTData[0] & 0x0F;
@@ -167,7 +168,7 @@ inline void RefreshLine(const unsigned short Line)
                     index[6] = (pbTData[3] & 0xF0) >> 4;
                     index[7] = pbTData[3] & 0x0F;
                 }
-                else                            // 4 Color
+                else                            /* 4 Colors */
                 {
                     index[0] = (pbTData[0] & 0xC0) >> 6;
                     index[1] = (pbTData[0] & 0x30) >> 4;
@@ -181,7 +182,7 @@ inline void RefreshLine(const unsigned short Line)
             }
             else
             {
-                if(IO[COLCTL] & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   /* 16 Colors */
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -216,7 +217,7 @@ inline void RefreshLine(const unsigned short Line)
                     index[7] |= (pbTData[2] & 0x01) ? 0x4 : 0;
                     index[7] |= (pbTData[3] & 0x01) ? 0x8 : 0;
                 }
-                else                            // 4 Color
+                else                            /* 4 Colors */
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -298,9 +299,9 @@ inline void RefreshLine(const unsigned short Line)
     }
 /*********************************************************************/
     memset(ZBuf, 0, sizeof(ZBuf));
-    if((IO[DSPCTL] & 0x02) && Layer[1])          //FG layer表示
+    if((IO[DSPCTL] & 0x02) && Layer[1])          /* FG layer表示 */
     {
-        if((IO[DSPCTL] & 0x30) == 0x20) // ウィンドウ内部のみに表示
+        if((IO[DSPCTL] & 0x30) == 0x20) /* ウィンドウ内部のみに表示 */
         {
             for(i = 0, pW = WBuf + 8; i < 224; i++)
             {
@@ -314,7 +315,7 @@ inline void RefreshLine(const unsigned short Line)
                 }
             }
         }
-        else if((IO[DSPCTL] & 0x30) == 0x30) // ウィンドウ外部のみに表示
+        else if((IO[DSPCTL] & 0x30) == 0x30) /* ウィンドウ外部のみに表示 */
         {
             for(i = 0, pW = WBuf + 8; i < 224; i++)
             {
@@ -375,7 +376,7 @@ inline void RefreshLine(const unsigned short Line)
             }
             else
             {
-                if((IO[COLCTL] & 0x80) && (TMap & MAP_BANK))// 4 colors and bank 1
+                if((IO[COLCTL] & 0x80) && (TMap & MAP_BANK))	/* 4 colors and bank 1 */
                 {
                     pbTData = IRAM + 0x4000;
                 }
@@ -394,9 +395,9 @@ inline void RefreshLine(const unsigned short Line)
                 }
             }
 
-            if(IO[COLCTL] & 0x20)                       // Packed Mode
+            if(IO[COLCTL] & 0x20)                       /* Packed Mode */
             {
-                if(IO[COLCTL] & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   /* 16 Colors */
                 {
                     index[0] = (pbTData[0] & 0xF0) >> 4;
                     index[1] = pbTData[0] & 0x0F;
@@ -407,7 +408,7 @@ inline void RefreshLine(const unsigned short Line)
                     index[6] = (pbTData[3] & 0xF0) >> 4;
                     index[7] = pbTData[3] & 0x0F;
                 }
-                else                            // 4 Color
+                else                            /* 4 Colors */
                 {
                     index[0] = (pbTData[0] & 0xC0) >> 6;
                     index[1] = (pbTData[0] & 0x30) >> 4;
@@ -421,7 +422,7 @@ inline void RefreshLine(const unsigned short Line)
             }
             else
             {
-                if(IO[COLCTL] & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                  /* 16 Colors */
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -456,7 +457,7 @@ inline void RefreshLine(const unsigned short Line)
                     index[7] |= (pbTData[2] & 0x01) ? 0x4 : 0;
                     index[7] |= (pbTData[3] & 0x01) ? 0x8 : 0;
                 }
-                else                            // 4 Color
+                else                            /* 4 Colors */
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -553,9 +554,9 @@ inline void RefreshLine(const unsigned short Line)
         }
     }
 /*********************************************************************/
-    if((IO[DSPCTL] & 0x04) && Layer[2])          //sprite
+    if((IO[DSPCTL] & 0x04) && Layer[2])         /* Sprites */
     {
-        if (IO[DSPCTL] & 0x08)      //sprite window
+        if (IO[DSPCTL] & 0x08)     /* Sprite window */
         {
             for (i = 0, pW = WBuf + 8; i < 224; i++)
             {
@@ -570,7 +571,7 @@ inline void RefreshLine(const unsigned short Line)
             }
         }
 
-        for (pbTMap = SprETMap; pbTMap >= SprTTMap; pbTMap -= 4) // 
+        for (pbTMap = SprETMap; pbTMap >= SprTTMap; pbTMap -= 4)
         {
             TMap = pbTMap[0];
             TMap |= pbTMap[1] << 8;
@@ -629,9 +630,9 @@ inline void RefreshLine(const unsigned short Line)
                 }
             }
 
-            if(IO[COLCTL] & 0x20)                       // Packed Mode
+            if(IO[COLCTL] & 0x20)                       /* Packed Mode */
             {
-                if(IO[COLCTL] & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   /* 16 Color */
                 {
                     index[0] = (pbTData[0] & 0xF0) >> 4;
                     index[1] =  pbTData[0] & 0x0F;
@@ -642,7 +643,7 @@ inline void RefreshLine(const unsigned short Line)
                     index[6] = (pbTData[3] & 0xF0) >> 4;
                     index[7] =  pbTData[3] & 0x0F;
                 }
-                else                            // 4 Color
+                else                            /* 4 Color */
                 {
                     index[0] = (pbTData[0] & 0xC0) >> 6;
                     index[1] = (pbTData[0] & 0x30) >> 4;
@@ -656,7 +657,7 @@ inline void RefreshLine(const unsigned short Line)
             }
             else
             {
-                if(IO[COLCTL] & 0x40)                   // 16 Color
+                if(IO[COLCTL] & 0x40)                   /* 16 Color */
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -691,7 +692,7 @@ inline void RefreshLine(const unsigned short Line)
                     index[7] |= (pbTData[2] & 0x01) ? 0x4 : 0;
                     index[7] |= (pbTData[3] & 0x01) ? 0x8 : 0;
                 }
-                else                            // 4 Color
+                else                            /* 4 Color */
                 {
                     index[0]  = (pbTData[0] & 0x80) ? 0x1 : 0;
                     index[0] |= (pbTData[1] & 0x80) ? 0x2 : 0;
@@ -766,9 +767,10 @@ inline void RefreshLine(const unsigned short Line)
             }
         }
     }
+    
 }
 
-inline void RenderSleep(void)
+void RenderSleep(void)
 {
     unsigned char x, y;
     WORD* p;

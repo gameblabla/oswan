@@ -1,11 +1,11 @@
 #include "shared.h"
 
-inline void screen_draw(void);
-inline void Get_resolution(void);
-inline void Set_resolution(unsigned short w, unsigned short h);
-inline void SetVideo(unsigned char mode);
-inline void Set_DrawRegion(void);
-inline void take_screenshot(void);
+void screen_draw(void);
+void Get_resolution(void);
+void Set_resolution(unsigned short w, unsigned short h);
+void SetVideo(unsigned char mode);
+void Set_DrawRegion(void);
+void take_screenshot(void);
 
 extern unsigned char FPS;
 extern unsigned char HVMode;
@@ -18,7 +18,7 @@ struct wheretodraw
 	unsigned short offset_y;
 } screen_to_draw_region;
 
-#if !defined(SCALING)
+#if !defined(SCALING) && !defined(PSP)
 	#define flip_screen SDL_Flip
 #else
 	void flip_screen(SDL_Surface* screen);
