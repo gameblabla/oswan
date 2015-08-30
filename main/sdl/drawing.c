@@ -162,7 +162,7 @@ void screen_draw(void)
 			SDL_Rect pos;
 			pos.x = 0;
 			pos.y = 0;
-			pos.w = 16;
+			pos.w = 17;
 			pos.h = 16;
 			SDL_FillRect(actualScreen, &pos, 0);
 		}
