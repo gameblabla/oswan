@@ -8,6 +8,7 @@
 #define BPSWAV      12000 /* WSのHblankが12KHz */
 
 /*4096*/
+/*2048*/
 #define SND_BNKSIZE 2048
 #define MULT 3
 
@@ -55,6 +56,8 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
         return;
         
 	SDL_LockMutex(sound_mutex);
+
+	printf("%d\n", apuBufLen());
 
 	/*
 	 * For smoother audio playback, disable the comment below.
