@@ -896,7 +896,8 @@ int WsRun(void)
 	/*9*/
     /*for(i = 0; i < (159*11+(159/2)); i++)*/
     /*for(i = 0; i < (159*9+(159+159-40)); i++)*/
-    for(i = 0; i < 1709-31; i++)
+    /*for(i = 0; i < 1709-31; i++)*/
+    for(i = 0; i < 1709-29; i++)
     {
 #ifdef SPEEDHACKS
 		nec_execute(period);

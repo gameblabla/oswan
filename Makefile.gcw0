@@ -1,6 +1,6 @@
 CC 				= mipsel-linux-gcc
 
-CFLAGS 		= -O2 -fomit-frame-pointer -std=gnu89 -fomit-frame-pointer -mips32r2 -Wall -I./main/emu -I./main/sdl ${DEFINES} 
+CFLAGS 		= -O2 -std=gnu89 -mips32r2 -Wall -I./main/emu -I./main/sdl ${DEFINES} 
 DEFINES 		= -DSOUND_ON -DSOUND_EMULATION -DGCW -DJOYSTICK -DHOME_SUPPORT
 LDFLAGS 		= -lSDL -Wl,--as-needed -flto -s
 OUT	 		= oswan
