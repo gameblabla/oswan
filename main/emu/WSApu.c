@@ -57,7 +57,7 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
         
 	SDL_LockMutex(sound_mutex);
 
-	printf("%d\n", apuBufLen());
+	/*printf("%d\n", apuBufLen());*/
 
 	/*
 	 * For smoother audio playback, disable the comment below.
