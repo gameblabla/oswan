@@ -41,7 +41,6 @@ void menuSaveState(void);
 void menuLoadState(void);
 void screen_showkeymenu(void);
 unsigned char ifactive(void);
-void menuReturn(void);
 #if !defined(NOSCREENSHOTS)
 void menuSaveBmp(void);
 #endif
@@ -110,7 +109,6 @@ void screen_showchar(SDL_Surface *s, const short x, const short y, unsigned char
 	unsigned short *dst;
 	unsigned short w, h;
 
-	/*if(SDL_MUSTLOCK(s)) SDL_LockSurface(s);*/
 	SDL_LockSurface(s);
 	for(h = 8; h; h--) 
 	{
@@ -129,7 +127,6 @@ void screen_showchar(SDL_Surface *s, const short x, const short y, unsigned char
 #endif
 		}
 	}
-	/*if(SDL_MUSTLOCK(s)) SDL_UnlockSurface(s);*/
 	SDL_UnlockSurface(s);
 }
 
@@ -212,16 +209,6 @@ void screen_showmenu(MENU *menu)
 	flip_screen(actualScreen);
 }
 
-void screen_waitkeyarelease(void) 
-{
-	/* wait key release and go in menu */
-	while (1) 
-	{
-		Buttons();
-		if (button_state[4] != 1) break;
-	}
-}
-
 unsigned char ifactive(void)
 {
 	if (button_state[4] || button_state[5] || button_state[0] || button_state[1] || button_state[2] || button_state[3] || button_state[8] || button_state[9]) 
@@ -249,7 +236,7 @@ void screen_showmainmenu(MENU *menu)
 		/* A - apply parameter or enter submenu	*/
 		if (button_state[4] == 1) 
 		{ 
-			if (mi->itemOnA != NULL) (*mi->itemOnA)();
+			if (mi->itemOnA) (*mi->itemOnA)();
 		}
 
 		/* B - exit or back to previous menu	*/
@@ -811,12 +798,6 @@ void menuLoadState(void)
 		gameMenu=false;
 		m_Flag = GF_GAMERUNNING;
 	}
-}
-
-/* Go back to menu	*/
-void menuReturn(void) 
-{
-	gameMenu=false;
 }
 
 

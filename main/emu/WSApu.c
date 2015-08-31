@@ -88,7 +88,8 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 
 void apuWaveCreate(void)
 {
-    memset(sndbuffer,0x00, SND_RNGSIZE);
+    //memset(sndbuffer,0x00, SND_RNGSIZE);
+    memset(sndbuffer, 0x00, sizeof(*sndbuffer));
 }
 
 void apuWaveRelease(void)

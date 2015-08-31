@@ -769,19 +769,3 @@ void RefreshLine(const unsigned short Line)
     }
     
 }
-
-void RenderSleep(void)
-{
-    unsigned char x, y;
-    WORD* p;
-
-    p = FrameBuffer;
-    for (y = 0; y < 144; y++)
-    {
-        for (x = 0; x < 224; x++)
-        {
-            *p++ = 0x4208;
-        }
-    }
-	p += 320 - 224;
-}

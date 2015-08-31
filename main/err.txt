@@ -1,0 +1,56 @@
+[emu/WS.c:197]: (style) The scope of the variable 'flashWriteEnable' can be reduced.
+[emu/WS.c:766]: (style) The scope of the variable 'i' can be reduced.
+[emu/WS.c:766]: (style) The scope of the variable 'j' can be reduced.
+[emu/WS.c:892]: (style) The scope of the variable 'cycle' can be reduced.
+[emu/WSApu.c:219]: (style) The scope of the variable 'v' can be reduced.
+[emu/WSFileio.c:362]: (style) The scope of the variable 'fp' can be reduced.
+[emu/WSRender.c:73]: (style) The scope of the variable 'k' can be reduced.
+[emu/cpu/nec.c:130]: (style) The scope of the variable 'dest_seg' can be reduced.
+[emu/cpu/nec.c:130]: (style) The scope of the variable 'dest_off' can be reduced.
+[emu/cpu/nec.c:537]: (style) The scope of the variable 'val' can be reduced.
+[emu/cpu/nec.c:731]: (style) The scope of the variable 'uresult2' can be reduced.
+[emu/cpu/nec.c:731]: (style) The scope of the variable 'result2' can be reduced.
+[emu/cpu/nec.c:746]: (style) The scope of the variable 'uresult2' can be reduced.
+[emu/cpu/nec.c:746]: (style) The scope of the variable 'result2' can be reduced.
+[emu/cpu/nec.c:236]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:237]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:238]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:239]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:240]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:241]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:326]: (style) Variable 'src2' is assigned a value that is never used.
+[emu/cpu/nec.c:325]: (style) Variable 'src' is assigned a value that is never used.
+[emu/cpu/nec.c:368]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:382]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:396]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:410]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:466]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:467]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:475]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:476]: (style) Variable 'dst' is assigned a value that is never used.
+[pandora/pandora_drawing.c:57]: (style) The scope of the variable 'buffer' can be reduced.
+[psp/psp_drawing.c:59]: (style) The scope of the variable 'buffer' can be reduced.
+[sdl/drawing.c]: (information) Too many #ifdef configurations - cppcheck only checks 12 of 14 configurations. Use --force to check all configurations.
+[sdl/drawing.c:153]: (style) The scope of the variable 'buffer' can be reduced.
+[sdl/md5.c:94]: (style) The scope of the variable 'saved_a' can be reduced.
+[sdl/md5.c:94]: (style) The scope of the variable 'saved_b' can be reduced.
+[sdl/md5.c:94]: (style) The scope of the variable 'saved_c' can be reduced.
+[sdl/md5.c:94]: (style) The scope of the variable 'saved_d' can be reduced.
+[sdl/md5.c:211]: (style) The scope of the variable 'available' can be reduced.
+[sdl/menu.c:109]: (style) The scope of the variable 'dst' can be reduced.
+[sdl/menu.c:145]: (style) The scope of the variable 'i_str' can be reduced.
+[sdl/menu.c:176]: (style) The scope of the variable 'szVal' can be reduced.
+[sdl/menu.c:223]: (style) The scope of the variable 'mi' can be reduced.
+[sdl/menu.c:445]: (style) The scope of the variable 'current_dir' can be reduced.
+[sdl/menu.c:449]: (style) The scope of the variable 'current_dir_length' can be reduced.
+[sdl/menu.c:450]: (style) The scope of the variable 'num_filedir' can be reduced.
+[sdl/menu.c:456]: (style) The scope of the variable 'repeat' can be reduced.
+[sdl/menu.c:459]: (style) The scope of the variable 'current_filedir_scroll_value' can be reduced.
+[sdl/menu.c:460]: (style) The scope of the variable 'current_filedir_selection' can be reduced.
+[sdl/menu.c:461]: (style) The scope of the variable 'current_filedir_in_scroll' can be reduced.
+[sdl/menu.c:462]: (style) The scope of the variable 'current_filedir_number' can be reduced.
+[sdl/menu.c:720]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:720]: (style) The scope of the variable 'szFile1' can be reduced.
+[sdl/menu.c:762]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:783]: (style) The scope of the variable 'szFile' can be reduced.
+(information) Cppcheck cannot find all the include files (use --check-config for details)

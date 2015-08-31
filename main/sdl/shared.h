@@ -28,15 +28,26 @@
 	#define JOYSTICK
 	#endif
 	
-	#ifndef UNIX
-	#define UNIX
+	#ifndef POSIX
+	#define POSIX
 	#endif
-	
 #endif
 
 #ifdef _TINSPIRE
 	#ifndef NO_WAIT
 	#define NO_WAIT
+	#endif
+#endif
+
+#ifdef DREAMCAST
+	#ifndef POSIX
+	#define POSIX
+	#endif
+#endif
+
+#ifdef _TINSPIRE
+	#ifndef HOME_SUPPORT
+	#define HOME_SUPPORT
 	#endif
 #endif
 
@@ -69,7 +80,7 @@
 
 #ifdef _TINSPIRE
 	#define PATH_DIRECTORY "/documents/ndless/"
-	#define SAVE_DIRECTORY ""
+	#define SAVE_DIRECTORY ".oswan/"
 	#define EXTENSION ".tns"
 #elif defined(GCW)
 	#define PATH_DIRECTORY getenv("HOME")

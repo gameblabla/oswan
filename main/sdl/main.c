@@ -8,12 +8,16 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
+#ifdef HOME_SUPPORT
+#include <unistd.h>
+#endif
 
 #include "shared.h"
 #include "drawing.h"
 #include "hack.h"
 
 void exit_oswan();
+void msleep(unsigned char milisec);
 extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 #ifdef SWITCHING_GRAPHICS
 	extern void screen_prepback(SDL_Surface *s);
@@ -143,7 +147,14 @@ int main(int argc, char *argv[])
 #if defined(HOME_SUPPORT)
 	char home_path[256];
 	snprintf(home_path, sizeof(home_path), "%s/.oswan", PATH_DIRECTORY);
-	mkdir(home_path, 0755);	
+	/* 
+	 * If folder does not exists then create it 
+	 * This can speeds up startup if the folder already exists
+	*/
+	if(access( home_path, F_OK ) == -1) 
+	{
+		mkdir(home_path, 0755);	
+	}
 	snprintf(current_conf_app, sizeof(current_conf_app), "%s/.oswan/oswan.cfg", PATH_DIRECTORY);
 #else
 	snprintf(current_conf_app, sizeof(current_conf_app), "%soswan.cfg%s", PATH_DIRECTORY, EXTENSION);
@@ -163,7 +174,7 @@ int main(int argc, char *argv[])
 		if (!GameConf.m_ScreenRatio) SetVideo(1);
 #endif
 		flip_screen(actualScreen);
-		strcpy(gameName,argv[1]);
+		snprintf(gameName, sizeof(gameName) ,"%s", argv[1]);
 		m_Flag = GF_GAMEINIT;
 	}
 
@@ -217,7 +228,7 @@ int main(int argc, char *argv[])
 				{
 					if (wait < 1000000) 
 					{
-						SDL_Delay(wait/1000);
+						msleep(wait/1000);
 					}
 				}
 				#endif
@@ -259,4 +270,25 @@ void exit_oswan()
 #endif
 	
 	exit(0);
+}
+
+void msleep(unsigned char milisec)
+{
+/* 
+ * nanosleep is better in every way.
+ * Only use SDL_Delay as a last resort. 
+*/
+#ifdef POSIX
+	struct timespec req={0};
+	time_t sec=(unsigned short)(milisec/1000);
+
+	milisec=milisec-(sec*1000);
+	req.tv_sec=sec;
+	req.tv_nsec=milisec*1000000L;
+
+	while(nanosleep(&req,&req)==-1)
+	continue;
+#else
+	SDL_Delay(milisec);
+#endif
 }

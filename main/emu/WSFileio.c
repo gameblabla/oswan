@@ -169,6 +169,7 @@ int WsCreate(char *CartName)
     if (fread(buf, 1, 10, fp) != 10)
     {
 		fprintf(stderr,"ERR_FREAD_ROMINFO\n");
+		if (fp) fclose(fp);
         return 1;
     }
     switch (buf[4])

@@ -30,9 +30,8 @@ char button_state[18], button_time[18];
 /* Uses button_state global */
 void Buttons(void)
 {
-	unsigned char *keys;
 	unsigned char i;
-	int pad;
+	int pad = 0;
 	
 #ifdef PSP
 	SceCtrlData pad_controller;
@@ -40,7 +39,7 @@ void Buttons(void)
 #else
 	SDL_Event event;
 	SDL_PollEvent(&event);
-	keys = SDL_GetKeyState(NULL);
+	unsigned char *keys = SDL_GetKeyState(NULL);
 #endif
 
 	for(i=0;i<sizeof(button_state);i++)

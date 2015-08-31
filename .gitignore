@@ -6,6 +6,8 @@
 *.map
 *.wsc
 *.out
+/oswan/main/*.sh
+/oswan/main/*.txt
 ./oswan
 /opk/oswan
 main/sdl/*.o

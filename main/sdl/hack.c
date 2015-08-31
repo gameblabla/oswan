@@ -66,7 +66,7 @@ void Check_MD5(unsigned char* buf, FILE* fp)
 	
     for (i = 0; i < 16; i++) 
     {
-        snprintf(&(out[i*2]), 16*2, "%02x", (unsigned char)digest[i]);
+        snprintf(&(out[i*2]), sizeof(&out), "%02x", (unsigned char)digest[i]);
 	}
   
   	period_hack = 0;

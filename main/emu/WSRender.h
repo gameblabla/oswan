@@ -17,6 +17,5 @@ extern const unsigned char Layer[3];
 
 void SetPalette(const int addr);
 void RefreshLine(const unsigned short Line);
-void RenderSleep(void);
 
 #endif
