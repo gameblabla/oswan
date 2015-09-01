@@ -1,21 +1,19 @@
 CC			= nspire-gcc
 
-CFLAGS  	= -O3 -Wall -Werror -std=gnu89 -I./main/emu -I./main/sdl 
+CFLAGS  	= -Ofast -fomit-frame-pointer -std=gnu89 -I./main/emu -I./main/sdl -I./main/nspire 
 CFLAGS 	   += -marm -march=armv5te -mtune=arm926ej-s
-CFLAGS 	   += ${DEFINES}
-DEFINES 	= -DSWITCHING_GRAPHICS
-LDFLAGS 	= -lSDL -Wl,--as-needed -flto
+LDFLAGS 	= -Wl,--as-needed -flto
 OUT  		= oswan
 
-SDL 		= main/emu/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c
-CPU 		= main/emu/cpu/nec.c
-CORE 		= main/fast/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
+SDL 		= main/sdl/main.c main/sdl/menu.c main/nspire/drawing.c main/sdl/input.c main/sdl/game_input.c
+CPU 		= main/emu/cpu/nec.c main/nspire/n2DLib.c
+CORE 		= main/nspire/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
 SOURCES 	= ${SDL} ${CPU} ${CORE} 
 
-# Comment the 4 lines below to disable zip support
+# Comment the 3 lines below to disable zip support
 CFLAGS 	   += -DZIP_SUPPORT -I./minizip
 LDFLAGS	   += -lz
-THIRD_PARTY	= minizip/unzip.o minizip/ioapi.o
+THIRD_PARTY+= minizip/unzip.o minizip/ioapi.o
 SOURCES    += ${THIRD_PARTY}
 
 OBJS 		= ${SOURCES:.c=.o}

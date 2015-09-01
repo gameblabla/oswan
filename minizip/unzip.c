@@ -939,6 +939,7 @@ extern int ZEXPORT unzOpenCurrentFile (file)
     return unzOpenCurrentFile3(file, NULL, NULL, 0, NULL);
 }
 
+/*
 extern int ZEXPORT unzOpenCurrentFile2 (file,method,level,raw)
     unzFile file;
     int* method;
@@ -947,6 +948,7 @@ extern int ZEXPORT unzOpenCurrentFile2 (file,method,level,raw)
 {
     return unzOpenCurrentFile3(file, method, level, raw, NULL);
 }
+*/
 
 /*
   Read bytes from the current file.

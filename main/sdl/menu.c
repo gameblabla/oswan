@@ -1,5 +1,6 @@
 #ifdef _TINSPIRE
 #include <os.h>
+#include "n2DLib.h"
 #endif
 
 #include <stdio.h>
@@ -15,6 +16,15 @@
 extern unsigned int m_Flag;
 unsigned char gameMenu;
 
+#ifdef _TINSPIRE
+#define COLOR_BG           	(5 >> 3) << 11 		| (3 >> 2) << 5 	| (2 >> 3)
+#define COLOR_OK			(0 >> 3) << 11 		| (0 >> 2) << 5 	| (255 >> 3)
+#define COLOR_KO			(255 >> 3) << 11 	| (0 >> 2) << 5 	| (0 >> 3)
+#define COLOR_INFO			(0 >> 3) << 11 		| (255 >> 2) << 5 	| (0 >> 3)
+#define COLOR_LIGHT			(255 >> 3) << 11 	| (255 >> 2) << 5 	| (0 >> 3)
+#define COLOR_ACTIVE_ITEM   (255 >> 3) << 11 	| (255 >> 2) << 5 	| (255 >> 3)
+#define COLOR_INACTIVE_ITEM (255 >> 3) << 11 	| (255 >> 2) << 5 	| (255 >> 3)
+#else
 #define COLOR_BG           	SDL_MapRGB(actualScreen->format,5,3,2)
 #define COLOR_OK			SDL_MapRGB(actualScreen->format,0,0,255)
 #define COLOR_KO			SDL_MapRGB(actualScreen->format,255,0,0)
@@ -22,6 +32,7 @@ unsigned char gameMenu;
 #define COLOR_LIGHT			SDL_MapRGB(actualScreen->format,255,255,0)
 #define COLOR_ACTIVE_ITEM   SDL_MapRGB(actualScreen->format,255, 255, 255)
 #define COLOR_INACTIVE_ITEM SDL_MapRGB(actualScreen->format,255,255,255)
+#endif
 
 const char *file_ext[] = { 
 	(const char *) ".ws",  (const char *) ".wsc", 
@@ -32,6 +43,10 @@ const char *file_ext[] = {
 	 (const char *) ".tns", 
 #endif
 	NULL };
+	
+void clear_screen_menu(void);
+void draw_bluerect_menu(unsigned char i);
+void draw_bluerect_file(unsigned char i);
 
 void menuReset(void);
 void menuQuit(void);
@@ -104,8 +119,11 @@ MENU mnuMainMenu = {
 /*----------------------------------------------------------------------------------------------------
 Prints char on a given surface
 ----------------------------------------------------------------------------------------------------*/
-void screen_showchar(SDL_Surface *s, const short x, const short y, unsigned char a, const int fg_color, const int bg_color) 
+void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, const int fg_color, const int bg_color) 
 {
+#ifdef _TINSPIRE
+	drawChar(&x, &y, 0, a, fg_color, bg_color);
+#else
 	unsigned short *dst;
 	unsigned short w, h;
 
@@ -128,16 +146,21 @@ void screen_showchar(SDL_Surface *s, const short x, const short y, unsigned char
 		}
 	}
 	SDL_UnlockSurface(s);
+#endif
 }
 
 /* 
 	"Copy-pasted mostly from gpsp emulator by Exophase. Thanks for it"
 	- Alekmaul
 */
-void print_string(const char *s, const  unsigned short fg_color, const unsigned short bg_color, short x, const short y) 
+void print_string(const char *s, const  unsigned short fg_color, const unsigned short bg_color, int x, int y) 
 {
+#ifdef _TINSPIRE
+	drawString(&x, &y, 0, s, fg_color, bg_color);
+#else
 	int i, j = strlen(s);
 	for(i = 0; i < j; i++, x += 6) screen_showchar(actualScreen, x, y, s[i], fg_color, bg_color);
+#endif
 }
 
 void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color) 
@@ -161,20 +184,67 @@ void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color)
 void print_string_video(short x, const short y, const char *s) 
 {
 	int i, j = strlen(s);
-	for(i = 0; i < j; i++, x += 8) screen_showchar(actualScreen, x, y, s[i], SDL_MapRGB(actualScreen->format,255, 0, 0), 0);
+	for(i = 0; i < j; i++, x += 8) 
+	{
+		screen_showchar(actualScreen, x, y, s[i], 
+		#ifdef _TINSPIRE
+		(255 >> 3) << 11 	| (0 >> 2) << 5 | (0 >> 3),
+		#else
+		SDL_MapRGB(actualScreen->format,255, 0, 0), 
+		#endif
+		0);
+	}
 }
+
+void clear_screen_menu(void)
+{
+#ifdef _TINSPIRE
+	clearBufferB();
+#else
+	SDL_FillRect(actualScreen, NULL, 0);
+#endif
+}
+
 
 /* Shows menu items and pointing arrow	*/
 #define SPRX (16)
 #define OFF_X 0
 #define OFF_Y 0
 
+void draw_bluerect_menu(unsigned char i)
+{
+#ifdef _TINSPIRE
+	fillRect(0 + OFF_X, (44+i*15)-2+8 + OFF_Y, 320, 12, ((0 >> 3) << 11) | ((0 >> 2) << 5) | (255 >> 3));
+#else
+	SDL_Rect position_select;
+	position_select.w  = 320;
+	position_select.h  = 12;
+	position_select.x  = 0 + OFF_X;
+	position_select.y  = (44+i*15)-2+8 + OFF_Y;
+	SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
+#endif
+}
+
+void draw_bluerect_file(unsigned char i)
+{
+#ifdef _TINSPIRE
+	fillRect(0, 10*3+((i + 2) * 8), 320, 8, ((0 >> 3) << 11) | ((0 >> 2) << 5) | (255 >> 3));
+#else
+	SDL_Rect position_select;
+	position_select.w  = 320;
+	position_select.h  = 8;
+	position_select.x  = 0;
+	position_select.y  = 10*3+((i + 2) * 8);
+	SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
+#endif
+}
+
+
 void screen_showmenu(MENU *menu) 
 {
 	unsigned char i;
 	MENUITEM *mi = menu->m;
 	char szVal[100];
-	SDL_Rect position_select;
 	
 	/* show menu lines */
 	for(i = 0; i < menu->itemNum; i++, mi++) 
@@ -183,11 +253,7 @@ void screen_showmenu(MENU *menu)
 		
 		if(menu->itemCur == i)
 		{
-			position_select.w  = 320;
-			position_select.h  = 12;
-			position_select.x  = 0 + OFF_X;
-			position_select.y  = (44+i*15)-2+8 + OFF_Y;
-			SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
+			draw_bluerect_menu(i);
 		}
 		
 		if(menu->itemCur == i) 
@@ -255,7 +321,7 @@ void screen_showmainmenu(MENU *menu)
 		/* UP - arrow up	*/
 		if (button_state[2]==1) 
 		{ 
-			SDL_FillRect(actualScreen, NULL, 0);
+			clear_screen_menu();
 			if(--menu->itemCur < 0)
 			{
 				menu->itemCur = menu->itemNum - 1;
@@ -265,7 +331,7 @@ void screen_showmainmenu(MENU *menu)
 		/*	DOWN - arrow down	*/
 		if (button_state[3]==1) 
 		{ 
-			SDL_FillRect(actualScreen, NULL, 0);
+			clear_screen_menu();
 			if(++menu->itemCur == menu->itemNum) 
 			{
 				menu->itemCur = 0;
@@ -278,7 +344,7 @@ void screen_showmainmenu(MENU *menu)
 			if(mi->itemPar != NULL && *mi->itemPar > 0)
 			{ 
 				*mi->itemPar -= 1;
-				SDL_FillRect(actualScreen, NULL, 0);
+				clear_screen_menu();
 			}
 		}
 
@@ -288,7 +354,7 @@ void screen_showmainmenu(MENU *menu)
 			if(mi->itemPar != NULL && *mi->itemPar < mi->itemParMaxValue) 
 			{ 
 				*mi->itemPar += 1;
-				SDL_FillRect(actualScreen, NULL, 0);
+				clear_screen_menu();
 			}
 		}
 
@@ -323,7 +389,7 @@ void screen_showtopmenu(void)
 	}
 #endif
 
-	SDL_FillRect(actualScreen, NULL, 0);
+	clear_screen_menu();
 
 	/* Display and manage main menu	*/
 	screen_showmainmenu(&mnuMainMenu);
@@ -336,7 +402,7 @@ void screen_showtopmenu(void)
 #ifdef SWITCHING_GRAPHICS
 		SetVideo(1);
 #endif
-		SDL_FillRect(actualScreen, NULL, 0);
+		clear_screen_menu();
 		flip_screen(actualScreen);
 	}
 	
@@ -438,7 +504,6 @@ char strcmp_function(const char *s1, const char *s2)
 
 signed int load_file(const char **wildcards, char *result) 
 {
-	SDL_Rect position_select;
 	unsigned char keyup = 0, keydown = 0, kepufl = 0, kepdfl = 0;
 
 	char current_dir_name[MAX__PATH];
@@ -455,6 +520,8 @@ signed int load_file(const char **wildcards, char *result)
 	signed int return_value = 1;
 	unsigned int repeat;
 	unsigned int i;
+	
+	unsigned short i_hold = 1;
 
 	unsigned int current_filedir_scroll_value;
 	unsigned int current_filedir_selection;
@@ -546,13 +613,12 @@ signed int load_file(const char **wildcards, char *result)
 		{
 			#define CHARLEN ((320/6)-2)
 			
-			SDL_FillRect(actualScreen, NULL, 0);
+			clear_screen_menu();
+			draw_bluerect_file(i_hold);
 			
 			/* Catch input	*/
 			Buttons();
-			
-			SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
-			
+
 			print_string(current_dir_short, COLOR_ACTIVE_ITEM, COLOR_BG, 4, 10*3);
 			print_string("Press B to return to the main menu", COLOR_ACTIVE_ITEM, COLOR_BG, 160-(34*8/2), 240-5 -10*3);
 				
@@ -579,10 +645,7 @@ signed int load_file(const char **wildcards, char *result)
 					if(current_filedir_number == current_filedir_selection) 
 					{
 						/* Put Blue rectangle on screen before the text is printed	*/
-						position_select.w  = 320;
-						position_select.h  = 8;
-						position_select.x  = 0;
-						position_select.y  = 10*3+((i + 2) * 8);
+						i_hold = i;
 						print_string(print_buffer, COLOR_ACTIVE_ITEM, COLOR_BG, 4, 10*3+((i + 2) * 8));
 					} 
 					else 
@@ -695,7 +758,7 @@ signed int load_file(const char **wildcards, char *result)
 		strcpy(GameConf.current_dir_rom,current_dir_name);
 	}
 
-	SDL_FillRect(actualScreen, NULL, 0);
+	clear_screen_menu();
 
 	return return_value;
 }
@@ -822,7 +885,7 @@ void system_loadcfg(const char *cfg_name)
 #ifndef SWITCHING_GRAPHICS
 	if (!GameConf.m_ScreenRatio) 
 	{
-		SDL_FillRect(actualScreen, NULL, 0);
+		clear_screen_menu();
 		flip_screen(actualScreen);
 	}
 #else

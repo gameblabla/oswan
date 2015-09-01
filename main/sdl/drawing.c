@@ -60,6 +60,12 @@ void SetVideo(unsigned char mode)
 		h = 144;
 	}
 	
+	if (!SDL_WasInit(SDL_INIT_VIDEO)) 
+	{	
+		SDL_Init(SDL_INIT_VIDEO);
+		SDL_ShowCursor(SDL_DISABLE);
+	}
+	
 	#if defined(SCALING)
 		if (real_screen) SDL_FreeSurface(real_screen);
 		if (actualScreen) SDL_FreeSurface(actualScreen);
@@ -123,6 +129,8 @@ void screen_draw(void)
 	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
 	unsigned int W,H,ix,iy,x,y;
 	
+	SDL_LockSurface(actualScreen);
+	
 	x=screen_to_draw_region.offset_x;
 	y=screen_to_draw_region.offset_y; 
 	W=screen_to_draw_region.w;
@@ -169,13 +177,16 @@ void screen_draw(void)
 		sprintf(buffer,"%d",FPS);
 		print_string_video(2,2,buffer);
 	}
+	
+	SDL_UnlockSurface(actualScreen);
+	flip_screen(actualScreen);
 }
 
 #if defined(SCALING)
 void flip_screen(SDL_Surface* screen)
 {
 	SDL_Surface* doble;
-	doble = zoomSurface(screen,screen_scale.w_scale,screen_scale.h_scale);
+	doble = zoomSurface(actualScreen,screen_scale.w_scale,screen_scale.h_scale);
 	SDL_BlitSurface(doble,NULL,real_screen,&screen_position);
 	SDL_Flip(real_screen);
 	SDL_FreeSurface(doble);

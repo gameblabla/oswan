@@ -11,6 +11,12 @@ void Set_resolution(unsigned short w, unsigned short h)
 
 void SetVideo(unsigned char mode)
 {
+	if (!SDL_WasInit(SDL_INIT_VIDEO)) 
+	{	
+		SDL_Init(SDL_INIT_VIDEO);
+		SDL_ShowCursor(SDL_DISABLE);
+	}
+	
 	if (actualScreen) SDL_FreeSurface(actualScreen);
 	
 	#if !defined(NOSCREENSHOTS)
@@ -36,6 +42,9 @@ void screen_draw(void)
 {
 	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
 	unsigned int W,H,x,y,iy,ix;
+	
+	SDL_LockSurface(actualScreen);
+	
 	x=0;
 	y=0; 
 	W=800;
@@ -54,12 +63,15 @@ void screen_draw(void)
 		y+=iy;
 	} while (--H);
 	
-	static char buffer[4];
+	static char buffer[3];
 	if (GameConf.m_DisplayFPS) 
 	{
 		sprintf(buffer,"%d",FPS);
 		print_string_video(2,2,buffer);
 	}
+	
+	SDL_UnlockSurface(actualScreen);
+	flip_screen(actualScreen);
 }
 
 void take_screenshot(void)

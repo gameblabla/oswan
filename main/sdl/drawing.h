@@ -18,11 +18,17 @@ struct wheretodraw
 	unsigned short offset_y;
 } screen_to_draw_region;
 
-#if !defined(SCALING) && !defined(PSP)
+#if !defined(SCALING) && !defined(PSP) && !defined(_TINSPIRE)
 	#define flip_screen SDL_Flip
+#elif defined(_TINSPIRE)
+	void flip_screen(SDL_Surface* screen);
 #else
 	void flip_screen(SDL_Surface* screen);
 	SDL_Surface *real_screen;
+#endif
+
+#if !defined(_TINSPIRE)
+SDL_Rect screen_position;
 #endif
 
 struct scaling
@@ -34,4 +40,3 @@ struct scaling
 	float w_scale_size;
 	float h_scale_size;
 } screen_scale;
-SDL_Rect screen_position;

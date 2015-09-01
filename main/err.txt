@@ -5,52 +5,113 @@
 [emu/WSApu.c:219]: (style) The scope of the variable 'v' can be reduced.
 [emu/WSFileio.c:362]: (style) The scope of the variable 'fp' can be reduced.
 [emu/WSRender.c:73]: (style) The scope of the variable 'k' can be reduced.
+[emu/cpu/nec.c:323] -> [emu/cpu/nec.c:323]: (performance) Variable 'dst' is reassigned a value before the old one has been used.
 [emu/cpu/nec.c:130]: (style) The scope of the variable 'dest_seg' can be reduced.
 [emu/cpu/nec.c:130]: (style) The scope of the variable 'dest_off' can be reduced.
-[emu/cpu/nec.c:537]: (style) The scope of the variable 'val' can be reduced.
-[emu/cpu/nec.c:731]: (style) The scope of the variable 'uresult2' can be reduced.
-[emu/cpu/nec.c:731]: (style) The scope of the variable 'result2' can be reduced.
-[emu/cpu/nec.c:746]: (style) The scope of the variable 'uresult2' can be reduced.
-[emu/cpu/nec.c:746]: (style) The scope of the variable 'result2' can be reduced.
+[emu/cpu/nec.c:525]: (style) The scope of the variable 'val' can be reduced.
+[emu/cpu/nec.c:719]: (style) The scope of the variable 'uresult2' can be reduced.
+[emu/cpu/nec.c:719]: (style) The scope of the variable 'result2' can be reduced.
+[emu/cpu/nec.c:734]: (style) The scope of the variable 'uresult2' can be reduced.
+[emu/cpu/nec.c:734]: (style) The scope of the variable 'result2' can be reduced.
+[emu/cpu/nec.c:56]: (style) struct or union member 'nec_Regs::MF' is never used.
+[emu/cpu/nec.c:61]: (style) struct or union member 'nec_Regs::irq_callback' is never used.
+[emu/cpu/nec.c:216]: (style) Variable 'tmp' is assigned a value that is never used.
+[emu/cpu/nec.c:225]: (style) Variable 'tmp' is assigned a value that is never used.
 [emu/cpu/nec.c:236]: (style) Variable 'dst' is assigned a value that is never used.
 [emu/cpu/nec.c:237]: (style) Variable 'dst' is assigned a value that is never used.
 [emu/cpu/nec.c:238]: (style) Variable 'dst' is assigned a value that is never used.
 [emu/cpu/nec.c:239]: (style) Variable 'dst' is assigned a value that is never used.
 [emu/cpu/nec.c:240]: (style) Variable 'dst' is assigned a value that is never used.
 [emu/cpu/nec.c:241]: (style) Variable 'dst' is assigned a value that is never used.
-[emu/cpu/nec.c:326]: (style) Variable 'src2' is assigned a value that is never used.
-[emu/cpu/nec.c:325]: (style) Variable 'src' is assigned a value that is never used.
-[emu/cpu/nec.c:368]: (style) Variable 'dst' is assigned a value that is never used.
-[emu/cpu/nec.c:382]: (style) Variable 'dst' is assigned a value that is never used.
-[emu/cpu/nec.c:396]: (style) Variable 'dst' is assigned a value that is never used.
-[emu/cpu/nec.c:410]: (style) Variable 'dst' is assigned a value that is never used.
-[emu/cpu/nec.c:466]: (style) Variable 'dst' is assigned a value that is never used.
-[emu/cpu/nec.c:467]: (style) Variable 'dst' is assigned a value that is never used.
-[emu/cpu/nec.c:475]: (style) Variable 'dst' is assigned a value that is never used.
-[emu/cpu/nec.c:476]: (style) Variable 'dst' is assigned a value that is never used.
-[pandora/pandora_drawing.c:57]: (style) The scope of the variable 'buffer' can be reduced.
-[psp/psp_drawing.c:59]: (style) The scope of the variable 'buffer' can be reduced.
-[sdl/drawing.c]: (information) Too many #ifdef configurations - cppcheck only checks 12 of 14 configurations. Use --force to check all configurations.
-[sdl/drawing.c:153]: (style) The scope of the variable 'buffer' can be reduced.
+[emu/cpu/nec.c:356]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:370]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:384]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:398]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:454]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:455]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:463]: (style) Variable 'dst' is assigned a value that is never used.
+[emu/cpu/nec.c:464]: (style) Variable 'dst' is assigned a value that is never used.
+[nspire/WS.c:84]: (style) The scope of the variable 'flashWriteEnable' can be reduced.
+[nspire/WS.c:533]: (style) The scope of the variable 'i' can be reduced.
+[nspire/WS.c:533]: (style) The scope of the variable 'j' can be reduced.
+[nspire/WS.c:651]: (style) The scope of the variable 'cycle' can be reduced.
+[nspire/n2DLib.c:51]: (style) The scope of the variable 'c' can be reduced.
+[nspire/n2DLib.c:271]: (style) The scope of the variable 'factor' can be reduced.
+[nspire/n2DLib.c:308]: (style) The scope of the variable 'factor' can be reduced.
+[nspire/n2DLib.c:436]: (style) The scope of the variable 'i' can be reduced.
+[nspire/n2DLib.c:436]: (style) The scope of the variable 'j' can be reduced.
+[nspire/n2DLib.c:553]: (style) The scope of the variable 'e2' can be reduced.
+[nspire/n2DLib.c:582]: (style) The scope of the variable 'cur_arg' can be reduced.
+[nspire/n2DLib.c:692]: (style) The scope of the variable 'i' can be reduced.
+[nspire/n2DLib.c:692]: (style) The scope of the variable 'j' can be reduced.
+[nspire/n2DLib.c:693]: (style) The scope of the variable 'charSprite' can be reduced.
+[nspire/n2DLib.c:728]: (style) The scope of the variable 'num' can be reduced.
+[nspire/n2DLib.c:796]: (style) The scope of the variable 'rowmap' can be reduced.
+[pandora/pandora_drawing.c:60]: (style) The scope of the variable 'buffer' can be reduced.
+[psp/psp_drawing.c:62]: (style) The scope of the variable 'buffer' can be reduced.
+[sdl/drawing.c]: (information) Too many #ifdef configurations - cppcheck only checks 12 of 13 configurations. Use --force to check all configurations.
+[sdl/drawing.c:160]: (style) The scope of the variable 'buffer' can be reduced.
+[sdl/main.c:125]: (style) Unused variable: period
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_a' can be reduced.
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_b' can be reduced.
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_c' can be reduced.
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_d' can be reduced.
 [sdl/md5.c:211]: (style) The scope of the variable 'available' can be reduced.
-[sdl/menu.c:109]: (style) The scope of the variable 'dst' can be reduced.
-[sdl/menu.c:145]: (style) The scope of the variable 'i_str' can be reduced.
-[sdl/menu.c:176]: (style) The scope of the variable 'szVal' can be reduced.
-[sdl/menu.c:223]: (style) The scope of the variable 'mi' can be reduced.
-[sdl/menu.c:445]: (style) The scope of the variable 'current_dir' can be reduced.
-[sdl/menu.c:449]: (style) The scope of the variable 'current_dir_length' can be reduced.
-[sdl/menu.c:450]: (style) The scope of the variable 'num_filedir' can be reduced.
-[sdl/menu.c:456]: (style) The scope of the variable 'repeat' can be reduced.
-[sdl/menu.c:459]: (style) The scope of the variable 'current_filedir_scroll_value' can be reduced.
-[sdl/menu.c:460]: (style) The scope of the variable 'current_filedir_selection' can be reduced.
-[sdl/menu.c:461]: (style) The scope of the variable 'current_filedir_in_scroll' can be reduced.
-[sdl/menu.c:462]: (style) The scope of the variable 'current_filedir_number' can be reduced.
-[sdl/menu.c:720]: (style) The scope of the variable 'szFile' can be reduced.
-[sdl/menu.c:720]: (style) The scope of the variable 'szFile1' can be reduced.
-[sdl/menu.c:762]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:127]: (style) The scope of the variable 'dst' can be reduced.
+[sdl/menu.c:168]: (style) The scope of the variable 'i_str' can be reduced.
+[sdl/menu.c:247]: (style) The scope of the variable 'szVal' can be reduced.
+[sdl/menu.c:289]: (style) The scope of the variable 'mi' can be reduced.
+[sdl/menu.c:510]: (style) The scope of the variable 'current_dir' can be reduced.
+[sdl/menu.c:514]: (style) The scope of the variable 'current_dir_length' can be reduced.
+[sdl/menu.c:515]: (style) The scope of the variable 'num_filedir' can be reduced.
+[sdl/menu.c:521]: (style) The scope of the variable 'repeat' can be reduced.
+[sdl/menu.c:526]: (style) The scope of the variable 'current_filedir_scroll_value' can be reduced.
+[sdl/menu.c:527]: (style) The scope of the variable 'current_filedir_selection' can be reduced.
+[sdl/menu.c:528]: (style) The scope of the variable 'current_filedir_in_scroll' can be reduced.
+[sdl/menu.c:529]: (style) The scope of the variable 'current_filedir_number' can be reduced.
 [sdl/menu.c:783]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:783]: (style) The scope of the variable 'szFile1' can be reduced.
+[sdl/menu.c:825]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:846]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:171] -> [sdl/menu.c:171]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:180] -> [sdl/menu.c:180]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:217] -> [sdl/menu.c:217]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:231] -> [sdl/menu.c:231]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:270] -> [sdl/menu.c:270]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:622] -> [sdl/menu.c:622]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:623] -> [sdl/menu.c:623]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:649] -> [sdl/menu.c:649]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:653] -> [sdl/menu.c:653]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:836] -> [sdl/menu.c:836]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:838] -> [sdl/menu.c:838]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:857] -> [sdl/menu.c:857]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:859] -> [sdl/menu.c:859]: (style) Same expression on both sides of '|'.
+[nspire/n2DLib.c:357]: (style) The function 'clearBuffer' is never used.
+[nspire/n2DLib.c:350]: (style) The function 'clearBufferW' is never used.
+[nspire/n2DLib.c:251]: (style) The function 'cube' is never used.
+[nspire/n2DLib.c:724]: (style) The function 'drawDecimal' is never used.
+[nspire/n2DLib.c:390]: (style) The function 'drawHLine' is never used.
+[nspire/n2DLib.c:572]: (style) The function 'drawPolygon' is never used.
+[nspire/n2DLib.c:445]: (style) The function 'drawSprite' is never used.
+[nspire/n2DLib.c:459]: (style) The function 'drawSpritePart' is never used.
+[nspire/n2DLib.c:497]: (style) The function 'drawSpriteRotated' is never used.
+[nspire/n2DLib.c:476]: (style) The function 'drawSpriteScaled' is never used.
+[nspire/n2DLib.c:748]: (style) The function 'drawStringF' is never used.
+[nspire/n2DLib.c:412]: (style) The function 'drawVLine' is never used.
+[nspire/n2DLib.c:601]: (style) The function 'fillCircle' is never used.
+[nspire/n2DLib.c:612]: (style) The function 'fillEllipse' is never used.
+[nspire/n2DLib.c:256]: (style) The function 'fixcube' is never used.
+[nspire/n2DLib.c:246]: (style) The function 'fixsq' is never used.
+[nspire/n2DLib.c:794]: (style) The function 'get_key_pressed' is never used.
+[nspire/n2DLib.c:268]: (style) The function 'interpolatePathFixed' is never used.
+[nspire/n2DLib.c:305]: (style) The function 'interpolatePathFloat' is never used.
+[nspire/n2DLib.c:839]: (style) The function 'isKey' is never used.
+[nspire/n2DLib.c:760]: (style) The function 'numberWidth' is never used.
+[nspire/n2DLib.c:384]: (style) The function 'setPixelRGB' is never used.
+[nspire/n2DLib.c:241]: (style) The function 'sq' is never used.
+[nspire/n2DLib.c:780]: (style) The function 'stringWidth' is never used.
+[nspire/n2DLib.c:106]: (style) The function 'timer_init' is never used.
+[nspire/n2DLib.c:162]: (style) The function 'timer_load' is never used.
+[nspire/n2DLib.c:176]: (style) The function 'timer_read' is never used.
+[nspire/n2DLib.c:138]: (style) The function 'timer_restore' is never used.
 (information) Cppcheck cannot find all the include files (use --check-config for details)

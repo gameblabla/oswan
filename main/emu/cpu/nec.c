@@ -53,12 +53,12 @@ typedef struct
 
 	INT32	SignVal;
 	UINT32	AuxVal, OverVal, ZeroVal, CarryVal, ParityVal; /* 0 or non-0 valued flags */
-	UINT8	TF, IF, DF; 	/* 0 or 1 valued flags */	/* OB[19.07.99] added Mode Flag V30 */
+	UINT8	TF, IF, DF, MF; 	/* 0 or 1 valued flags */	/* OB[19.07.99] added Mode Flag V30 */
 	UINT32	int_vector;
 	UINT32	pending_irq;
 	UINT32	nmi_state;
 	UINT32	irq_state;
-	/*int 	(*irq_callback)(int irqline);*/
+	int 	(*irq_callback)(int irqline);
 } nec_Regs;
 
 /***************************************************************************/
@@ -320,20 +320,7 @@ OP( 0x62, i_chkind	) {
 OP( 0x68, i_push_d16 ) { UINT32 tmp;	FETCHWORD(tmp); PUSH(tmp);	CLK(1);	}
 OP( 0x69, i_imul_d16 ) { UINT32 tmp;	DEF_r16w; 	FETCHWORD(tmp); dst = (INT32)((INT16)src)*(INT32)((INT16)tmp); I.CarryVal = I.OverVal = (((INT32)dst) >> 15 != 0) && (((INT32)dst) >> 15 != -1);	  RegWord(ModRM)=(WORD)dst; 	CLKM(4,3);}
 OP( 0x6a, i_push_d8  ) { UINT32 tmp = (WORD)((INT16)((INT8)FETCH)); 	PUSH(tmp);	CLK(1);	}
-OP( 0x6b, i_imul_d8  ) 
-{ 
-	/*UINT32 src2; */
-	DEF_r16w; 
-	/*src2= (WORD)((INT16)((INT8)FETCH)); */
-	/* 
-	 * According to cppcheck : "Variable 'dst' is reassigned a value before the old one has been used." 
-	 * I'm not really sure to understand. Does this mean it is not used ?
-	*/
-	/*dst = (INT32)((INT16)src)*(INT32)((INT16)src2); */
-	I.CarryVal = I.OverVal = (((INT32)dst) >> 15 != 0) && (((INT32)dst) >> 15 != -1); 
-	RegWord(ModRM)=(WORD)dst; 
-	CLKM(4,3); 
-}
+OP( 0x6b, i_imul_d8  ) { UINT32 src2; DEF_r16w; src2= (WORD)((INT16)((INT8)FETCH)); dst = (INT32)((INT16)src)*(INT32)((INT16)src2); I.CarryVal = I.OverVal = (((INT32)dst) >> 15 != 0) && (((INT32)dst) >> 15 != -1); RegWord(ModRM)=(WORD)dst; CLKM(4,3); }
 OP( 0x6c, i_insb	 ) { PutMemB(ES,I.regs.w[IY],read_port(I.regs.w[DW])); I.regs.w[IY]+= -2 * I.DF + 1; CLK(6); }
 OP( 0x6d, i_insw	 ) { PutMemB(ES,I.regs.w[IY],read_port(I.regs.w[DW])); PutMemB(ES,(I.regs.w[IY]+1)&0xffff,read_port((I.regs.w[DW]+1)&0xffff)); I.regs.w[IY]+= -4 * I.DF + 2; CLK(6); }
 OP( 0x6e, i_outsb	 ) { write_port(I.regs.w[DW],GetMemB(DS,I.regs.w[IX])); I.regs.w[IX]+= -2 * I.DF + 1; CLK(7); }

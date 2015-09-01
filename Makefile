@@ -1,6 +1,6 @@
-CC 		= clang-3.6
+CC 			= gcc
 
-CFLAGS  	= -O3 -g -Wall -Werror -std=gnu89 -I./main/emu -I./main/sdl 
+CFLAGS  	= -O2 -g -std=gnu89 -I./main/emu -I./main/sdl 
 CFLAGS 	   += ${DEFINES}
 DEFINES 	= -DHOME_SUPPORT -DSWITCHING_GRAPHICS -DSOUND_ON -DSOUND_EMULATION
 LDFLAGS 	= -lSDLmain -lSDL -Wl,--as-needed
@@ -21,8 +21,8 @@ THIRD_PARTY+= minizip/unzip.o minizip/ioapi.o
 #THIRD_PARTY+= main/sdl/gfx/SDL_rotozoom.c
 
 # Comment the 2 lines below to speed hacks
-CFLAGS 	   += -DSPEEDHACKS
-THIRD_PARTY+= main/sdl/hack.c main/sdl/md5.c
+#CFLAGS 	   += -DSPEEDHACKS
+#THIRD_PARTY+= main/sdl/hack.c main/sdl/md5.c
 
 SOURCES    += ${THIRD_PARTY}
 

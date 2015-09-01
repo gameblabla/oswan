@@ -1,6 +1,9 @@
 #ifdef PSP
 #include <pspctrl.h>
 #endif
+#ifdef _TINSPIRE
+#include <os.h>
+#endif
 #include <SDL/SDL.h>
 #include "shared.h"
 
@@ -25,24 +28,31 @@
 17: PAD_XDOWN;
 */
 
-char button_state[18], button_time[18];
+short button_state[18];
+unsigned char button_time[18];
 
 /* Uses button_state global */
 void Buttons(void)
 {
-	unsigned char i;
+	unsigned char i = 0;
+#ifdef _TINSPIRE
+	t_key pad;
+#else
 	int pad = 0;
+#endif
 	
 #ifdef PSP
 	SceCtrlData pad_controller;
 	sceCtrlReadBufferPositive(&pad_controller, 1);	
+#elif defined(_TINSPIRE)
+
 #else
 	SDL_Event event;
 	SDL_PollEvent(&event);
 	unsigned char *keys = SDL_GetKeyState(NULL);
 #endif
 
-	for(i=0;i<sizeof(button_state);i++)
+	for(i=0;i<18;i++)
 	{	
 		switch (i)
 		{
@@ -123,8 +133,13 @@ void Buttons(void)
 		{
 			/* To avoid for the button for being pressed again */
 			case -1:
-			
+#ifdef PSP
+				if (!(pad_controller.Buttons & pad))
+#elif defined(_TINSPIRE)
+				if (!(isKeyPressed(pad)))
+#else
 				if (!(keys[pad]))
+#endif
 				{
 					button_time[i]++;
 				}
@@ -139,6 +154,8 @@ void Buttons(void)
 			case 0:
 #ifdef PSP
 				if (pad_controller.Buttons & pad)
+#elif defined(_TINSPIRE)
+				if (isKeyPressed(pad))
 #else
 				if (keys[pad])
 #endif
@@ -161,6 +178,8 @@ void Buttons(void)
 			case 2:
 #ifdef PSP
 				if (!(pad_controller.Buttons & pad))
+#elif defined(_TINSPIRE)
+				if (!(isKeyPressed(pad)))
 #else
 				if (!(keys[pad]))
 #endif

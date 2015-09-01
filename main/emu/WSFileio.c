@@ -435,7 +435,7 @@ void WsSaveEeprom(void)
     if ((fp = fopen(IEepPath, "wb")) != NULL)
     {
         fwrite(IEep, sizeof(WORD), 64, fp);
-        fclose(fp);
+		if (fp) fclose(fp);
     }
 }
 

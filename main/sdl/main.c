@@ -16,8 +16,11 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 #include "drawing.h"
 #include "hack.h"
 
-void exit_oswan();
+#ifndef NO_WAIT
 void msleep(unsigned char milisec);
+#endif
+void exit_oswan();
+
 extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
 #ifdef SWITCHING_GRAPHICS
 	extern void screen_prepback(SDL_Surface *s);
@@ -63,7 +66,10 @@ unsigned long nextTick, lastTick = 0, newTick, currentTick, wait;
 unsigned char FPS = 60; 
 unsigned char pastFPS = 0; 
 
-SDL_Surface *actualScreen, *screenshots;
+SDL_Surface *actualScreen;
+#if !defined(NOSCREENSHOTS)
+SDL_Surface *screenshots;
+#endif
 
 unsigned long SDL_UXTimerRead(void) 
 {
@@ -74,29 +80,22 @@ unsigned long SDL_UXTimerRead(void)
 
 void graphics_paint(void) 
 {
-	SDL_LockSurface(actualScreen);
 	screen_draw();
-	SDL_UnlockSurface(actualScreen);
-
 	pastFPS++;
 	newTick = SDL_UXTimerRead();
-	if ((newTick-lastTick)>1000000) {
+	if ((newTick-lastTick)>1000000) 
+	{
 		FPS = pastFPS;
 		pastFPS = 0;
 		lastTick = newTick;
 	}
-
-	flip_screen(actualScreen);
 }
 
 void initSDL(void) 
 {
-	SDL_Init(SDL_INIT_VIDEO);
-	
 	/* Get current resolution, does nothing on Windowed or bare metal platroms*/
 	Get_resolution();
 	
-	SDL_ShowCursor(SDL_DISABLE);
 	SetVideo(0);
 
 #ifdef SOUND_ON
@@ -105,11 +104,11 @@ void initSDL(void)
 	
 	/*	Set up SDL sound */
 	fmt.freq = 44100;   
-    fmt.format = AUDIO_S16SYS;
-    fmt.channels = 2;
-    fmt.samples = 2048;
-    fmt.callback = mixaudioCallback;
-    fmt.userdata = NULL;
+	fmt.format = AUDIO_S16SYS;
+	fmt.channels = 2;
+	fmt.samples = 2048;
+	fmt.callback = mixaudioCallback;
+	fmt.userdata = NULL;
 
     /* Open the audio device and start playing sound! */
     if ( SDL_OpenAudio(&fmt, &retFmt) < 0 )
@@ -125,10 +124,6 @@ int main(int argc, char *argv[])
 {
 	double period;
 	
-#ifdef _TINSPIRE
-	enable_relative_paths(argv);
-#endif
-
 #ifdef PSP
 	SetupCallbacks();
 	scePowerSetClockFrequency(333, 333, 166);
@@ -163,8 +158,6 @@ int main(int argc, char *argv[])
 	m_Flag = GF_MAINUI;
 	system_loadcfg(current_conf_app);
 
-	SDL_WM_SetCaption("Oswan", NULL);
-
     /*	load rom file via args if a rom path is supplied	*/
 	strcpy(gameName,"");
 	
@@ -193,7 +186,9 @@ int main(int argc, char *argv[])
 					SDL_PauseAudio(0);
 					#endif
 				}
+				#ifndef NO_WAIT
 				nextTick = SDL_UXTimerRead() + interval;
+				#endif
 				break;
 
 			case GF_GAMEINIT:
@@ -207,11 +202,13 @@ int main(int argc, char *argv[])
 					#ifdef SOUND_ON
 					SDL_PauseAudio(0);
 					#endif
+					#ifndef NO_WAIT
 					/* Init timing */
 					period = 1.0 / 60;
 					period = period * 1000000;
 					interval = (int) period;
 					nextTick = SDL_UXTimerRead() + interval;
+					#endif
 				}
 				else 
 				{
@@ -221,8 +218,8 @@ int main(int argc, char *argv[])
 				break;
 		
 			case GF_GAMERUNNING:	
-				currentTick = SDL_UXTimerRead(); 
 				#ifndef NO_WAIT
+				currentTick = SDL_UXTimerRead(); 
 				wait = (nextTick - currentTick);
 				if (wait > 0) 
 				{
@@ -233,7 +230,9 @@ int main(int argc, char *argv[])
 				}
 				#endif
 				WsRun();
+				#ifndef NO_WAIT
 				nextTick += interval;
+				#endif
 				break;
 		}
 	}
@@ -249,29 +248,31 @@ void exit_oswan()
 	#endif
 
 	/* Free memory	*/
-	#ifndef NOSCREENSHOTS
-	if (screenshots != NULL) SDL_FreeSurface(screenshots);
-	#endif
-	if (actualScreen != NULL) SDL_FreeSurface(actualScreen);
-	#if defined(SCALING)
-	if (real_screen != NULL) SDL_FreeSurface(real_screen);
-	#endif
+	#ifdef _TINSPIRE
+		deinitBuffering();
+	#else
 		
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);	
-	#ifdef SOUND_ON
-	SDL_QuitSubSystem(SDL_INIT_AUDIO);
+	#ifndef NOSCREENSHOTS
+		if (screenshots != NULL) SDL_FreeSurface(screenshots);
 	#endif
-	
-	SDL_Quit();
+		if (actualScreen != NULL) SDL_FreeSurface(actualScreen);
+	#if defined(SCALING)
+		if (real_screen != NULL) SDL_FreeSurface(real_screen);
+	#endif
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);	
+	#ifdef SOUND_ON
+		SDL_QuitSubSystem(SDL_INIT_AUDIO);
+	#endif
+		SDL_Quit();
+	#endif
 	
 #ifdef PSP
 	sceDisplayWaitVblankStart();
 	sceKernelExitGame(); 	
 #endif
-	
-	exit(0);
 }
 
+#ifndef NO_WAIT
 void msleep(unsigned char milisec)
 {
 /* 
@@ -292,3 +293,5 @@ void msleep(unsigned char milisec)
 	SDL_Delay(milisec);
 #endif
 }
+#endif
+

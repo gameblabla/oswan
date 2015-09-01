@@ -6,6 +6,10 @@
 *.map
 *.wsc
 *.out
+*.prx
+*.sfo
+*.elf
+*.PBP
 /oswan/main/*.sh
 /oswan/main/*.txt
 ./oswan
@@ -14,6 +18,7 @@ main/sdl/*.o
 minizip/*.o
 main/emu/*.o
 main/fast/*.o
+main/nspire/*.o
 main/pandora/*.o
 main/psp/*.o
 main/emu/cpu/*.o

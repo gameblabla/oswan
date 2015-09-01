@@ -3,6 +3,8 @@
 
 #ifdef _TINSPIRE
 #include <os.h>
+#else
+#include <SDL/SDL.h>
 #endif
 
 #include <unistd.h>
@@ -13,21 +15,16 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
-#include <SDL/SDL.h>
-
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
 #ifdef GCW
-
 	#ifndef HOME_SUPPORT
 	#define HOME_SUPPORT
 	#endif
-	
 	#ifndef JOYSTICK
 	#define JOYSTICK
 	#endif
-	
 	#ifndef POSIX
 	#define POSIX
 	#endif
@@ -37,11 +34,29 @@
 	#ifndef NO_WAIT
 	#define NO_WAIT
 	#endif
+	
+	#ifndef NOSCREENSHOTS
+	#define NOSCREENSHOTS
+	#endif
+	
+	#define SDL_Surface int
+#endif
+
+#ifdef PSP
+	#ifndef NO_WAIT
+	#define NO_WAIT
+	#endif
+	#ifndef JOYSTICK
+	#define JOYSTICK
+	#endif
 #endif
 
 #ifdef DREAMCAST
 	#ifndef POSIX
 	#define POSIX
+	#endif
+	#ifndef JOYSTICK
+	#define JOYSTICK
 	#endif
 #endif
 
@@ -79,7 +94,7 @@
 #endif
 
 #ifdef _TINSPIRE
-	#define PATH_DIRECTORY "/documents/ndless/"
+	#define PATH_DIRECTORY NDLESS_DIR
 	#define SAVE_DIRECTORY ".oswan/"
 	#define EXTENSION ".tns"
 #elif defined(GCW)
@@ -106,36 +121,36 @@
 #endif
 
 #ifdef _TINSPIRE
-	#define PAD_UP		SDLK_UP
-	#define PAD_LEFT	SDLK_LEFT
-	#define PAD_RIGHT	SDLK_RIGHT
-	#define PAD_DOWN	SDLK_DOWN
+	#define PAD_UP		KEY_NSPIRE_UP
+	#define PAD_LEFT	KEY_NSPIRE_LEFT
+	#define PAD_RIGHT	KEY_NSPIRE_RIGHT
+	#define PAD_DOWN	KEY_NSPIRE_DOWN
 
-	#define PAD_XUP		SDLK_UP
-	#define PAD_XLEFT	SDLK_LEFT
-	#define PAD_XRIGHT	SDLK_RIGHT
-	#define PAD_XDOWN	SDLK_DOWN
+	#define PAD_XUP		KEY_NSPIRE_UP
+	#define PAD_XLEFT	KEY_NSPIRE_LEFT
+	#define PAD_XRIGHT	KEY_NSPIRE_RIGHT
+	#define PAD_XDOWN	KEY_NSPIRE_DOWN
 	
-	#define PAD_YUP		SDLK_UP_
-	#define PAD_YLEFT	SDLK_LEFT_
-	#define PAD_YRIGHT	SDLK_RIGHT_
-	#define PAD_YDOWN	SDLK_DOWN_
+	#define PAD_YUP		NULL
+	#define PAD_YLEFT	NULL
+	#define PAD_YRIGHT	NULL
+	#define PAD_YDOWN	NULL
 	
-	#define PAD_A		SDLK_LCTRL
-	#define PAD_B		SDLK_TAB
+	#define PAD_A		KEY_NSPIRE_CTRL
+	#define PAD_B		KEY_NSPIRE_SHIFT
 	
-	#define PAD_X		SDLK_LSHIFT
-	#define PAD_Y		SDLK_SPACE
+	#define PAD_X		KEY_NSPIRE_VAR
+	#define PAD_Y		KEY_NSPIRE_DEL
 	
-	#define PAD_L		SDLK_s
-	#define PAD_R		SDLK_l
+	#define PAD_L		KEY_NSPIRE_L
+	#define PAD_R		KEY_NSPIRE_R
 
-	#define PAD_START		SDLK_LSHIFT
-	#define PAD_SELECT		SDLK_LSHIFT
+	#define PAD_START		KEY_NSPIRE_TAB
+	#define PAD_SELECT		KEY_NSPIRE_MENU
 	
-	#define PAD_SLIDER		0
+	#define PAD_SLIDER		KEY_NSPIRE_ENTER
 	
-	#define PAD_QUIT		SDLK_ESCAPE
+	#define PAD_QUIT		KEY_NSPIRE_ESC
 
 #elif defined(GCW)
 
@@ -271,12 +286,13 @@ typedef struct {
 } gamecfg;
 
 extern SDL_Surface* actualScreen;	/* Main program screen */
-
 #if !defined(NOSCREENSHOTS)
 extern SDL_Surface* screenshots;	
 #endif	
 
+#if !defined(_TINSPIRE)
 extern SDL_Event event;
+#endif
 
 extern gamecfg GameConf;
 extern unsigned int m_Flag;
@@ -294,6 +310,7 @@ extern void screen_showtopmenu(void);
 extern void print_string_video(short x, const short y, const char *s);
 
 extern void Buttons(void);
-extern char button_state[18], button_time[18];
+extern short button_state[18];
+extern unsigned char button_time[18];
 
 #endif

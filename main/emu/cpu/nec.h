@@ -154,19 +154,11 @@ typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
 		return;								\
 	}
 
-
-/* According to cppcheck, tmp is not used.
- * I think so but this may not be the case.
-*/
-
-/*		int tmp;							\
-		I.regs.b[AL] = tmp = I.regs.b[AL] + param1;	\
-*/
-
 #define ADJ4(param1,param2)					\
 	if (AF || ((I.regs.b[AL] & 0xf) > 9))	\
 	{										\
-		I.regs.b[AL] = I.regs.b[AL] + param1;	\
+		int tmp;							\
+		I.regs.b[AL] = tmp = I.regs.b[AL] + param1;	\
 		I.AuxVal = 1;						\
 	}										\
 	if (CF || (I.regs.b[AL] > 0x9f))		\

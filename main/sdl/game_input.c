@@ -1,4 +1,8 @@
+#ifdef _TINSPIRE
+#include <os.h>
+#else
 #include <SDL/SDL.h>
+#endif
 #include <string.h>
 
 #include "game_input.h"
