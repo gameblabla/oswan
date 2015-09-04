@@ -14,6 +14,7 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 
 #include "shared.h"
 #include "drawing.h"
+#include "game_input.h"
 #include "hack.h"
 
 #ifndef NO_WAIT
@@ -229,6 +230,7 @@ int main(int argc, char *argv[])
 					}
 				}
 				#endif
+				exit_button();
 				WsRun();
 				#ifndef NO_WAIT
 				nextTick += interval;

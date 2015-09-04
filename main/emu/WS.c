@@ -8,7 +8,7 @@ extern void graphics_paint(void);
 #include "WSRender.h"
 #include "WS.h"
 #include "game_input.h"
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
 #include "WSApu.h"
 #endif
 #include "WSFileio.h"
@@ -39,7 +39,7 @@ static WORD HTimer;
 static WORD VTimer;
 static unsigned char RtcCount;
 
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
 static unsigned long WaveMap;
 #endif
 
@@ -166,7 +166,7 @@ static void WriteIRam(const DWORD A, const BYTE V)
     {
         SetPalette(A);
     }
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     if(!((A - WaveMap) & 0xFFC0))
     {
         apuSetPData(A & 0x003F, V);
@@ -370,7 +370,7 @@ void WriteIO(const DWORD A, BYTE V)
             V &= 0x7F;
         }
         break;
-#ifdef SOUND_ON
+#ifdef SOUND_EMULATION
     case 0x80:
     case 0x81:
         IO[A] = V;
@@ -897,7 +897,7 @@ int WsRun(void)
     /*for(i = 0; i < (159*11+(159/2)); i++)*/
     /*for(i = 0; i < (159*9+(159+159-40)); i++)*/
     /*for(i = 0; i < 1709-31; i++)*/
-    for(i = 0; i < 1709-29; i++)
+    for(i = 0; i < 1680; i++)
     {
 #ifdef SPEEDHACKS
 		nec_execute(period);

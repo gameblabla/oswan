@@ -34,15 +34,19 @@ unsigned char gameMenu;
 #define COLOR_INACTIVE_ITEM SDL_MapRGB(actualScreen->format,255,255,255)
 #endif
 
+
+#ifdef _TINSPIRE
+const char *file_ext[] = { 
+	(const char *) ".tns",
+	NULL };
+#else
 const char *file_ext[] = { 
 	(const char *) ".ws",  (const char *) ".wsc", 
 #ifdef ZIP_SUPPORT  
 	(const char *) ".zip",
 #endif
-#ifdef _TINSPIRE
-	 (const char *) ".tns", 
-#endif
 	NULL };
+#endif
 	
 void clear_screen_menu(void);
 void draw_bluerect_menu(unsigned char i);
@@ -89,6 +93,9 @@ MENUITEM MainMenuItems[] = {
 	{"Load State: ", (short *) &GameConf.reserved1,  8, (char *) &mnuSaves, &menuLoadState},
 	{"Save State: ", (short *) &GameConf.reserved2,  8, (char *) &mnuSaves, &menuSaveState},
 	{"Show FPS: ", (short *) &GameConf.m_DisplayFPS, 1, (char *) &mnuYesNo, NULL},
+	
+	{"Quick Saves: ", (short *) &GameConf.reserved3, 1, (char *) &mnuYesNo, NULL},
+	
 #if !defined(NOSCREENSHOTS)
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 #endif
@@ -103,15 +110,15 @@ MENUITEM MainMenuItems[] = {
 MENU mnuMainMenu = { 
 #if defined(PSP)
 #if defined(NOSCREENSHOTS)
-	8,
-#else
-	9,
-#endif
-#else
-#if defined(NOSCREENSHOTS)
 	9,
 #else
 	10,
+#endif
+#else
+#if defined(NOSCREENSHOTS)
+	10,
+#else
+	11,
 #endif
 #endif
 	0, (MENUITEM *) &MainMenuItems };
@@ -209,7 +216,8 @@ void clear_screen_menu(void)
 /* Shows menu items and pointing arrow	*/
 #define SPRX (16)
 #define OFF_X 0
-#define OFF_Y 0
+/* Re-adujusting Menu Y position */
+#define OFF_Y (-6)
 
 void draw_bluerect_menu(unsigned char i)
 {
@@ -904,7 +912,9 @@ void system_loadcfg(const char *cfg_name)
 		GameConf.OD_Joy[ 6] = 4;  GameConf.OD_Joy[ 7] = 5;
 		GameConf.OD_Joy[ 8] = 4;  GameConf.OD_Joy[ 9] = 5;
 		GameConf.OD_Joy[10] = 6;  GameConf.OD_Joy[11] = 6;
-	   
+		GameConf.reserved1 = 0;
+		GameConf.reserved2 = 0;
+		GameConf.reserved3 = 0;
 		GameConf.sndLevel=40;
 		GameConf.m_ScreenRatio=1; 	/* Sets the Ratio to fullscren by default	*/
 		GameConf.m_DisplayFPS=0; 	/* 0 = no, 1 = Yes	*/

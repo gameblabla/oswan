@@ -16,6 +16,15 @@
 	short x_joy = 0, y_joy = 0;
 #endif
 
+inline void exit_button(void)
+{
+	if (button_state[12]) /* SELECT BUTTON -> MENU UI*/
+	{
+		take_screenshot();
+		m_Flag = GF_MAINUI;
+	}
+}
+
 int WsInputGetState(int mode)
 {
 	char szFile[512];
@@ -48,28 +57,31 @@ int WsInputGetState(int mode)
 		SDL_JoystickUpdate();
 	#endif
 
-	/* Save (L button)	*/
-	if (button_state[8] == 1) 
+	/* If Quick Saves are enabled */
+	if (GameConf.reserved3)
 	{
-		strcpy(szFile, gameName);
-#ifdef _TINSPIRE
-		strcpy(strrchr(szFile, '.'), ".sta.tns");
-#else
-		strcpy(strrchr(szFile, '.'), ".sta");
-#endif
-		WsSaveState(szFile, GameConf.reserved1);
-	}
-
-	/* Load (R button)	*/
-	if (button_state[9] == 1) 
-	{
-		strcpy(szFile, gameName);
-#ifdef _TINSPIRE
-		strcpy(strrchr(szFile, '.'), ".sta.tns");
-#else
-		strcpy(strrchr(szFile, '.'), ".sta");
-#endif
-		WsLoadState(szFile, GameConf.reserved2);
+		/* Save (L button)	*/
+		if (button_state[8] == 1) 
+		{
+			strcpy(szFile, gameName);
+			#ifdef _TINSPIRE
+			strcpy(strrchr(szFile, '.'), ".sta.tns");
+			#else
+			strcpy(strrchr(szFile, '.'), ".sta");
+			#endif
+			WsSaveState(szFile, GameConf.reserved1);
+		}
+		/* Load (R button)	*/
+		else if (button_state[9] == 1) 
+		{
+			strcpy(szFile, gameName);
+			#ifdef _TINSPIRE
+			strcpy(strrchr(szFile, '.'), ".sta.tns");
+			#else
+			strcpy(strrchr(szFile, '.'), ".sta");
+			#endif
+			WsLoadState(szFile, GameConf.reserved2);
+		}
 	}
 	
 
@@ -185,11 +197,6 @@ int WsInputGetState(int mode)
 			#endif
 	}
 			
-	if (button_state[12]) /* SELECT BUTTON -> MENU UI*/
-	{
-		take_screenshot();
-		m_Flag = GF_MAINUI;
-	}
 			
 	if (button_state[10])  /* START -> START */
 		button |= (1<<9); 

@@ -3,5 +3,6 @@
 
 int WsInputGetState(int mode);
 int Fire_buttons(void);
+inline void exit_button(void);
 
 #endif

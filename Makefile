@@ -2,7 +2,7 @@ CC 			= gcc
 
 CFLAGS  	= -O2 -g -std=gnu89 -I./main/emu -I./main/sdl 
 CFLAGS 	   += ${DEFINES}
-DEFINES 	= -DHOME_SUPPORT -DSWITCHING_GRAPHICS -DSOUND_ON -DSOUND_EMULATION
+DEFINES 	= -DHOME_SUPPORT
 LDFLAGS 	= -lSDLmain -lSDL -Wl,--as-needed
 OUT  		= oswan
 
