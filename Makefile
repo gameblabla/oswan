@@ -1,8 +1,8 @@
-CC 			= gcc
+CC 			= clang-3.6
 
 CFLAGS  	= -O2 -g -std=gnu89 -I./main/emu -I./main/sdl 
 CFLAGS 	   += ${DEFINES}
-DEFINES 	= -DHOME_SUPPORT
+DEFINES 	= -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION
 LDFLAGS 	= -lSDLmain -lSDL -Wl,--as-needed
 OUT  		= oswan
 

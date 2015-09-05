@@ -1,7 +1,7 @@
 TARGET 		= oswan
 
 CFLAGS 	   	= -O3 -G0 -I/usr/local/pspdev/psp/include/SDL
-CFLAGS 	   += -I./main/emu -I./main/sdl 
+CFLAGS 	   += -I./main/emu -I./main/sdl -I./main/psp
 CFLAGS 	   += -DSOUND_ON -DSOUND_EMULATION -DPSP
 ASFLAGS 	= $(CFLAGS)
 

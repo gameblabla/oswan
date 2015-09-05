@@ -13,10 +13,18 @@
 #include "WSFileio.h"
 #include "font.h" /* Font c array */
 
+#include "menu.h"
+#ifdef PSP
+#include "menu_psp.h"
+#else
+#include "menu_generic.h"
+#endif
+
 extern unsigned int m_Flag;
 unsigned char gameMenu;
 
 #ifdef _TINSPIRE
+
 #define COLOR_BG           	(5 >> 3) << 11 		| (3 >> 2) << 5 	| (2 >> 3)
 #define COLOR_OK			(0 >> 3) << 11 		| (0 >> 2) << 5 	| (255 >> 3)
 #define COLOR_KO			(255 >> 3) << 11 	| (0 >> 2) << 5 	| (0 >> 3)
@@ -24,6 +32,7 @@ unsigned char gameMenu;
 #define COLOR_LIGHT			(255 >> 3) << 11 	| (255 >> 2) << 5 	| (0 >> 3)
 #define COLOR_ACTIVE_ITEM   (255 >> 3) << 11 	| (255 >> 2) << 5 	| (255 >> 3)
 #define COLOR_INACTIVE_ITEM (255 >> 3) << 11 	| (255 >> 2) << 5 	| (255 >> 3)
+
 #else
 #define COLOR_BG           	SDL_MapRGB(actualScreen->format,5,3,2)
 #define COLOR_OK			SDL_MapRGB(actualScreen->format,0,0,255)
@@ -32,96 +41,9 @@ unsigned char gameMenu;
 #define COLOR_LIGHT			SDL_MapRGB(actualScreen->format,255,255,0)
 #define COLOR_ACTIVE_ITEM   SDL_MapRGB(actualScreen->format,255, 255, 255)
 #define COLOR_INACTIVE_ITEM SDL_MapRGB(actualScreen->format,255,255,255)
+
 #endif
 
-
-#ifdef _TINSPIRE
-const char *file_ext[] = { 
-	(const char *) ".tns",
-	NULL };
-#else
-const char *file_ext[] = { 
-	(const char *) ".ws",  (const char *) ".wsc", 
-#ifdef ZIP_SUPPORT  
-	(const char *) ".zip",
-#endif
-	NULL };
-#endif
-	
-void clear_screen_menu(void);
-void draw_bluerect_menu(unsigned char i);
-void draw_bluerect_file(unsigned char i);
-
-void menuReset(void);
-void menuQuit(void);
-void menuContinue(void);
-void menuFileBrowse(void);
-void menuSaveState(void);
-void menuLoadState(void);
-void screen_showkeymenu(void);
-unsigned char ifactive(void);
-#if !defined(NOSCREENSHOTS)
-void menuSaveBmp(void);
-#endif
-
-/*---------------------------------------------------------------------------------------*/
-typedef struct {
-	const char itemName[16];
-	short *itemPar;
-	short itemParMaxValue;
-	const char *itemParName;
-	void (*itemOnA)();
-} MENUITEM;
-
-typedef struct {
-	int itemNum; /* number of items	*/
-	int itemCur; /* current item	*/
-	MENUITEM *m; /* array of items	*/
-} MENU;
-
-const char mnuABXY[4][16] = {"Normal", "Wonderswan-like", "Swap DPAD,ABXY", "Swap ABXY,Stick"};
-const char mnuYesNo[2][16] = {"No", "Yes"};
-const char mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
-#if !defined(PSP)
-const char mnuRatio[3][16] = { "1x size","Full screen", "Keep Aspect"};
-#endif
-
-MENUITEM MainMenuItems[] = {
-	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
-	{"Continue", NULL, 0, NULL, &menuContinue},
-	{"Reset", NULL, 0, NULL, &menuReset},
-	{"Load State: ", (short *) &GameConf.reserved1,  8, (char *) &mnuSaves, &menuLoadState},
-	{"Save State: ", (short *) &GameConf.reserved2,  8, (char *) &mnuSaves, &menuSaveState},
-	{"Show FPS: ", (short *) &GameConf.m_DisplayFPS, 1, (char *) &mnuYesNo, NULL},
-	
-	{"Quick Saves: ", (short *) &GameConf.reserved3, 1, (char *) &mnuYesNo, NULL},
-	
-#if !defined(NOSCREENSHOTS)
-	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
-#endif
-#if !defined(PSP)
-	{"Ratio: ", (short *) &GameConf.m_ScreenRatio, 2, (char *) &mnuRatio, NULL},
-#endif
-	{"", (short *) &GameConf.input_layout, 		   3, (char *) &mnuABXY, NULL},
-	{"Exit", NULL, 0, NULL, &menuQuit}
-};
-
-
-MENU mnuMainMenu = { 
-#if defined(PSP)
-#if defined(NOSCREENSHOTS)
-	9,
-#else
-	10,
-#endif
-#else
-#if defined(NOSCREENSHOTS)
-	10,
-#else
-	11,
-#endif
-#endif
-	0, (MENUITEM *) &MainMenuItems };
 
 /*----------------------------------------------------------------------------------------------------
 Prints char on a given surface
@@ -856,6 +778,8 @@ void menuLoadState(void)
 	if (cartridge_IsLoaded()) 
 	{
 		Reset_Controls();
+		/* Clear screen before loading savestate*/
+		Set_DrawRegion();
 		strcpy(szFile, gameName);
 #ifdef _TINSPIRE
 		strcpy(strrchr(szFile, '.'), ".sta.tns");
