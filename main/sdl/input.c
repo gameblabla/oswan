@@ -1,10 +1,3 @@
-#ifdef PSP
-#include <pspctrl.h>
-#endif
-#ifdef _TINSPIRE
-#include <os.h>
-#endif
-#include <SDL/SDL.h>
 #include "shared.h"
 
 /*

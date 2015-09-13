@@ -1,5 +1,5 @@
 #include "drawing.h"
-#include <SDL/SDL.h>
+#include "shared.h"
 
 void Get_resolution(void)
 {

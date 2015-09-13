@@ -1,4 +1,4 @@
-#include <SDL/SDL_endian.h>
+#include "endian.h"
 #include "../WSHard.h"
 
 typedef enum { ES, CS, SS, DS } SREGS;
@@ -11,7 +11,7 @@ typedef enum { AW, CW, DW, BW, SP, BP, IX, IY } WREGS;
 #define TRUE 1
 #endif
 
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+#if _BYTEORDER == LIL_ENDIAN_APP
 typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 #else
 typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;

@@ -78,6 +78,13 @@ void screen_draw(void)
 		
 	} while (--H);
 	
+	static char buffer[3];
+	if (GameConf.m_DisplayFPS) 
+	{
+		sprintf(buffer,"%d",FPS);
+		print_string_video(2,2,buffer);
+	}
+	
 	flip_screen(0);
 }
 

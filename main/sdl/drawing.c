@@ -1,12 +1,10 @@
+#include "drawing.h"
 #ifdef SCALING
-#include <SDL/SDL.h>
 #include "gfx/SDL_rotozoom.h"
 #ifdef SYLLABLE
 #include <gui/desktop.h>
 #endif
 #endif
-
-#include "drawing.h"
 
 void Get_resolution(void)
 {

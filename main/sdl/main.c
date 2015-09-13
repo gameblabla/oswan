@@ -213,7 +213,8 @@ int main(int argc, char *argv[])
 				}
 				else 
 				{
-					fprintf(stderr,"Can't load %s : %s", gameName, SDL_GetError()); fflush(stderr);
+					fprintf(stderr,"Can't load %s", gameName); 
+					fflush(stderr);
 					m_Flag = GF_GAMEQUIT;
 				}
 				break;

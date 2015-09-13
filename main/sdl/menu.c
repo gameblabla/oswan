@@ -112,16 +112,28 @@ void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color)
 
 void print_string_video(short x, const short y, const char *s) 
 {
+	if (GameConf.m_ScreenRatio != 1)
+	{
+#ifdef _TINSPIRE
+	fillRect(0, 0, 18, 18, 0);
+#else
+	SDL_Rect rect;
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = 18;
+	rect.h = 18;
+	SDL_FillRect(actualScreen, &rect, 0);
+#endif
+	}
+	
 	int i, j = strlen(s);
 	for(i = 0; i < j; i++, x += 8) 
 	{
-		screen_showchar(actualScreen, x, y, s[i], 
-		#ifdef _TINSPIRE
-		(255 >> 3) << 11 	| (0 >> 2) << 5 | (0 >> 3),
-		#else
-		SDL_MapRGB(actualScreen->format,255, 0, 0), 
-		#endif
-		0);
+#ifdef _TINSPIRE
+		screen_showchar(0, x, y, s[i], (255 >> 3) << 11 	| (0 >> 2) << 5 | (0 >> 3), 0);
+#else
+		screen_showchar(actualScreen, x, y, s[i], SDL_MapRGB(actualScreen->format,255, 0, 0), 0);
+#endif
 	}
 }
 

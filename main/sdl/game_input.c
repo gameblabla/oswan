@@ -1,8 +1,3 @@
-#ifdef _TINSPIRE
-#include <os.h>
-#else
-#include <SDL/SDL.h>
-#endif
 #include <string.h>
 
 #include "game_input.h"
@@ -18,7 +13,8 @@
 
 inline void exit_button(void)
 {
-	if (button_state[12]) /* SELECT BUTTON -> MENU UI*/
+	 /* SLIDER/SELECT or ESC -> MENU UI*/
+	if (button_state[12] || button_state[13])
 	{
 		take_screenshot();
 		m_Flag = GF_MAINUI;

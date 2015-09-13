@@ -44,10 +44,15 @@ static unsigned long WaveMap;
 #endif
 
 #if BITDEPTH_OSWAN == 32
-#define MONO(C) 0xF000 | (C)<<8 | (C)<<4 | (C)
+#define MONO(C) (C)<<12 | (C)<<7 | (C)<<1
 #else
 #define MONO(C) (C)<<12 | (C)<<7 | (C)<<1
 #endif
+/*static WORD DefColor[] = {
+    MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),
+    MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
+};*/
+
 static WORD DefColor[] = {
     MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),
     MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
@@ -351,8 +356,8 @@ void WriteIO(const DWORD A, BYTE V)
         i = (A & 0x1E) >> 1;
         j = 0;
         if (A & 0x01) j = 2;
-        Palette[i][j] = MonoColor[V & 0x07];
-        Palette[i][j + 1] = MonoColor[(V >> 4) & 0x07];
+        /*Palette[i][j] = MonoColor[V & 0x07];
+        Palette[i][j + 1] = MonoColor[(V >> 4) & 0x07];*/
         break;
     case 0x48:
         if(V & 0x80)

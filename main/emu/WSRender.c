@@ -1,5 +1,4 @@
-﻿#include <SDL/SDL.h>
-#include "WSRender.h"
+﻿#include "WSRender.h"
 #include "WS.h"
 #include "shared.h"
 #include "cpu/necintrf.h"
@@ -34,19 +33,24 @@ void SetPalette(const int addr)
 
     /* RGB444 format */
     color = *(WORD*)(IRAM + (addr & 0xFFFE));
+	
+#if BITDEPTH_OSWAN == 32
+	r = ((color & 0x0F00));
+	g = ((color & 0x00F0));
+	b = ((color & 0x000F));
+	r = r * 17;
+	g = g * 17;
+	b = b * 17;
+	r = r << 8;
+	g = g << 4;
+	b = b << 0;
+	pal = (r)  | (g) | (b) ;
+#else
   
 	/* RGB565 */
 	r = ((color & 0x0F00) << 4);
 	g = ((color & 0x00F0) << 3);
 	b = ((color & 0x000F) << 1);
-	
-#if BITDEPTH_OSWAN == 32
-	r = r * 255 / 31;
-	g = g * 255 / 63;
-	b = b * 255 / 31;
-	
-	pal = (r<<16) | (g << 8) | (b);
-#else
 	pal = (r) | (g) | (b);
 #endif
 

@@ -7,6 +7,10 @@
 #include <SDL/SDL.h>
 #endif
 
+#ifdef PSP
+#include <pspctrl.h>
+#endif
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
