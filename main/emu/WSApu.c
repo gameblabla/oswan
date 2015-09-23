@@ -11,7 +11,7 @@
 /*4096*/
 /*2048*/
 #define SND_BNKSIZE 2048
-#define MULT 3
+#define MULT 4
 
 #define SND_RNGSIZE (10 * SND_BNKSIZE)
 #define WAV_VOLUME 30
@@ -59,13 +59,8 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 	SDL_LockMutex(sound_mutex);
 
 	/*printf("%d\n", apuBufLen());*/
-
-	/*
-	 * For smoother audio playback, disable the comment below.
-	 * It still has problems with the buffer though... 
-	*/
-
-	if (/*SDL_GetAudioStatus() == SDL_AUDIO_PAUSED && */apuBufLen() < len) 
+	
+	if (/*SDL_GetAudioStatus() == SDL_AUDIO_PAUSED &&*/ apuBufLen() < len) 
 	{
 		memset(stream,0,len);
 	}

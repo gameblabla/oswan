@@ -104,7 +104,7 @@ void initSDL(void)
 	SDL_AudioSpec fmt, retFmt;
 	
 	/*	Set up SDL sound */
-	fmt.freq = 44100;   
+	fmt.freq = 48000;   
 	fmt.format = AUDIO_S16SYS;
 	fmt.channels = 2;
 	fmt.samples = 2048;
@@ -123,8 +123,6 @@ void initSDL(void)
 
 int main(int argc, char *argv[]) 
 {
-	double period;
-	
 #ifdef PSP
 	SetupCallbacks();
 	scePowerSetClockFrequency(333, 333, 166);
@@ -205,9 +203,7 @@ int main(int argc, char *argv[])
 					#endif
 					#ifndef NO_WAIT
 					/* Init timing */
-					period = 1.0 / 60;
-					period = period * 1000000;
-					interval = (int) period;
+					interval = (1.0 / 60) * 1000000;
 					nextTick = SDL_UXTimerRead() + interval;
 					#endif
 				}
@@ -230,12 +226,10 @@ int main(int argc, char *argv[])
 						msleep(wait/1000);
 					}
 				}
+				nextTick += interval;
 				#endif
 				exit_button();
 				WsRun();
-				#ifndef NO_WAIT
-				nextTick += interval;
-				#endif
 				break;
 		}
 	}

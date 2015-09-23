@@ -1,0 +1,23 @@
+CC = gcc
+CXX = g++
+
+CFLAGS = -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -I./src -I./src/gfx -I/boot/system/index/include/SDL -I/boot/system/index/include -I/resources/indexes/include -I/resources/indexes/include/SDL -I. `sdl-config --cflags` $(DEFINES)
+LDFLAGS = `sdl-config --libs` -lm -lsyllable -Wl--gc-sections -Wl,--as-needed
+DEFINES = -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION
+OUT = oswan
+
+SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c
+CPU 		= main/emu/cpu/nec.c
+CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
+SOURCES 	= ${SDL} ${CPU} ${CORE} 
+
+OBJS 		= ${SOURCES:.c=.o}
+
+all: ${OUT}
+
+${OUT}	: ${OBJS}
+		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
+		
+clean	:
+		rm ${OBJS}
+		rm ${OUT}

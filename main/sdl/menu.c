@@ -446,8 +446,7 @@ char strcmp_function(const char *s1, const char *s2)
 
 signed int load_file(const char **wildcards, char *result) 
 {
-	unsigned char keyup = 0, keydown = 0, kepufl = 0, kepdfl = 0;
-
+	#define MENU_WAIT 64
 	char current_dir_name[MAX__PATH];
 	DIR *current_dir;
 	struct dirent *current_file;
@@ -469,6 +468,8 @@ signed int load_file(const char **wildcards, char *result)
 	unsigned int current_filedir_selection;
 	unsigned int current_filedir_in_scroll;
 	unsigned int current_filedir_number;
+	
+	unsigned char down_wait = 0, up_wait = 0;
 	
 	char print_buffer[81];
 	
@@ -620,78 +621,57 @@ signed int load_file(const char **wildcards, char *result)
 				repeat = 0;
 			}
 
-			/* UP, L shoulder or Left button - Arrow up	*/
-			if (button_state[2]==1 || (button_state[8]==2 || button_state[0]==2)) 
+			/* UP, L trigger - Arrow up	*/
+			if (button_state[2]==1 || button_state[8]==2 || up_wait > MENU_WAIT) 
 			{ 
-				if (!keyup) 
+				if(current_filedir_selection) 
 				{
-					keyup = 1; 
-					if(current_filedir_selection) 
-					{
-						current_filedir_selection--;
+					current_filedir_selection--;
 						
-						if(current_filedir_in_scroll == 0) 
-						{
-							current_filedir_scroll_value--;
-						} 
-						else 
-						{
-							current_filedir_in_scroll--;
-						}
+					if(current_filedir_in_scroll == 0) 
+					{
+						current_filedir_scroll_value--;
+					} 
+					else 
+					{
+						current_filedir_in_scroll--;
 					}
 				}
-				else 
-				{
-					keyup++; 
-					if (keyup>kepufl) keyup=0;
-					if (kepufl>8) kepufl--; 
-				}
+				up_wait = 0;
 			}
-			else 
+			/* DOWN, R trigger - Arrow down */
+			if (button_state[3]==1 || button_state[9]==2 || down_wait > MENU_WAIT) 
 			{ 
-				keyup = 0; 
-				kepufl = 8; 
-			}
-
-			/* DOWN, R shoulder or Right button - Arrow down */
-			if (button_state[3]==1 || (button_state[9]==2 || button_state[1]==2)) 
-			{ 
-				if (!keydown) 
+				if(current_filedir_selection < (num_filedir - 1)) 
 				{
-					keydown = 1; 
-					if(current_filedir_selection < (num_filedir - 1)) 
-					{
-						current_filedir_selection++;
+					current_filedir_selection++;
 						
-						if(current_filedir_in_scroll == (FILE_LIST_ROWS - 1)) 
-						{
-							current_filedir_scroll_value++;
-						} 
-						else 
-						{
-							current_filedir_in_scroll++;
-						}
+					if(current_filedir_in_scroll == (FILE_LIST_ROWS - 1)) 
+					{
+						current_filedir_scroll_value++;
+					} 
+					else 
+					{
+						current_filedir_in_scroll++;
 					}
 				}
-				else 
-				{
-					keydown++; if (keydown>kepdfl) keydown=0;
-					if (kepdfl>8) kepdfl--; 
-				}
-			}
-			else
-			{ 
-				keydown=0;	
-				kepdfl = 8; 
+				down_wait = 0;
 			}
 			
+			/* If Up is pressed... */
+			if (button_state[2]==2)
+			{
+				up_wait++;	
+			}
+			
+			/* If Down is pressed... */
+			else if (button_state[3]==2)
+			{
+				down_wait++;	
+			}
+
 			flip_screen(actualScreen);
-		
-#ifdef _TINSPIRE
-		sleep(1);
-#else
-		SDL_Delay(1);
-#endif	
+
 		}
 	}
 

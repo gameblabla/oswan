@@ -1,10 +1,10 @@
-[emu/WS.c:197]: (style) The scope of the variable 'flashWriteEnable' can be reduced.
-[emu/WS.c:766]: (style) The scope of the variable 'i' can be reduced.
-[emu/WS.c:766]: (style) The scope of the variable 'j' can be reduced.
-[emu/WS.c:892]: (style) The scope of the variable 'cycle' can be reduced.
-[emu/WSApu.c:220]: (style) The scope of the variable 'v' can be reduced.
+[emu/WS.c:202]: (style) The scope of the variable 'flashWriteEnable' can be reduced.
+[emu/WS.c:775]: (style) The scope of the variable 'i' can be reduced.
+[emu/WS.c:775]: (style) The scope of the variable 'j' can be reduced.
+[emu/WS.c:901]: (style) The scope of the variable 'cycle' can be reduced.
+[emu/WSApu.c:215]: (style) The scope of the variable 'v' can be reduced.
 [emu/WSFileio.c:362]: (style) The scope of the variable 'fp' can be reduced.
-[emu/WSRender.c:72]: (style) The scope of the variable 'k' can be reduced.
+[emu/WSRender.c:77]: (style) The scope of the variable 'k' can be reduced.
 [emu/cpu/nec.c:323] -> [emu/cpu/nec.c:323]: (performance) Variable 'dst' is reassigned a value before the old one has been used.
 [emu/cpu/nec.c:130]: (style) The scope of the variable 'dest_seg' can be reduced.
 [emu/cpu/nec.c:130]: (style) The scope of the variable 'dest_off' can be reduced.
@@ -44,7 +44,7 @@
 [psp/psp_drawing.c:68]: (style) The scope of the variable 'buffer' can be reduced.
 [sdl/drawing.c]: (information) Too many #ifdef configurations - cppcheck only checks 12 of 13 configurations. Use --force to check all configurations.
 [sdl/drawing.c:159]: (style) The scope of the variable 'buffer' can be reduced.
-[sdl/game_input.c:25]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/game_input.c:26]: (style) The scope of the variable 'szFile' can be reduced.
 [sdl/main.c:126]: (style) Unused variable: period
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_a' can be reduced.
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_b' can be reduced.
@@ -55,31 +55,31 @@
 [sdl/menu.c:97]: (style) The scope of the variable 'i_str' can be reduced.
 [sdl/menu.c:189]: (style) The scope of the variable 'szVal' can be reduced.
 [sdl/menu.c:231]: (style) The scope of the variable 'mi' can be reduced.
-[sdl/menu.c:452]: (style) The scope of the variable 'current_dir' can be reduced.
-[sdl/menu.c:456]: (style) The scope of the variable 'current_dir_length' can be reduced.
-[sdl/menu.c:457]: (style) The scope of the variable 'num_filedir' can be reduced.
-[sdl/menu.c:463]: (style) The scope of the variable 'repeat' can be reduced.
-[sdl/menu.c:468]: (style) The scope of the variable 'current_filedir_scroll_value' can be reduced.
-[sdl/menu.c:469]: (style) The scope of the variable 'current_filedir_selection' can be reduced.
-[sdl/menu.c:470]: (style) The scope of the variable 'current_filedir_in_scroll' can be reduced.
-[sdl/menu.c:471]: (style) The scope of the variable 'current_filedir_number' can be reduced.
-[sdl/menu.c:725]: (style) The scope of the variable 'szFile' can be reduced.
-[sdl/menu.c:725]: (style) The scope of the variable 'szFile1' can be reduced.
-[sdl/menu.c:767]: (style) The scope of the variable 'szFile' can be reduced.
-[sdl/menu.c:788]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:451]: (style) The scope of the variable 'current_dir' can be reduced.
+[sdl/menu.c:455]: (style) The scope of the variable 'current_dir_length' can be reduced.
+[sdl/menu.c:456]: (style) The scope of the variable 'num_filedir' can be reduced.
+[sdl/menu.c:462]: (style) The scope of the variable 'repeat' can be reduced.
+[sdl/menu.c:467]: (style) The scope of the variable 'current_filedir_scroll_value' can be reduced.
+[sdl/menu.c:468]: (style) The scope of the variable 'current_filedir_selection' can be reduced.
+[sdl/menu.c:469]: (style) The scope of the variable 'current_filedir_in_scroll' can be reduced.
+[sdl/menu.c:470]: (style) The scope of the variable 'current_filedir_number' can be reduced.
+[sdl/menu.c:705]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:705]: (style) The scope of the variable 'szFile1' can be reduced.
+[sdl/menu.c:747]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:768]: (style) The scope of the variable 'szFile' can be reduced.
 [sdl/menu.c:100] -> [sdl/menu.c:100]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:109] -> [sdl/menu.c:109]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:159] -> [sdl/menu.c:159]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:173] -> [sdl/menu.c:173]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:212] -> [sdl/menu.c:212]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:564] -> [sdl/menu.c:564]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:565] -> [sdl/menu.c:565]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:591] -> [sdl/menu.c:591]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:595] -> [sdl/menu.c:595]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:778] -> [sdl/menu.c:778]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:780] -> [sdl/menu.c:780]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:801] -> [sdl/menu.c:801]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:803] -> [sdl/menu.c:803]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:566] -> [sdl/menu.c:566]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:592] -> [sdl/menu.c:592]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:596] -> [sdl/menu.c:596]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:758] -> [sdl/menu.c:758]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:760] -> [sdl/menu.c:760]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:781] -> [sdl/menu.c:781]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:783] -> [sdl/menu.c:783]: (style) Same expression on both sides of '|'.
 [nspire/n2DLib.c:131]: (style) The function 'drawHLine' is never used.
 [nspire/n2DLib.c:190]: (style) The function 'drawLine' is never used.
 [nspire/n2DLib.c:153]: (style) The function 'drawVLine' is never used.

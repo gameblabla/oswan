@@ -149,22 +149,22 @@ void ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
     }
 }
 
-BYTE ReadMem(const DWORD A)
+BYTE ReadMem(const unsigned long A)
 {
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
 
-void WriteMem(const DWORD A, const BYTE V)
+void WriteMem(const unsigned long A, const BYTE V)
 {
     (*WriteMemFnTable[(A >> 16) & 0x0F])(A, V);
 }
 
-static void WriteRom(const DWORD A, const BYTE V)
+static void WriteRom(const unsigned long A, const BYTE V)
 {
     /*ErrorMsg(ERR_WRITE_ROM);*/
 }
 
-static void WriteIRam(const DWORD A, const BYTE V)
+static void WriteIRam(const unsigned long A, const BYTE V)
 {
     IRAM[A & 0xFFFF] = V;
     if((A & 0xFE00) == 0xFE00)
@@ -192,7 +192,7 @@ static void WriteIRam(const DWORD A, const BYTE V)
 #define FLASH_CMD_CONTINUE_RES2 0xF0
 #define FLASH_CMD_CONTINUE_RES3 0x00
 #define FLASH_CMD_WRITE         0xA0
-static void WriteCRam(const DWORD A, const BYTE V)
+static void WriteCRam(const unsigned long A, const BYTE V)
 {
     static int flashCommand1 = 0;
     static int flashCommand2 = 0;
@@ -289,7 +289,7 @@ static void WriteCRam(const DWORD A, const BYTE V)
     }
 }
 
-void WriteIO(const DWORD A, BYTE V)
+void WriteIO(const unsigned long A, BYTE V)
 {
     int i, j, k;
 
@@ -297,6 +297,7 @@ void WriteIO(const DWORD A, BYTE V)
     {
         return;
     }
+    
     switch(A)
     {
     case 0x07:
@@ -353,16 +354,19 @@ void WriteIO(const DWORD A, BYTE V)
     case 0x3E:
     case 0x3F:
         if (IO[COLCTL] & 0x80) break;
+        
         i = (A & 0x1E) >> 1;
         j = 0;
+
         if (A & 0x01) j = 2;
-        /*Palette[i][j] = MonoColor[V & 0x07];
-        Palette[i][j + 1] = MonoColor[(V >> 4) & 0x07];*/
+
+        Palette[i][j] = MonoColor[V & 0x07];
+        Palette[i][j + 1] = MonoColor[(V >> 4) & 0x07];
         break;
     case 0x48:
         if(V & 0x80)
         {
-            i = *(DWORD*)(IO + DMASRC); /* IO[]が4バイト境界にあることが必要 */
+            i = *(unsigned long*)(IO + DMASRC); /* IO[]が4バイト境界にあることが必要 */
             j = *(WORD*)(IO + DMADST);
             k = *(WORD*)(IO + DMACNT);
             while(k--)
@@ -370,7 +374,7 @@ void WriteIO(const DWORD A, BYTE V)
                 WriteMem(j++, ReadMem(i++));
             }
             *(WORD*)(IO + DMACNT) = 0;
-            *(DWORD*)(IO + DMASRC) = i; /* IO[]が4バイト境界にあることが必要 */
+            *(unsigned long*)(IO + DMASRC) = i; /* IO[]が4バイト境界にあることが必要 */
             *(WORD*)(IO + DMADST) = j;
             V &= 0x7F;
         }
@@ -560,7 +564,7 @@ void WriteIO(const DWORD A, BYTE V)
 }
 
 #define  BCD(value) ((value / 10) << 4) | (value % 10)
-BYTE ReadIO(const DWORD A)
+BYTE ReadIO(const unsigned long A)
 {
     switch(A)
     {
@@ -779,7 +783,7 @@ int Interrupt(void)
         case 0:
             if (IO[RSTRL] == 144)
             {
-                DWORD VCounter;
+                unsigned long VCounter;
 
                 ButtonState = WsInputGetState(HVMode);
                 if((ButtonState ^ Joyz) & Joyz)
@@ -902,7 +906,8 @@ int WsRun(void)
     /*for(i = 0; i < (159*11+(159/2)); i++)*/
     /*for(i = 0; i < (159*9+(159+159-40)); i++)*/
     /*for(i = 0; i < 1709-31; i++)*/
-    for(i = 0; i < 1680; i++)
+    /*for(i = 0; i < 1680; i++)*/
+    for(i = 0; i < 1422; i++)
     {
 #ifdef SPEEDHACKS
 		nec_execute(period);

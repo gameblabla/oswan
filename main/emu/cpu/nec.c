@@ -124,10 +124,10 @@ void nec_reset (void *param)
 	
 }
 
-void nec_int(const DWORD wektor)
+void nec_int(const unsigned long wektor)
 {
   
-	DWORD dest_seg, dest_off;
+	unsigned long dest_seg, dest_off;
 
 	if(I.IF)
 	{
