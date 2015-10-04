@@ -1,7 +1,7 @@
-[emu/WS.c:202]: (style) The scope of the variable 'flashWriteEnable' can be reduced.
-[emu/WS.c:775]: (style) The scope of the variable 'i' can be reduced.
-[emu/WS.c:775]: (style) The scope of the variable 'j' can be reduced.
-[emu/WS.c:901]: (style) The scope of the variable 'cycle' can be reduced.
+[emu/WS.c:198]: (style) The scope of the variable 'flashWriteEnable' can be reduced.
+[emu/WS.c:778]: (style) The scope of the variable 'i' can be reduced.
+[emu/WS.c:778]: (style) The scope of the variable 'j' can be reduced.
+[emu/WS.c:904]: (style) The scope of the variable 'cycle' can be reduced.
 [emu/WSApu.c:215]: (style) The scope of the variable 'v' can be reduced.
 [emu/WSFileio.c:362]: (style) The scope of the variable 'fp' can be reduced.
 [emu/WSRender.c:77]: (style) The scope of the variable 'k' can be reduced.
@@ -33,19 +33,17 @@
 [emu/cpu/nec.c:464]: (style) Variable 'dst' is assigned a value that is never used.
 [nspire/drawing.c:81]: (style) The scope of the variable 'buffer' can be reduced.
 [nspire/n2DLib.c:51]: (style) The scope of the variable 'c' can be reduced.
-[nspire/n2DLib.c:177]: (style) The scope of the variable 'i' can be reduced.
-[nspire/n2DLib.c:177]: (style) The scope of the variable 'j' can be reduced.
-[nspire/n2DLib.c:197]: (style) The scope of the variable 'e2' can be reduced.
-[nspire/n2DLib.c:288]: (style) The scope of the variable 'i' can be reduced.
-[nspire/n2DLib.c:288]: (style) The scope of the variable 'j' can be reduced.
-[nspire/n2DLib.c:289]: (style) The scope of the variable 'charSprite' can be reduced.
-[nspire/n2DLib.c:357]: (style) The scope of the variable 'rowmap' can be reduced.
+[nspire/n2DLib.c:125]: (style) The scope of the variable 'i' can be reduced.
+[nspire/n2DLib.c:125]: (style) The scope of the variable 'j' can be reduced.
+[nspire/n2DLib.c:145]: (style) The scope of the variable 'e2' can be reduced.
+[nspire/n2DLib.c:236]: (style) The scope of the variable 'i' can be reduced.
+[nspire/n2DLib.c:236]: (style) The scope of the variable 'j' can be reduced.
+[nspire/n2DLib.c:237]: (style) The scope of the variable 'charSprite' can be reduced.
 [pandora/pandora_drawing.c:66]: (style) The scope of the variable 'buffer' can be reduced.
 [psp/psp_drawing.c:68]: (style) The scope of the variable 'buffer' can be reduced.
 [sdl/drawing.c]: (information) Too many #ifdef configurations - cppcheck only checks 12 of 13 configurations. Use --force to check all configurations.
 [sdl/drawing.c:159]: (style) The scope of the variable 'buffer' can be reduced.
 [sdl/game_input.c:26]: (style) The scope of the variable 'szFile' can be reduced.
-[sdl/main.c:126]: (style) Unused variable: period
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_a' can be reduced.
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_b' can be reduced.
 [sdl/md5.c:94]: (style) The scope of the variable 'saved_c' can be reduced.
@@ -80,12 +78,5 @@
 [sdl/menu.c:760] -> [sdl/menu.c:760]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:781] -> [sdl/menu.c:781]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:783] -> [sdl/menu.c:783]: (style) Same expression on both sides of '|'.
-[nspire/n2DLib.c:131]: (style) The function 'drawHLine' is never used.
-[nspire/n2DLib.c:190]: (style) The function 'drawLine' is never used.
-[nspire/n2DLib.c:153]: (style) The function 'drawVLine' is never used.
-[nspire/n2DLib.c:109]: (style) The function 'getPixel' is never used.
-[nspire/n2DLib.c:355]: (style) The function 'get_key_pressed' is never used.
-[nspire/n2DLib.c:400]: (style) The function 'isKey' is never used.
-[nspire/n2DLib.c:321]: (style) The function 'numberWidth' is never used.
-[nspire/n2DLib.c:341]: (style) The function 'stringWidth' is never used.
+[nspire/n2DLib.c:138]: (style) The function 'drawLine' is never used.
 (information) Cppcheck cannot find all the include files (use --check-config for details)

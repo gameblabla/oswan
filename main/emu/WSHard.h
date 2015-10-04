@@ -3,13 +3,14 @@
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
+typedef unsigned long DWORD;
 
-typedef void  (*WriteMemFn) (unsigned long A, BYTE V);
+typedef void  (*WriteMemFn) (DWORD A, BYTE V);
 extern WriteMemFn WriteMemFnTable[0x10];
-BYTE ReadMem(unsigned long A);
-void WriteMem(unsigned long A, BYTE V);
-void WriteIO(unsigned long A, BYTE V);
-BYTE ReadIO(unsigned long A);
+BYTE ReadMem(DWORD A);
+void WriteMem(DWORD A, BYTE V);
+void WriteIO(DWORD A, BYTE V);
+BYTE ReadIO(DWORD A);
 
 #define cpu_readop(A)               (ReadMem(A))
 #define cpu_readop_arg(A)           (ReadMem(A))

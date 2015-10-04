@@ -16,13 +16,13 @@ CFLAGS 	   += -DZIP_SUPPORT -I./minizip
 LDFLAGS	   += -lz
 THIRD_PARTY+= minizip/unzip.o minizip/ioapi.o
 
+# Enable Hacks for some black and white games. Recommended (for now)
+CFLAGS 	   += -DHACKS
+THIRD_PARTY+= main/sdl/hack.c main/sdl/md5.c
+
 # Comment the 2 lines below to disable Scaling support
 #CFLAGS 	   += -DSCALING
 #THIRD_PARTY+= main/sdl/gfx/SDL_rotozoom.c
-
-# Comment the 2 lines below to speed hacks
-#CFLAGS 	   += -DSPEEDHACKS
-#THIRD_PARTY+= main/sdl/hack.c main/sdl/md5.c
 
 SOURCES    += ${THIRD_PARTY}
 

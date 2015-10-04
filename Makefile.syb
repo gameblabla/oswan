@@ -11,6 +11,11 @@ CPU 		= main/emu/cpu/nec.c
 CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
 SOURCES 	= ${SDL} ${CPU} ${CORE} 
 
+# Enable Hacks for some black and white games. Recommended (for now)
+CFLAGS 	   += -DHACKS
+THIRD_PARTY+= main/sdl/hack.c main/sdl/md5.c
+
+SOURCES	   += ${THIRD_PARTY}
 OBJS 		= ${SOURCES:.c=.o}
 
 all: ${OUT}

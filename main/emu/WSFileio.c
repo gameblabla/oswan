@@ -350,7 +350,7 @@ int WsCreate(char *CartName)
     WsReset();
 	SetHVMode(buf[6] & 1);
 	
-#ifdef SPEEDHACKS
+#ifdef HACKS
 	Check_MD5(buf, fp);
 #endif
     

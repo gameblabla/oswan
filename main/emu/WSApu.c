@@ -11,7 +11,7 @@
 /*4096*/
 /*2048*/
 #define SND_BNKSIZE 2048
-#define MULT 4
+#define MULT 3
 
 #define SND_RNGSIZE (10 * SND_BNKSIZE)
 #define WAV_VOLUME 30
@@ -58,7 +58,7 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
         
 	SDL_LockMutex(sound_mutex);
 
-	/*printf("%d\n", apuBufLen());*/
+	printf("%d\n", apuBufLen());
 	
 	if (/*SDL_GetAudioStatus() == SDL_AUDIO_PAUSED &&*/ apuBufLen() < len) 
 	{

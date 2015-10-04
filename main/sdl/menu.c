@@ -446,7 +446,7 @@ char strcmp_function(const char *s1, const char *s2)
 
 signed int load_file(const char **wildcards, char *result) 
 {
-	#define MENU_WAIT 64
+	#define MENU_WAIT 48
 	char current_dir_name[MAX__PATH];
 	DIR *current_dir;
 	struct dirent *current_file;
