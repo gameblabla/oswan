@@ -808,7 +808,13 @@ int Interrupt(void)
         case 2:
             /* Hblank毎に1サンプルセットすることで12KHzのwaveデータが出来る */
             apuWaveSet();
-            *(WORD*)(IO + NCSR) = apuShiftReg();
+            
+            /* Line 817 crashes the GCW0... */
+            #ifdef GCW
+				apuShiftReg();
+            #else
+				*(WORD*)(IO + NCSR) = apuShiftReg();
+			#endif
             break;
 #endif
         case 4:
@@ -901,16 +907,10 @@ int WsRun(void)
     static int period = IPeriod;
     int i, iack, inum;
 #ifndef SPEEDHACKS
-	int cycle;
+	unsigned short cycle;
 #endif
 
-	/* 1/75s */
-	/*9*/
-    /*for(i = 0; i < (159*11+(159/2)); i++)*/
-    /*for(i = 0; i < (159*9+(159+159-40)); i++)*/
-    for(i = 0; i < 1678; i++)
-    /*for(i = 0; i < 1680; i++)*/
-    /*for(i = 0; i < 1422; i++)*/
+    for(i = 0; i < 1706; i++)
     {
         cycle = nec_execute(period);
         period += IPeriod - cycle;

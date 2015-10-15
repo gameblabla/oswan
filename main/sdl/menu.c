@@ -324,11 +324,8 @@ void screen_showmainmenu(MENU *menu)
 /* Menu function that runs main top menu	*/
 void screen_showtopmenu(void) 
 {
-#ifdef SWITCHING_GRAPHICS
-	if (!GameConf.m_ScreenRatio)
-	{
-		SetVideo(0);
-	}
+#ifdef NATIVE_RESOLUTION
+	SetVideo(0);
 #endif
 
 	clear_screen_menu();
@@ -341,7 +338,7 @@ void screen_showtopmenu(void)
 	
 	if (!GameConf.m_ScreenRatio)
 	{
-#ifdef SWITCHING_GRAPHICS
+#ifdef NATIVE_RESOLUTION
 		SetVideo(1);
 #endif
 		clear_screen_menu();
@@ -446,7 +443,7 @@ char strcmp_function(const char *s1, const char *s2)
 
 signed int load_file(const char **wildcards, char *result) 
 {
-	#define MENU_WAIT 48
+	#define MENU_WAIT 64
 	char current_dir_name[MAX__PATH];
 	DIR *current_dir;
 	struct dirent *current_file;
@@ -806,15 +803,12 @@ void system_loadcfg(const char *cfg_name)
 		GameConf.save_oldoswan_check = 128;
 	} 
 #endif
-#ifndef SWITCHING_GRAPHICS
-	if (!GameConf.m_ScreenRatio) 
-	{
+
+#ifndef NATIVE_RESOLUTION
 		clear_screen_menu();
-		flip_screen(actualScreen);
-	}
-#else
-		flip_screen(actualScreen);
 #endif
+		flip_screen(actualScreen);
+
   }
   else 
   {

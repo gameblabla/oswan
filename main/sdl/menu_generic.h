@@ -13,16 +13,23 @@ MENUITEM MainMenuItems[] = {
 #if !defined(NOSCREENSHOTS)
 	{"Take Screenshot", NULL, 0, NULL, &menuSaveBmp},
 #endif
+
+#ifndef NATIVE_RESOLUTION
 	{"Ratio: ", (short *) &GameConf.m_ScreenRatio, 2, (char *) &mnuRatio, NULL},
+#endif
+
 	{"", (short *) &GameConf.input_layout, 		   3, (char *) &mnuABXY, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
 
 
 MENU mnuMainMenu = { 
-#if defined(NOSCREENSHOTS)
-	10,
-#else
-	11,
-#endif
+	11
+	#if defined(NOSCREENSHOTS)
+	-1
+	#endif
+	#if defined(NATIVE_RESOLUTION)
+	-1
+	#endif
+	,
 	0, (MENUITEM *) &MainMenuItems };

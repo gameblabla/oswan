@@ -2,7 +2,6 @@
 [emu/WS.c:778]: (style) The scope of the variable 'i' can be reduced.
 [emu/WS.c:778]: (style) The scope of the variable 'j' can be reduced.
 [emu/WS.c:904]: (style) The scope of the variable 'cycle' can be reduced.
-[emu/WSApu.c:215]: (style) The scope of the variable 'v' can be reduced.
 [emu/WSFileio.c:362]: (style) The scope of the variable 'fp' can be reduced.
 [emu/WSRender.c:77]: (style) The scope of the variable 'k' can be reduced.
 [emu/cpu/nec.c:323] -> [emu/cpu/nec.c:323]: (performance) Variable 'dst' is reassigned a value before the old one has been used.

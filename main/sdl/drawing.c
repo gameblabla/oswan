@@ -112,7 +112,7 @@ void Set_DrawRegion(void)
 	{
 		screen_to_draw_region.w	= 224;
 		screen_to_draw_region.h	= 144;
-#ifdef SWITCHING_GRAPHICS
+#ifdef NATIVE_RESOLUTION
 		screen_to_draw_region.offset_x = 0;
 		screen_to_draw_region.offset_y = 0; 
 #else
@@ -151,7 +151,7 @@ void screen_draw(void)
 			x+=ix;
 		} while (--W);
 		y+=iy;
-#ifndef SWITCHING_GRAPHICS
+#ifndef NATIVE_RESOLUTION
 		if (screen_to_draw_region.w == 224) buffer_scr += actualScreen->pitch - 320 - SYSVID_WIDTH;
 #endif
 	} while (--H);
@@ -159,7 +159,7 @@ void screen_draw(void)
 	static char buffer[4];
 	if (GameConf.m_DisplayFPS) 
 	{
-#ifndef SWITCHING_GRAPHICS
+#ifndef NATIVE_RESOLUTION
 		if (GameConf.m_ScreenRatio == 2 || GameConf.m_ScreenRatio == 0)
 #else
 		if (GameConf.m_ScreenRatio == 2)

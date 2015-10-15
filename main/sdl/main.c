@@ -23,11 +23,6 @@ void msleep(unsigned char milisec);
 void exit_oswan();
 
 extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
-#ifdef SWITCHING_GRAPHICS
-	extern void screen_prepback(SDL_Surface *s);
-#else
-	extern void screen_putskin(SDL_Surface *s, unsigned char *bmpBuf, unsigned int bmpSize);
-#endif
 
 #ifdef PSP
 #include <pspkernel.h>
@@ -162,8 +157,8 @@ int main(int argc, char *argv[])
 	
 	if(argc > 1) 
 	{
-#ifdef SWITCHING_GRAPHICS
-		if (!GameConf.m_ScreenRatio) SetVideo(1);
+#ifdef NATIVE_RESOLUTION
+		SetVideo(1);
 #endif
 		flip_screen(actualScreen);
 		snprintf(gameName, sizeof(gameName) ,"%s", argv[1]);

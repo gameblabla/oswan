@@ -1,14 +1,17 @@
 CC 			= mipsel-linux-gcc
 
-CFLAGS 		= -O2 -fomit-frame-pointer -fdata-sections -ffunction-sections -std=gnu89 -mips32r2 -Wall -I./main/emu -I./main/sdl ${DEFINES} 
-DEFINES 	= -DSOUND_ON -DSOUND_EMULATION -DGCW -DJOYSTICK -DHOME_SUPPORT -DPOSIX
-LDFLAGS 	= -Wl,--as-needed -flto -Wl,--gc-sections -lSDL -lm -s
+CFLAGS 		= -O3 -fno-omit-frame-pointer -fdata-sections -ffunction-sections -mips32r2 -std=gnu89 -Wall -I./main/emu -I./main/sdl ${DEFINES} 
+DEFINES 	= -DGCW
+LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto -lSDL
 OUT	 		= oswan
 
-SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c
+SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/sdl/drawing.c
 CPU 		= main/emu/cpu/nec.c
-CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
-SOURCES 	= ${SDL} ${CPU} ${CORE} 
+CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
+
+# Sound support
+CORE 	   += main/emu/WSApu.c 
+DEFINES    += -DSOUND_ON -DSOUND_EMULATION
 
 # Enable this to support zip files
 # Here, Support for zips is enabled
@@ -16,16 +19,15 @@ CFLAGS 	   +=-DZIP_SUPPORT -I./minizip
 LDFLAGS	   +=-lz
 THIRD_PARTY = minizip/unzip.o minizip/ioapi.o
 
-# Enable Hacks for some black and white games. Recommended (for now)
-CFLAGS 	   += -DHACKS
-THIRD_PARTY+= main/sdl/hack.c main/sdl/md5.c
-
+SOURCES 	= ${SDL} ${CPU} ${CORE} 
 SOURCES	   += ${THIRD_PARTY}
+
 OBJS 		= ${SOURCES:.c=.o}
 
 all		: ${OUT} pack
 
 pack	:
+		mipsel-linux-strip oswan
 		mv oswan ./opk/oswan
 		mksquashfs ./opk oswan.opk -all-root -noappend -no-exports -no-xattrs
 

@@ -58,7 +58,7 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
         
 	SDL_LockMutex(sound_mutex);
 
-	printf("%d\n", apuBufLen());
+	/*printf("%d\n", apuBufLen());*/
 	
 	if (/*SDL_GetAudioStatus() == SDL_AUDIO_PAUSED &&*/ apuBufLen() < len) 
 	{
@@ -84,8 +84,8 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 
 void apuWaveCreate(void)
 {
-    //memset(sndbuffer,0x00, SND_RNGSIZE);
-    memset(sndbuffer, 0x00, sizeof(*sndbuffer));
+    memset(sndbuffer,0x00, SND_RNGSIZE);
+    //memset(sndbuffer, 0x00, sizeof(*sndbuffer));
 }
 
 void apuWaveRelease(void)
@@ -281,19 +281,14 @@ WORD apuShiftReg(void)
 
 void apuWaveSet(void)
 {
-    static  int point[] = {0, 0, 0, 0};
-    static  int preindex[] = {0, 0, 0, 0};
+    static  unsigned short point[] = {0, 0, 0, 0};
+    static  unsigned short preindex[] = {0, 0, 0, 0};
     int     channel, index;
     short   value, lVol[4], rVol[4];
     short   LL, RR, vVol;
     /*static int wait = 0;*/
     /*short   *dataAdr;*/
-    
-    /* 
-     * MULT 3 is the correct speed but it plays like ass !
-     * It seems like it just can't keep up.
-     * I need someone to improve this...
-    */
+
 	static int conv=MULT;
     int i;
 
