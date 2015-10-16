@@ -808,13 +808,7 @@ int Interrupt(void)
         case 2:
             /* Hblank毎に1サンプルセットすることで12KHzのwaveデータが出来る */
             apuWaveSet();
-            
-            /* Line 817 crashes the GCW0... */
-            #ifdef GCW
-				apuShiftReg();
-            #else
-				*(WORD*)(IO + NCSR) = apuShiftReg();
-			#endif
+			*(WORD*)(IO + NCSR) = apuShiftReg();
             break;
 #endif
         case 4:

@@ -29,14 +29,12 @@ Minizip is licensed under a 3-clause BSD license.
 COMPATIBILITY
 ==============
 
-All known Wonderswan Color games are known to play properly,
-
-with no graphical or audio glitches.
+All known Wonderswan Color games are known to play properly, with no graphical or audio glitches.
 
 This fork however still has some trouble with some games :
 - Pocket Fighter (Graphical Glitches)
-- Klonoa (Graphical Glitches, Scratchy voices)
-- Beatmania (Scratchy sound at moment, fine in-game)
+- Klonoa (Scratchy voices)
+- Beatmania (Scratchy sound)
 
 
 ===========

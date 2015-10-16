@@ -37,8 +37,7 @@ void SetVideo(unsigned char mode)
 
 	if (mode == 1) 
 	{
-		w = 224;
-		h = 144;
+		actualScreen = SDL_SetVideoMode(224, 144, BITDEPTH_OSWAN, flags);
 	}
 	else
 	{

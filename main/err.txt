@@ -2,6 +2,8 @@
 [emu/WS.c:778]: (style) The scope of the variable 'i' can be reduced.
 [emu/WS.c:778]: (style) The scope of the variable 'j' can be reduced.
 [emu/WS.c:904]: (style) The scope of the variable 'cycle' can be reduced.
+[emu/WSApu.c:215]: (style) The scope of the variable 'v' can be reduced.
+[emu/WSApu.c:87]: (warning, inconclusive) Array 'sndbuffer' is filled incompletely. Did you forget to multiply the size given to 'memset()' with 'sizeof(*sndbuffer)'?
 [emu/WSFileio.c:362]: (style) The scope of the variable 'fp' can be reduced.
 [emu/WSRender.c:77]: (style) The scope of the variable 'k' can be reduced.
 [emu/cpu/nec.c:323] -> [emu/cpu/nec.c:323]: (performance) Variable 'dst' is reassigned a value before the old one has been used.
@@ -30,6 +32,7 @@
 [emu/cpu/nec.c:455]: (style) Variable 'dst' is assigned a value that is never used.
 [emu/cpu/nec.c:463]: (style) Variable 'dst' is assigned a value that is never used.
 [emu/cpu/nec.c:464]: (style) Variable 'dst' is assigned a value that is never used.
+[gcw0/drawing.c:91]: (style) The scope of the variable 'buffer' can be reduced.
 [nspire/drawing.c:81]: (style) The scope of the variable 'buffer' can be reduced.
 [nspire/n2DLib.c:51]: (style) The scope of the variable 'c' can be reduced.
 [nspire/n2DLib.c:125]: (style) The scope of the variable 'i' can be reduced.
@@ -52,30 +55,30 @@
 [sdl/menu.c:97]: (style) The scope of the variable 'i_str' can be reduced.
 [sdl/menu.c:189]: (style) The scope of the variable 'szVal' can be reduced.
 [sdl/menu.c:231]: (style) The scope of the variable 'mi' can be reduced.
-[sdl/menu.c:451]: (style) The scope of the variable 'current_dir' can be reduced.
-[sdl/menu.c:455]: (style) The scope of the variable 'current_dir_length' can be reduced.
-[sdl/menu.c:456]: (style) The scope of the variable 'num_filedir' can be reduced.
-[sdl/menu.c:462]: (style) The scope of the variable 'repeat' can be reduced.
-[sdl/menu.c:467]: (style) The scope of the variable 'current_filedir_scroll_value' can be reduced.
-[sdl/menu.c:468]: (style) The scope of the variable 'current_filedir_selection' can be reduced.
-[sdl/menu.c:469]: (style) The scope of the variable 'current_filedir_in_scroll' can be reduced.
-[sdl/menu.c:470]: (style) The scope of the variable 'current_filedir_number' can be reduced.
-[sdl/menu.c:705]: (style) The scope of the variable 'szFile' can be reduced.
-[sdl/menu.c:705]: (style) The scope of the variable 'szFile1' can be reduced.
-[sdl/menu.c:747]: (style) The scope of the variable 'szFile' can be reduced.
-[sdl/menu.c:768]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:448]: (style) The scope of the variable 'current_dir' can be reduced.
+[sdl/menu.c:452]: (style) The scope of the variable 'current_dir_length' can be reduced.
+[sdl/menu.c:453]: (style) The scope of the variable 'num_filedir' can be reduced.
+[sdl/menu.c:459]: (style) The scope of the variable 'repeat' can be reduced.
+[sdl/menu.c:464]: (style) The scope of the variable 'current_filedir_scroll_value' can be reduced.
+[sdl/menu.c:465]: (style) The scope of the variable 'current_filedir_selection' can be reduced.
+[sdl/menu.c:466]: (style) The scope of the variable 'current_filedir_in_scroll' can be reduced.
+[sdl/menu.c:467]: (style) The scope of the variable 'current_filedir_number' can be reduced.
+[sdl/menu.c:702]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:702]: (style) The scope of the variable 'szFile1' can be reduced.
+[sdl/menu.c:744]: (style) The scope of the variable 'szFile' can be reduced.
+[sdl/menu.c:765]: (style) The scope of the variable 'szFile' can be reduced.
 [sdl/menu.c:100] -> [sdl/menu.c:100]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:109] -> [sdl/menu.c:109]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:159] -> [sdl/menu.c:159]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:173] -> [sdl/menu.c:173]: (style) Same expression on both sides of '|'.
 [sdl/menu.c:212] -> [sdl/menu.c:212]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:565] -> [sdl/menu.c:565]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:566] -> [sdl/menu.c:566]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:592] -> [sdl/menu.c:592]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:596] -> [sdl/menu.c:596]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:758] -> [sdl/menu.c:758]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:760] -> [sdl/menu.c:760]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:781] -> [sdl/menu.c:781]: (style) Same expression on both sides of '|'.
-[sdl/menu.c:783] -> [sdl/menu.c:783]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:562] -> [sdl/menu.c:562]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:563] -> [sdl/menu.c:563]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:589] -> [sdl/menu.c:589]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:593] -> [sdl/menu.c:593]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:755] -> [sdl/menu.c:755]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:757] -> [sdl/menu.c:757]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:778] -> [sdl/menu.c:778]: (style) Same expression on both sides of '|'.
+[sdl/menu.c:780] -> [sdl/menu.c:780]: (style) Same expression on both sides of '|'.
 [nspire/n2DLib.c:138]: (style) The function 'drawLine' is never used.
 (information) Cppcheck cannot find all the include files (use --check-config for details)
