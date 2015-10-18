@@ -13,7 +13,9 @@ It used to be based on Alekmaul's Oswan port but the numerous issues it introduc
 
 This fork is also even more accurate than upstream : 
 
-Games are now playing at the proper speed.
+Games are now playing at the proper speed,  
+
+games like Klonoa and Beatmania now sound closer to real hardware.
 
 
 The CPU core comes from NomadSwan (GPLv2 or later).
@@ -25,23 +27,21 @@ A stripped-down version of Minizip is provided as well.
 
 Minizip is licensed under a 3-clause BSD license.
 
-==============
+=================
 COMPATIBILITY
-==============
+=================
 
-All known Wonderswan Color games are known to play properly, with no graphical or audio glitches.
+Since 10/18/2015, 
 
-This fork however still has some trouble with some games :
-- Pocket Fighter (Graphical Glitches)
-- Klonoa (Scratchy voices)
-- Beatmania (Scratchy sound)
+the only known issues are the incorrect palettes and flickering winning screen in Pocket Fighter.
 
+Not all games were tested but as far as i know, all the other Wonderswan games play properly.
 
 ===========
 CREDITS
 ===========
 
-GUI comes from Alekmaul's Oswan. (Itself based on Dmitry's Handy GCW0 port)
+GUI comes from Alekmaul's Oswan.  (Itself based on Dmitry's Handy GCW0 port)
 
 Mednafen, which i used for comparison.
 

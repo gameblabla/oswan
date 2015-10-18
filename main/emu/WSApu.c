@@ -281,27 +281,25 @@ WORD apuShiftReg(void)
 
 void apuWaveSet(void)
 {
-    static  unsigned short point[] = {0, 0, 0, 0};
+#ifdef NO_FLOAT
+	static  unsigned short point[] = {0, 0, 0, 0};
     static  unsigned short preindex[] = {0, 0, 0, 0};
     int     channel, index;
     short   value, lVol[4], rVol[4];
     short   LL, RR, vVol;
-    /*static int wait = 0;*/
-    /*short   *dataAdr;*/
-
 	static int conv=MULT;
     int i;
+#else
+	static float point[] = {0.0, 0.0, 0.0, 0.0};
+    static float preindex[] = {0.0, 0.0, 0.0, 0.0};
+    int     channel; 
+	int 	index;
+    float   value, lVol[4], rVol[4];
+    float   LL, RR, vVol;
+	static int conv=MULT;
+    int i;
+#endif
 
-    /*if (WsInputGetNowait())
-    {
-        wait = 1;
-    }
-    else if (wait)
-    {
-        wait = 0;
-        apuWaveClear();
-    }*/
-    
     SDL_LockMutex(sound_mutex);
     
     apuSweep();
@@ -325,7 +323,11 @@ void apuWaveSet(void)
                 {
                     point[3] = 0;
                 }
-                value = (short)PDataN[Noise.pattern][index] - 8;
+                value = 
+                #ifdef NO_FLOAT
+                (short)
+                #endif
+                PDataN[Noise.pattern][index] - 8;
             }
             else if (Sound[channel] == 0)
             {
@@ -337,7 +339,11 @@ void apuWaveSet(void)
                 {
                     point[channel] = 0;
                 }
-                value = (short)PData[channel][index] - 8;
+                value = 
+                #ifdef NO_FLOAT
+                (short)
+                #endif
+                PData[channel][index] - 8;
             }
             preindex[channel] = index;
             point[channel]++;
@@ -351,7 +357,11 @@ void apuWaveSet(void)
 		}
     }
     
-    vVol = ((short)apuVoice() - 0x80);
+    vVol = (
+	#ifdef NO_FLOAT
+	(short)
+	#endif
+    apuVoice() - 0x80);
     /* mix 16bits wave -32768 ～ +32767 32768/120 = 273 */
     LL = (lVol[0] + lVol[1] + lVol[2] + lVol[3] + vVol) * WAV_VOLUME;
     RR = (rVol[0] + rVol[1] + rVol[2] + rVol[3] + vVol) * WAV_VOLUME;
