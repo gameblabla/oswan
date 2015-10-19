@@ -1,7 +1,7 @@
 CC 			= mipsel-linux-gcc
 
 CFLAGS 		= -O3 -fno-omit-frame-pointer -fdata-sections -ffunction-sections -mips32r2 -std=gnu89 -Wall -I./main/emu -I./main/sdl ${DEFINES} 
-DEFINES 	= -DGCW -DNATIVE_RESOLUTION
+DEFINES 	= -DGCW -DBETTER_ACCURACY
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto -lSDL
 OUT	 		= oswan
 

@@ -22,6 +22,8 @@ NOISE Noise;
 char VoiceOn;
 short Sound[7] = {1, 1, 1, 1, 1, 1, 1};
 
+static int convert_multiplier = MULT;
+
 static unsigned char PData[4][32];
 static unsigned char PDataN[8][BUFSIZEN];
 static unsigned int RandData[BUFSIZEN];
@@ -58,7 +60,7 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
         
 	SDL_LockMutex(sound_mutex);
 
-	/*printf("%d\n", apuBufLen());*/
+	printf("%d\n", apuBufLen());
 	
 	if (/*SDL_GetAudioStatus() == SDL_AUDIO_PAUSED &&*/ apuBufLen() < len) 
 	{
@@ -84,8 +86,8 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
 
 void apuWaveCreate(void)
 {
-    memset(sndbuffer,0x00, SND_RNGSIZE);
-    //memset(sndbuffer, 0x00, sizeof(*sndbuffer));
+    /*memset(sndbuffer,0x00, SND_RNGSIZE);*/
+    memset(sndbuffer, 0x00, sizeof(*sndbuffer));
 }
 
 void apuWaveRelease(void)
@@ -96,6 +98,8 @@ void apuWaveRelease(void)
 void apuInit(void)
 {
     int i, j;
+    
+    convert_multiplier = MULT;
 
     for (i = 0; i < 4; i++)
     {
@@ -284,21 +288,17 @@ void apuWaveSet(void)
 #ifdef NO_FLOAT
 	static  unsigned short point[] = {0, 0, 0, 0};
     static  unsigned short preindex[] = {0, 0, 0, 0};
-    int     channel, index;
     short   value, lVol[4], rVol[4];
     short   LL, RR, vVol;
-	static int conv=MULT;
-    int i;
 #else
-	static float point[] = {0.0, 0.0, 0.0, 0.0};
-    static float preindex[] = {0.0, 0.0, 0.0, 0.0};
-    int     channel; 
-	int 	index;
-    float   value, lVol[4], rVol[4];
-    float   LL, RR, vVol;
-	static int conv=MULT;
-    int i;
+	#define FLOAT_SND double
+	static FLOAT_SND point[] = {0.0, 0.0, 0.0, 0.0};
+    static FLOAT_SND preindex[] = {0.0, 0.0, 0.0, 0.0};
+    FLOAT_SND   value, lVol[4], rVol[4];
+    FLOAT_SND   LL, RR, vVol;
 #endif
+    int channel, index;
+    int i;
 
     SDL_LockMutex(sound_mutex);
     
@@ -323,11 +323,12 @@ void apuWaveSet(void)
                 {
                     point[3] = 0;
                 }
-                value = 
-                #ifdef NO_FLOAT
-                (short)
-                #endif
-                PDataN[Noise.pattern][index] - 8;
+                
+                if (PDataN[Noise.pattern][index] < 8)
+                {
+					value = PDataN[Noise.pattern][index] - 8;
+				}
+				
             }
             else if (Sound[channel] == 0)
             {
@@ -339,11 +340,7 @@ void apuWaveSet(void)
                 {
                     point[channel] = 0;
                 }
-                value = 
-                #ifdef NO_FLOAT
-                (short)
-                #endif
-                PData[channel][index] - 8;
+                value = PData[channel][index] - 8;
             }
             preindex[channel] = index;
             point[channel]++;
@@ -357,21 +354,21 @@ void apuWaveSet(void)
 		}
     }
     
-    vVol = (
-	#ifdef NO_FLOAT
-	(short)
-	#endif
-    apuVoice() - 0x80);
+    vVol = (apuVoice() - 0x80);
     /* mix 16bits wave -32768 ～ +32767 32768/120 = 273 */
     LL = (lVol[0] + lVol[1] + lVol[2] + lVol[3] + vVol) * WAV_VOLUME;
     RR = (rVol[0] + rVol[1] + rVol[2] + rVol[3] + vVol) * WAV_VOLUME;
 
-	if (conv == MULT) 
-		conv = (MULT+1);
+	if (convert_multiplier == MULT) 
+	{
+		convert_multiplier = (MULT+1);
+	}
 	else
-		conv = MULT;
+	{
+		convert_multiplier = MULT;
+	}
 
-	for (i=0;i<conv;i++)	/* 48000/12000 */
+	for (i=0;i<convert_multiplier;i++)	/* 48000/12000 */
 	{ 
 		sndbuffer[wBuf][0] = LL;
 		sndbuffer[wBuf][1] = RR;
