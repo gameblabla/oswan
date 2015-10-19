@@ -353,18 +353,11 @@ void WriteIO(const DWORD A, BYTE V)
         
         i = (A & 0x1E) >> 1;
         j = 0;
-
-#ifdef HACKS
-		if (!wsmono_hack)
-		{
-#endif
-			if (A & 0x01) j = 2;
-			
-			Palette[i][j] = MonoColor[V & 0x07];
-			Palette[i][j + 1] = MonoColor[(V >> 4) & 0x07];
-#ifdef HACKS
-		}
-#endif
+        
+		if (A & 0x01) j = 2;
+		
+		Palette[i][j] = MonoColor[V & 0x07];
+		Palette[i][j + 1] = MonoColor[(V >> 4) & 0x07];
         break;
     case 0x48:
         if(V & 0x80)
@@ -900,10 +893,8 @@ int WsRun(void)
 {
     static int period = IPeriod;
     int i, iack, inum;
-#ifndef SPEEDHACKS
-	unsigned short cycle;
-#endif
-
+    unsigned short cycle;
+    
     for(i = 0; i < 1706; i++)
     {
         cycle = nec_execute(period);

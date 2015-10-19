@@ -60,7 +60,7 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
         
 	SDL_LockMutex(sound_mutex);
 
-	printf("%d\n", apuBufLen());
+	/*printf("%d\n", apuBufLen());*/
 	
 	if (/*SDL_GetAudioStatus() == SDL_AUDIO_PAUSED &&*/ apuBufLen() < len) 
 	{
@@ -288,13 +288,13 @@ void apuWaveSet(void)
 #ifdef NO_FLOAT
 	static  unsigned short point[] = {0, 0, 0, 0};
     static  unsigned short preindex[] = {0, 0, 0, 0};
-    short   value, lVol[4], rVol[4];
+    short   value = 0, lVol[4], rVol[4];
     short   LL, RR, vVol;
 #else
 	#define FLOAT_SND double
 	static FLOAT_SND point[] = {0.0, 0.0, 0.0, 0.0};
     static FLOAT_SND preindex[] = {0.0, 0.0, 0.0, 0.0};
-    FLOAT_SND   value, lVol[4], rVol[4];
+    FLOAT_SND   value = 0.0, lVol[4], rVol[4];
     FLOAT_SND   LL, RR, vVol;
 #endif
     int channel, index;
@@ -334,7 +334,8 @@ void apuWaveSet(void)
             {
                 continue;
             }
-            else {
+            else 
+            {
                 index = (3072000 / BPSWAV) * point[channel] / (2048 - Ch[channel].freq);
                 if ((index %= 32) == 0 && preindex[channel])
                 {
