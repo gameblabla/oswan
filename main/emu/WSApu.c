@@ -297,7 +297,8 @@ void apuWaveSet(void)
     FLOAT_SND   value = 0.0, lVol[4], rVol[4];
     FLOAT_SND   LL, RR, vVol;
 #endif
-    int channel, index;
+    int channel;
+    unsigned int index;
     int i;
 
     SDL_LockMutex(sound_mutex);
@@ -324,11 +325,7 @@ void apuWaveSet(void)
                     point[3] = 0;
                 }
                 
-                if (PDataN[Noise.pattern][index] < 8)
-                {
-					value = PDataN[Noise.pattern][index] - 8;
-				}
-				
+				value = PDataN[Noise.pattern][index] - 8;
             }
             else if (Sound[channel] == 0)
             {
