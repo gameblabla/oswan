@@ -100,9 +100,11 @@ void initSDL(void)
 	
 	/*	Set up SDL sound */
 	fmt.freq = 44800;   
+	fmt.samples = 2048;
+	/*fmt.freq = 12000;   
+	fmt.samples = 512;*/
 	fmt.format = AUDIO_S16SYS;
 	fmt.channels = 2;
-	fmt.samples = 2048;
 	fmt.callback = mixaudioCallback;
 	fmt.userdata = NULL;
 

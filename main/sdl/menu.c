@@ -59,11 +59,13 @@ void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, const int fg
 	SDL_LockSurface(s);
 	for(h = 8; h; h--) 
 	{
+
+		dst = (unsigned short *)s->pixels + ((y+8-h)*s->w + x)
 #if BITDEPTH_OSWAN == 32
-		dst = (unsigned short *)s->pixels + ((y+8-h)*s->w + x)*2;
-#else
-		dst = (unsigned short *)s->pixels + ((y+8-h)*s->w + x);
+		*2
 #endif
+		;
+		
 		for(w = 8; w; w--) 
 		{
 			unsigned short color = *dst; /* background */
@@ -97,12 +99,19 @@ void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color)
 	static char i_str[24];
 
 	/* if no parameters, show simple menu item	*/
-	if(m->itemPar == NULL) print_string(m->itemName, fg_color, COLOR_BG, x, y);
-	else {
-		if(m->itemParName == NULL) {
+	if(m->itemPar == NULL) 
+	{
+		print_string(m->itemName, fg_color, COLOR_BG, x, y);
+	}
+	else 
+	{
+		if(m->itemParName == NULL) 
+		{
 			/* if parameter is a digit	*/
 			snprintf(i_str, sizeof(i_str), "%s%i", m->itemName, *m->itemPar);
-		} else {
+		} 
+		else 
+		{
 			/* if parameter is a name in array */
 			snprintf(i_str, sizeof(i_str), "%s%s", m->itemName, m->itemParName+(*m->itemPar)*16);
 		}
@@ -188,6 +197,8 @@ void screen_showmenu(MENU *menu)
 	MENUITEM *mi = menu->m;
 	char szVal[100];
 	
+	print_string("Gameblabla's Oswan", COLOR_ACTIVE_ITEM, COLOR_BG, (SPRX+10)+72+OFF_X, 16);
+	
 	/* show menu lines */
 	for(i = 0; i < menu->itemNum; i++, mi++) 
 	{
@@ -207,11 +218,9 @@ void screen_showmenu(MENU *menu)
 	
 	if (cartridge_IsLoaded()) 
 	{
-		snprintf(szVal, sizeof(szVal), "Game:%s",strrchr(gameName,'/')+1);
+		snprintf(szVal, sizeof(szVal), "%s",strrchr(gameName,'/')+1);
 		szVal[(320/6)-2] = '\0'; 
 		print_string(szVal, COLOR_LIGHT, COLOR_BG, 8,240-2-10-10);
-		/*sprintf(szVal,"CRC:%08X",gameCRC); 
-		print_string(szVal, COLOR_LIGHT, COLOR_BG,8,240-2-10);*/
 	}
 	
 	flip_screen(actualScreen);
@@ -575,9 +584,13 @@ signed int load_file(const char **wildcards, char *result)
 						strncpy(print_buffer+1,filedir_list[current_filedir_number].name, CHARLEN-1);
 						print_buffer[0] = '[';
 						if (strlen(filedir_list[current_filedir_number].name)<(CHARLEN-1)) 
+						{
 							print_buffer[strlen(filedir_list[current_filedir_number].name)+1] = ']';
+						}
 						else
+						{
 							print_buffer[CHARLEN-1] = ']';
+						}
 					}
 						
 					print_buffer[CHARLEN] = 0;
@@ -611,15 +624,15 @@ signed int load_file(const char **wildcards, char *result)
 				}
 			}
 
-			/* B - exit or back to previous menu	*/
+			/* B - exit or back to the menu	*/
 			if (button_state[5] == 1) 
 			{ 
 				return_value = -1;
 				repeat = 0;
 			}
 
-			/* UP, L trigger - Arrow up	*/
-			if (button_state[2]==1 || button_state[8]==2 || up_wait > MENU_WAIT) 
+			/* UP - Go up */
+			if (button_state[2]==1 || up_wait > MENU_WAIT) 
 			{ 
 				if(current_filedir_selection) 
 				{
@@ -636,8 +649,8 @@ signed int load_file(const char **wildcards, char *result)
 				}
 				up_wait = 0;
 			}
-			/* DOWN, R trigger - Arrow down */
-			if (button_state[3]==1 || button_state[9]==2 || down_wait > MENU_WAIT) 
+			/* DOWN - Go down */
+			if (button_state[3]==1 || down_wait > MENU_WAIT) 
 			{ 
 				if(current_filedir_selection < (num_filedir - 1)) 
 				{
@@ -653,6 +666,49 @@ signed int load_file(const char **wildcards, char *result)
 					}
 				}
 				down_wait = 0;
+			}
+			
+			/* L trigger - Go up five times	*/
+			if (button_state[8]==1) 
+			{ 
+				/*  HACKS !!! */
+				for(i=0;i<5;i++)
+				{
+					if(current_filedir_selection) 
+					{
+						current_filedir_selection--;
+							
+						if(current_filedir_in_scroll == 0) 
+						{
+							current_filedir_scroll_value--;
+						} 
+						else 
+						{
+							current_filedir_in_scroll--;
+						}
+					}
+				}
+			}
+			/* R trigger - Go down five times */
+			if (button_state[9]==1)
+			{ 
+				/*  HACKS !!! */
+				for(i=0;i<5;i++)
+				{
+					if(current_filedir_selection < (num_filedir - 1)) 
+					{
+						current_filedir_selection++;
+							
+						if(current_filedir_in_scroll == (FILE_LIST_ROWS - 1)) 
+						{
+							current_filedir_scroll_value++;
+						} 
+						else 
+						{
+							current_filedir_in_scroll++;
+						}
+					}	
+				}
 			}
 			
 			/* If Up is pressed... */
