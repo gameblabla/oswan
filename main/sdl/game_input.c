@@ -6,6 +6,12 @@
 
 #include "WSFileio.h"
 
+#define JOYSTICK_UP y_joy < -7500
+#define JOYSTICK_LEFT	x_joy < -7500
+#define JOYSTICK_DOWN y_joy > 7500
+#define JOYSTICK_RIGHT	x_joy > 7500
+
+
 #ifdef JOYSTICK
 	SDL_Joystick* joy;
 	short x_joy = 0, y_joy = 0;
@@ -23,7 +29,6 @@ inline void exit_button(void)
 
 int WsInputGetState(int mode)
 {
-	char szFile[512];
 	/*
 	 * 0 = Up  (Y1)
 	 * 1 = Right (Y1)
@@ -38,6 +43,7 @@ int WsInputGetState(int mode)
 	 * 10 = A 
 	 * 11 = B
 	*/
+	char szFile[512];
 	int button = 0;
 	
 	Buttons();
@@ -192,6 +198,34 @@ int WsInputGetState(int mode)
 				button |= (1<<11); 
 			#endif
 	}
+	else if (GameConf.input_layout == 4)
+	{
+			if (button_state[15]>0) 
+				button |= (1<<1); 	/* RIGHT -> X2	*/
+			if (button_state[14]>0)  
+				button |= (1<<3); 	/* LEFT -> X4	*/
+			if (button_state[17]>0)  
+				button |= (1<<2); 	/* DOWN -> X3	*/
+			if (button_state[16]>0)    
+				button |= (1<<0); 	/* UP -> X1		*/
+				
+			if (button_state[4]>0) 
+				button |= (1<<5);  /* Button A - Right	*/
+			if (button_state[5]>0) 
+				button |= (1<<6);  /* Button B - Down	*/
+				
+			if (button_state[6]>0) 
+				button |= (1<<7);  /* Button X - Left	*/
+			if (button_state[7]>0) 
+				button |= (1<<4);  /* Button Y - Up	*/
+			
+			#ifdef JOYSTICK
+			if (x_joy > 7500) 
+				button |= (1<<10);
+			if (y_joy > 7500) 
+				button |= (1<<11);
+			#endif
+	}
 			
 			
 	if (button_state[10])  /* START -> START */
@@ -229,7 +263,7 @@ int Fire_buttons(void)
 		else
 			y_button = 0;
 	}
-	else if (GameConf.input_layout == 3)
+	else if (GameConf.input_layout == 3 || GameConf.input_layout == 4)
 	{
 #ifdef JOYSTICK
 		if (x_joy < -7500) 

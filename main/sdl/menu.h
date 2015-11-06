@@ -31,7 +31,7 @@ unsigned char ifactive(void);
 void menuSaveBmp(void);
 #endif
 
-const char mnuABXY[4][16] = {"Normal", "Wonderswan-like", "Swap DPAD,ABXY", "Swap ABXY,Stick"};
+const char mnuABXY[5][16] = {"Normal", "Swap Dpad-Stick", "Swap DPAD-ABXY", "Swap ABXY-Stick", "Swap ALL"};
 const char mnuYesNo[2][16] = {"No", "Yes"};
 const char mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
 #if !defined(PSP)

@@ -18,7 +18,7 @@ MENUITEM MainMenuItems[] = {
 	{"Ratio: ", (short *) &GameConf.m_ScreenRatio, 2, (char *) &mnuRatio, NULL},
 #endif
 
-	{"", (short *) &GameConf.input_layout, 		   3, (char *) &mnuABXY, NULL},
+	{"", (short *) &GameConf.input_layout, 		   4, (char *) &mnuABXY, NULL},
 	{"Exit", NULL, 0, NULL, &menuQuit}
 };
 

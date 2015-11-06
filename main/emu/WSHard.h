@@ -1,4 +1,4 @@
-﻿#ifndef WSHARD_H_
+#ifndef WSHARD_H_
 #define WSHARD_H_
 
 typedef unsigned char BYTE;
