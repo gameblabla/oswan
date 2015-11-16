@@ -1,4 +1,4 @@
-CC 			= clang-3.6
+CC 			= gcc
 
 CFLAGS  	= -O3 -fno-omit-frame-pointer -fdata-sections -ffunction-sections -g -std=gnu89 -I./main/emu -I./main/sdl 
 CFLAGS 	   += ${DEFINES}

@@ -15,9 +15,9 @@ DEFINES    += -DSOUND_ON -DSOUND_EMULATION
 
 # Enable this to support zip files
 # Here, Support for zips is enabled
-CFLAGS 	   +=-DZIP_SUPPORT -I./minizip
-LDFLAGS	   +=-lz
-THIRD_PARTY = minizip/unzip.o minizip/ioapi.o
+#CFLAGS 	   +=-DZIP_SUPPORT -I./minizip
+#LDFLAGS	   +=-lz
+#THIRD_PARTY = minizip/unzip.o minizip/ioapi.o
 
 SOURCES 	= ${SDL} ${CPU} ${CORE} 
 SOURCES	   += ${THIRD_PARTY}
