@@ -4,7 +4,7 @@ CFLAGS  	= -O2  -mrvl -mcpu=750 -meabi -mhard-float -I./main/emu -I./main/sdl
 CFLAGS 	   += ${DEFINES}
 DEFINES 	= -DGEKKO -DSOUND_ON -DSOUND_EMULATION
 LDFLAGS 	= -lSDL -lwiikeyboard -lfat -lwiiuse -lbte -logc -lm
-OUT  		= oswan.elf
+OUT  		= boot.dol
 
 SDL 		= main/sdl/main.c main/sdl/menu.c  main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c
 CPU 		= main/emu/cpu/nec.c

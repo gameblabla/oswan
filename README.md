@@ -37,6 +37,36 @@ the only known issues are the incorrect palettes and flickering winning screen i
 
 Not all games were tested but as far as i know, all the other Wonderswan games play properly.
 
+=================
+COMPILLING
+=================
+
+In all cases, i'm compilling the binaries on a GNU/Linux PC.
+
+GCW0:
+Make sure you have the precompiled SDK binaries installed somewhere and point its bin directory to PATH.
+
+Then just do a make -f Makefile.gcw0
+
+Wii:
+You need to have the DevkitPPC binaries somewhere and point its bin directory to PATH.
+
+Make sure you have libogc and LibSDL libraries !
+
+Then just do : make -f Makefile.wii
+
+Nspire:
+Just install the ndless devkit (or compile the toolchain with their script).
+
+Then do a make -f Makefile.nspire
+
+MinGW:
+Install the MingW packages provided by your distribution.
+
+Make sure to compile libSDL with it and put them in MinGW paths.
+
+Then do a make -f Makefile.mingw
+
 ===========
 CREDITS
 ===========
