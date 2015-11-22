@@ -7,6 +7,12 @@
 #include <SDL/SDL.h>
 #endif
 
+#ifdef GECKO
+#include <ogcsys.h>
+#include <gccore.h>
+#include <wiiuse/wpad.h>
+#endif
+
 #ifdef PSP
 #include <pspctrl.h>
 #endif
@@ -183,6 +189,34 @@
 	#define PAD_SLIDER		SDLK_HOME
 	
 	#define PAD_QUIT		SDLK_ESCAPE
+	
+#elif defined(GECKO)
+
+	#define PAD_XUP		WPAD_BUTTON_UP
+	#define PAD_XLEFT	WPAD_BUTTON_LEFT
+	#define PAD_XRIGHT	WPAD_BUTTON_RIGHT
+	#define PAD_XDOWN	WPAD_BUTTON_DOWN
+
+	#define PAD_UP		WPAD_BUTTON_UP
+	#define PAD_LEFT	WPAD_BUTTON_LEFT
+	#define PAD_RIGHT	WPAD_BUTTON_RIGHT
+	#define PAD_DOWN	WPAD_BUTTON_DOWN
+	
+	#define PAD_A		WPAD_BUTTON_A
+	#define PAD_B		WPAD_BUTTON_B
+	
+	#define PAD_X		WPAD_NUNCHUK_BUTTON_C
+	#define PAD_Y		WPAD_NUNCHUK_BUTTON_Z
+	
+	#define PAD_L		WPAD_BUTTON_1
+	#define PAD_R		WPAD_BUTTON_2
+	
+	#define PAD_START		WPAD_BUTTON_PLUS
+	#define PAD_SELECT		WPAD_BUTTON_HOME
+	
+	#define PAD_SLIDER		0
+	
+	#define PAD_QUIT		0
 
 #elif defined(PSP)
 

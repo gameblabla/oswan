@@ -13,6 +13,9 @@
 
 
 #ifdef JOYSTICK
+	#ifdef GECKO
+		struct expansion_t data;
+	#endif
 	SDL_Joystick* joy;
 	short x_joy = 0, y_joy = 0;
 #endif
@@ -50,13 +53,41 @@ int WsInputGetState(int mode)
 	button = Fire_buttons();
 
 	#ifdef JOYSTICK
-	if (SDL_NumJoysticks() > 0)
-		joy = SDL_JoystickOpen(0);
+		#ifdef GECKO
+			struct expansion_t data;
+			WPAD_Expansion(WPAD_CHAN_0, &data);
+			if (data.type == WPAD_EXP_NUNCHUK)
+			{ 
+				//Nunchuck Up
+				if((data.nunchuk.js.ang>=315 || data.nunchuk.js.ang<=45) && data.nunchuk.js.mag>=0.9)
+				{
+					y_joy = -8000;
+				}
+				//Nunchuck Down
+				else if((data.nunchuk.js.ang>=180-45 && data.nunchuk.js.ang<=180+45) && data.nunchuk.js.mag>=0.9)
+				{
+					y_joy = 8000;
+				}
+				//Nunchuck Left
+				if((data.nunchuk.js.ang>=270-45 && data.nunchuk.js.ang<=270+45) && data.nunchuk.js.mag>=0.9)
+				{
+					x_joy = -8000;
+				}
+				// Nunchuck Right
+				else if((data.nunchuk.js.ang>=90-45 && data.nunchuk.js.ang<=90+45) && data.nunchuk.js.mag>=0.9)
+				{
+					x_joy = 8000;
+				}
+			}
+		#else
+		if (SDL_NumJoysticks() > 0)
+			joy = SDL_JoystickOpen(0);
 		
 		x_joy = SDL_JoystickGetAxis(joy, 0);
 		y_joy = SDL_JoystickGetAxis(joy, 1);
 			
 		SDL_JoystickUpdate();
+		#endif
 	#endif
 
 	/* If Quick Saves are enabled */

@@ -124,6 +124,11 @@ int main(int argc, char *argv[])
 	SetupCallbacks();
 	scePowerSetClockFrequency(333, 333, 166);
 #endif
+
+#ifdef GECKO
+	fatInitDefault();
+	WPAD_Init();
+#endif
 	
 	/* Init graphics & sound	*/
 	initSDL();
