@@ -1,11 +1,11 @@
 CC			= nspire-gcc
 
-CFLAGS  	= -Ofast -std=gnu89 -I./main/emu -I./main/sdl -I./main/nspire
+CFLAGS  	= -Ofast -std=gnu89 -I./main/emu -I./main/sdl -I./main/nspire -I./main/headers
 CFLAGS     += -fno-omit-frame-pointer -fdata-sections -ffunction-sections -marm -march=armv5te -mtune=arm926ej-s -fno-ipa-sra
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto
 OUT  		= oswan
 
-SDL 		= main/sdl/main.c main/sdl/menu.c main/nspire/drawing.c main/sdl/input.c main/sdl/game_input.c
+SDL 		= main/sdl/main.c main/sdl/menu.c main/nspire/gui_drawing.c main/nspire/drawing.c main/sdl/input.c main/sdl/game_input.c
 CPU 		= main/emu/cpu/nec.c main/nspire/n2DLib.c
 CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
 SOURCES 	= ${SDL} ${CPU} ${CORE} 
@@ -14,10 +14,6 @@ SOURCES 	= ${SDL} ${CPU} ${CORE}
 #CFLAGS 	   += -DZIP_SUPPORT -I./minizip
 #LDFLAGS	   += -lz
 #THIRD_PARTY+= minizip/unzip.o minizip/ioapi.o
-
-# Enable Hacks for some black and white games. Recommended (for now)
-CFLAGS 	    += -DHACKS
-THIRD_PARTY += main/sdl/hack.c main/sdl/md5.c
 
 SOURCES	   += ${THIRD_PARTY}
 OBJS 		= ${SOURCES:.c=.o}

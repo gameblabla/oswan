@@ -1,0 +1,6 @@
+-- 02/27/2016
+
+I'm trying to clean up the code base.
+I have removed support for the PSP (too slow anyways for Oswan) and the SyllableOS-specific code
+I attemped to make menu.c look nicer but i'm still not fully satisfied though. (look at the load_file function !)
+I have removed the hacks.c and md5.c files... it never worked properly anyways.

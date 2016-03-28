@@ -4,7 +4,7 @@
 #ifdef _TINSPIRE
 #include <os.h>
 #else
-#include <SDL/SDL.h>
+#include <SDL.h>
 #endif
 
 #ifdef GECKO
@@ -13,9 +13,6 @@
 #include <wiiuse/wpad.h>
 #endif
 
-#ifdef PSP
-#include <pspctrl.h>
-#endif
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -52,15 +49,6 @@
 	#define SDL_Surface int
 #endif
 
-#ifdef PSP
-	#ifndef NO_WAIT
-	#define NO_WAIT
-	#endif
-	#ifndef JOYSTICK
-	#define JOYSTICK
-	#endif
-#endif
-
 #ifdef DREAMCAST
 	#ifndef POSIX
 	#define POSIX
@@ -86,11 +74,6 @@
 	#define FLAG_VIDEO SDL_SWSURFACE
 	#define REAL_SCREEN_WIDTH 320
 	#define REAL_SCREEN_HEIGHT 240
-#elif defined(PSP)
-	#define BITDEPTH_OSWAN 16
-	#define FLAG_VIDEO SDL_HWSURFACE | SDL_DOUBLEBUF
-	#define REAL_SCREEN_WIDTH 480
-	#define REAL_SCREEN_HEIGHT 272
 #elif defined(DREAMCAST)
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
@@ -110,10 +93,6 @@
 #elif defined(GCW)
 	#define PATH_DIRECTORY getenv("HOME")
 	#define SAVE_DIRECTORY "/.oswan/"
-	#define EXTENSION ""
-#elif defined(PSP)
-	#define PATH_DIRECTORY ""
-	#define SAVE_DIRECTORY ""
 	#define EXTENSION ""
 #elif defined(DREAMCAST)
 	#define PATH_DIRECTORY "/ram/"
@@ -218,33 +197,6 @@
 	
 	#define PAD_QUIT		0
 
-#elif defined(PSP)
-
-	#define PAD_XUP		PSP_CTRL_UP
-	#define PAD_XLEFT	PSP_CTRL_LEFT
-	#define PAD_XRIGHT	PSP_CTRL_RIGHT
-	#define PAD_XDOWN	PSP_CTRL_DOWN
-
-	#define PAD_UP		PSP_CTRL_UP
-	#define PAD_LEFT	PSP_CTRL_LEFT
-	#define PAD_RIGHT	PSP_CTRL_RIGHT
-	#define PAD_DOWN	PSP_CTRL_DOWN
-	
-	#define PAD_A		PSP_CTRL_CROSS
-	#define PAD_B		PSP_CTRL_CIRCLE
-	#define PAD_X		PSP_CTRL_SQUARE
-	#define PAD_Y		PSP_CTRL_TRIANGLE
-	
-	#define PAD_L		PSP_CTRL_LTRIGGER
-	#define PAD_R		PSP_CTRL_RTRIGGER
-	
-	#define PAD_START		PSP_CTRL_START
-	#define PAD_SELECT		0
-	
-	#define PAD_SLIDER		0
-	
-	#define PAD_QUIT		PSP_CTRL_SELECT
-
 #else
 
 	#define PAD_XUP		SDLK_UP
@@ -318,9 +270,6 @@ typedef struct {
 	unsigned short reserved2;
 	unsigned short reserved3;
 	unsigned short reserved4;
-#ifndef NOSAVE_HACK
-	unsigned char save_oldoswan_check;
-#endif
 } gamecfg;
 
 extern SDL_Surface* actualScreen;	/* Main program screen */

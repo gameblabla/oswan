@@ -1,6 +1,5 @@
 #ifdef _TINSPIRE
 #include <os.h>
-#include "n2DLib.h"
 #endif
 
 #include <stdio.h>
@@ -11,88 +10,13 @@
 #include "shared.h"
 #include "drawing.h"
 #include "WSFileio.h"
-#include "font.h" /* Font c array */
 
+#include "gui_drawing.h"
 #include "menu.h"
-#ifdef PSP
-#include "menu_psp.h"
-#else
-#include "menu_generic.h"
-#endif
+#include "gui_text.h"
 
 extern unsigned int m_Flag;
 unsigned char gameMenu;
-
-#ifdef _TINSPIRE
-
-#define COLOR_BG           	(5 >> 3) << 11 		| (3 >> 2) << 5 	| (2 >> 3)
-#define COLOR_OK			(0 >> 3) << 11 		| (0 >> 2) << 5 	| (255 >> 3)
-#define COLOR_KO			(255 >> 3) << 11 	| (0 >> 2) << 5 	| (0 >> 3)
-#define COLOR_INFO			(0 >> 3) << 11 		| (255 >> 2) << 5 	| (0 >> 3)
-#define COLOR_LIGHT			(255 >> 3) << 11 	| (255 >> 2) << 5 	| (0 >> 3)
-#define COLOR_ACTIVE_ITEM   (255 >> 3) << 11 	| (255 >> 2) << 5 	| (255 >> 3)
-#define COLOR_INACTIVE_ITEM (255 >> 3) << 11 	| (255 >> 2) << 5 	| (255 >> 3)
-
-#else
-#define COLOR_BG           	SDL_MapRGB(actualScreen->format,5,3,2)
-#define COLOR_OK			SDL_MapRGB(actualScreen->format,0,0,255)
-#define COLOR_KO			SDL_MapRGB(actualScreen->format,255,0,0)
-#define COLOR_INFO			SDL_MapRGB(actualScreen->format,0,255,0)
-#define COLOR_LIGHT			SDL_MapRGB(actualScreen->format,255,255,0)
-#define COLOR_ACTIVE_ITEM   SDL_MapRGB(actualScreen->format,255, 255, 255)
-#define COLOR_INACTIVE_ITEM SDL_MapRGB(actualScreen->format,255,255,255)
-
-#endif
-
-
-/*----------------------------------------------------------------------------------------------------
-Prints char on a given surface
-----------------------------------------------------------------------------------------------------*/
-void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, const int fg_color, const int bg_color) 
-{
-#ifdef _TINSPIRE
-	drawChar(&x, &y, 0, a, fg_color, bg_color);
-#else
-	unsigned short *dst;
-	unsigned short w, h;
-
-	SDL_LockSurface(s);
-	for(h = 8; h; h--) 
-	{
-
-		dst = (unsigned short *)s->pixels + ((y+8-h)*s->w + x)
-#if BITDEPTH_OSWAN == 32
-		*2
-#endif
-		;
-		
-		for(w = 8; w; w--) 
-		{
-			unsigned short color = *dst; /* background */
-			if((fontdata8x8[a*8 + (8-h)] >> w) & 1) color = fg_color;
-			*dst++ = color;
-#if BITDEPTH_OSWAN == 32
-			*dst++ = color;
-#endif
-		}
-	}
-	SDL_UnlockSurface(s);
-#endif
-}
-
-/* 
-	"Copy-pasted mostly from gpsp emulator by Exophase. Thanks for it"
-	- Alekmaul
-*/
-void print_string(const char *s, const  unsigned short fg_color, const unsigned short bg_color, int x, int y) 
-{
-#ifdef _TINSPIRE
-	drawString(&x, &y, 0, s, fg_color, bg_color);
-#else
-	int i, j = strlen(s);
-	for(i = 0; i < j; i++, x += 6) screen_showchar(actualScreen, x, y, s[i], fg_color, bg_color);
-#endif
-}
 
 void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color) 
 {
@@ -118,78 +42,6 @@ void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color)
 		print_string(i_str, fg_color, COLOR_BG, x, y);
 	}
 }
-
-void print_string_video(short x, const short y, const char *s) 
-{
-	if (GameConf.m_ScreenRatio != 1)
-	{
-#ifdef _TINSPIRE
-	fillRect(0, 0, 18, 18, 0);
-#else
-	SDL_Rect rect;
-	rect.x = 0;
-	rect.y = 0;
-	rect.w = 18;
-	rect.h = 18;
-	SDL_FillRect(actualScreen, &rect, 0);
-#endif
-	}
-	
-	int i, j = strlen(s);
-	for(i = 0; i < j; i++, x += 8) 
-	{
-#ifdef _TINSPIRE
-		screen_showchar(0, x, y, s[i], (255 >> 3) << 11 	| (0 >> 2) << 5 | (0 >> 3), 0);
-#else
-		screen_showchar(actualScreen, x, y, s[i], SDL_MapRGB(actualScreen->format,255, 0, 0), 0);
-#endif
-	}
-}
-
-void clear_screen_menu(void)
-{
-#ifdef _TINSPIRE
-	clearBufferB();
-#else
-	SDL_FillRect(actualScreen, NULL, 0);
-#endif
-}
-
-
-/* Shows menu items and pointing arrow	*/
-#define SPRX (16)
-#define OFF_X 0
-/* Re-adujusting Menu Y position */
-#define OFF_Y (-6)
-
-void draw_bluerect_menu(unsigned char i)
-{
-#ifdef _TINSPIRE
-	fillRect(0 + OFF_X, (44+i*15)-2+8 + OFF_Y, 320, 12, ((0 >> 3) << 11) | ((0 >> 2) << 5) | (255 >> 3));
-#else
-	SDL_Rect position_select;
-	position_select.w  = 320;
-	position_select.h  = 12;
-	position_select.x  = 0 + OFF_X;
-	position_select.y  = (44+i*15)-2+8 + OFF_Y;
-	SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
-#endif
-}
-
-void draw_bluerect_file(unsigned char i)
-{
-#ifdef _TINSPIRE
-	fillRect(0, 10*3+((i + 2) * 8), 320, 8, ((0 >> 3) << 11) | ((0 >> 2) << 5) | (255 >> 3));
-#else
-	SDL_Rect position_select;
-	position_select.w  = 320;
-	position_select.h  = 8;
-	position_select.x  = 0;
-	position_select.y  = 10*3+((i + 2) * 8);
-	SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
-#endif
-}
-
 
 void screen_showmenu(MENU *menu) 
 {
@@ -849,16 +701,6 @@ void system_loadcfg(const char *cfg_name)
   {
 	read(fd, &GameConf, sizeof(GameConf));
     close(fd);
-    /*	To remove in the future...*/
-#ifndef NOSAVE_HACK
-	if (GameConf.save_oldoswan_check!=128) 
-	{
-		printf("Old Save format ! Let's remove it...\n");
-		remove(cfg_name);
-		GameConf.input_layout = 0;
-		GameConf.save_oldoswan_check = 128;
-	} 
-#endif
 
 #ifndef NATIVE_RESOLUTION
 		clear_screen_menu();
@@ -884,9 +726,6 @@ void system_loadcfg(const char *cfg_name)
 		GameConf.sndLevel=40;
 		GameConf.m_ScreenRatio=1; 	/* Sets the Ratio to fullscren by default	*/
 		GameConf.m_DisplayFPS=0; 	/* 0 = no, 1 = Yes	*/
-#ifndef OLDSAVE_HACK
-		GameConf.save_oldoswan_check=128;
-#endif
 		getcwd(GameConf.current_dir_rom, MAX__PATH);
 	}
 }
@@ -894,7 +733,7 @@ void system_loadcfg(const char *cfg_name)
 void system_savecfg(const char *cfg_name) 
 {
 	int fd;
-	fd = open(cfg_name, O_CREAT | O_RDWR | O_BINARY | O_TRUNC, S_IREAD | S_IWRITE);
+	fd = open(cfg_name, O_CREAT | O_RDWR | O_BINARY | O_TRUNC, S_IRUSR | S_IWUSR);
 	
 	if (fd >= 0) 
 	{

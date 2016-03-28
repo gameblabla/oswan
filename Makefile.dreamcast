@@ -1,7 +1,7 @@
 CC			= kos-cc
 OBJCOPY		= /opt/toolchains/dc/sh-elf/bin/sh-elf-objcopy
 
-CFLAGS  	= -O2 -Wall -Werror -std=gnu89 -I./main/emu -I./main/sdl 
+CFLAGS  	= -O2 -Wall -Werror -std=gnu89 -I./main/emu -I./main/sdl -I./main/headers 
 CFLAGS 	   += -I$(KOS_BASE)/addons/include/SDL -I$(KOS_BASE)/addons/include
 CFLAGS 	   += ${DEFINES}
 DEFINES 	= -DSOUND_ON -DSOUND_EMULATION -DDREAMCAST -DJOYSTICK

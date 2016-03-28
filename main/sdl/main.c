@@ -15,7 +15,6 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 #include "shared.h"
 #include "drawing.h"
 #include "game_input.h"
-#include "hack.h"
 
 #ifndef NO_WAIT
 void msleep(unsigned char milisec);
@@ -23,33 +22,6 @@ void msleep(unsigned char milisec);
 void exit_oswan();
 
 extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
-
-#ifdef PSP
-#include <pspkernel.h>
-#include <pspdisplay.h>
-#include <psppower.h>
-PSP_MODULE_INFO("OSWAN", 0, 1, 1);
-PSP_HEAP_SIZE_MAX();
-PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
-int exit_callback(int arg1, int arg2, void *common);
-int CallbackThread(SceSize args, void *argp);
-int SetupCallbacks(void);
-int exit_callback(int arg1, int arg2, void *common) 
-{
-	exit_oswan(); return 0;
-}
-int CallbackThread(SceSize args, void *argp) 
-{
-	int cbid = sceKernelCreateCallback("Exit Callback", exit_callback, NULL);
-	sceKernelRegisterExitCallback(cbid);	sceKernelSleepThreadCB();
-	return 0;
-}
-int SetupCallbacks(void) 
-{
-	int thid = sceKernelCreateThread("CallbackThread", CallbackThread, 0x11, 0xFA0, PSP_THREAD_ATTR_USER, 0);
-	if (thid >= 0) sceKernelStartThread(thid, 0, 0); return thid;
-}
-#endif
 
 unsigned int m_Flag;
 unsigned int interval;
@@ -89,9 +61,8 @@ void graphics_paint(void)
 
 void initSDL(void) 
 {
-	/* Get current resolution, does nothing on Windowed or bare metal platroms*/
+	/* Get current resolution, does nothing on Windowed or bare metal platroms */
 	Get_resolution();
-	
 	SetVideo(0);
 
 #ifdef SOUND_ON
@@ -101,8 +72,6 @@ void initSDL(void)
 	/*	Set up SDL sound */
 	fmt.freq = 44800;   
 	fmt.samples = 2048;
-	/*fmt.freq = 12000;   
-	fmt.samples = 512;*/
 	fmt.format = AUDIO_S16SYS;
 	fmt.channels = 2;
 	fmt.callback = mixaudioCallback;
@@ -112,6 +81,7 @@ void initSDL(void)
     if ( SDL_OpenAudio(&fmt, &retFmt) < 0 )
 	{
         fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
+        printf("Exiting Oswan...\n");
         exit(1);
     }
 #endif
@@ -120,17 +90,13 @@ void initSDL(void)
 
 int main(int argc, char *argv[]) 
 {
-#ifdef PSP
-	SetupCallbacks();
-	scePowerSetClockFrequency(333, 333, 166);
-#endif
-
+	
 #ifdef GECKO
 	fatInitDefault();
 	WPAD_Init();
 #endif
 	
-	/* Init graphics & sound	*/
+	/* Init graphics & sound */
 	initSDL();
 	
 #ifdef JOYSTICK
@@ -161,6 +127,10 @@ int main(int argc, char *argv[])
 
     /*	load rom file via args if a rom path is supplied	*/
 	strcpy(gameName,"");
+	
+	#ifdef _TINSPIRE
+		clear_cache();
+	#endif
 	
 	if(argc > 1) 
 	{
@@ -264,11 +234,6 @@ void exit_oswan()
 	#endif
 		SDL_Quit();
 	#endif
-	
-#ifdef PSP
-	sceDisplayWaitVblankStart();
-	sceKernelExitGame(); 	
-#endif
 }
 
 #ifndef NO_WAIT

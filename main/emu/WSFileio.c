@@ -7,10 +7,11 @@
 #include "WSRender.h"
 #include "cpu/necintrf.h"
 
-#include "hack.h"
 #include "shared.h"
+
 #ifdef ZIP_SUPPORT  
 #include "unzip.h"
+char tempfilecartname_[512];
 #endif
 
 int result;
@@ -77,7 +78,7 @@ int WsCreate(char *CartName)
 		unz_global_info global_info;
 		if ( unzGetGlobalInfo( zipfile, &global_info ) != UNZ_OK )
 		{
-			printf( "could not read file global info\n" );
+			printf( "Could not read file global info\n" );
 			unzClose( zipfile );
 			return -1;
 		}
@@ -87,7 +88,7 @@ int WsCreate(char *CartName)
         char filename[512];
         if ( unzGetCurrentFileInfo( zipfile, &file_info, filename, 512, NULL, 0, NULL, 0 ) != UNZ_OK )
         {
-            printf( "could not read file info\n" );
+            printf( "Could not read file info\n" );
             unzClose( zipfile );
             return -1;
         }
@@ -95,14 +96,17 @@ int WsCreate(char *CartName)
 		/* Entry is a file, so extract it. */
 		if ( unzOpenCurrentFile( zipfile ) != UNZ_OK )
 		{
-			printf( "could not open file\n" );
+			printf( "Could not open file\n" );
 			unzClose( zipfile );
 			return -1;
 		}
 		
+		
+		snprintf(tempfilecartname_, sizeof(tempfilecartname_), "%s.ws", CartName);
+		
 		/* Open a file to write out the data. */
 		char tempfilename[512];
-		snprintf(tempfilename, sizeof(tempfilename), "%s%stemp.rom%s", PATH_DIRECTORY, SAVE_DIRECTORY, EXTENSION);
+		snprintf(tempfilename, sizeof(tempfilename), "%s%s%s%s", PATH_DIRECTORY, SAVE_DIRECTORY, tempfilecartname_, EXTENSION);
 		
 		FILE *out = fopen( tempfilename, "wb" );
 		if ( out == NULL )
@@ -253,9 +257,7 @@ int WsCreate(char *CartName)
         CartKind = 0;
         break;
     }
-    
-    /*printf("\n buf[5] = %d \n",buf[5]);
-    printf("\n Cart : %s \n RAMBanks = %d \n RAMSize = %d \n CartKind % d\n ROMBanks %d\n",CartName,RAMBanks,RAMSize,CartKind,ROMBanks);*/
+
     WsRomPatch(buf);
     
     Checksum = (int)((buf[9] << 8) + buf[8]);
@@ -349,10 +351,6 @@ int WsCreate(char *CartName)
     }
     WsReset();
 	SetHVMode(buf[6] & 1);
-	
-#ifdef HACKS
-	Check_MD5(buf, fp);
-#endif
     
 	return 1;
 }
@@ -496,7 +494,6 @@ int WsLoadState(const char *savename, int num)
 		WriteIO(i, IO[i]);
 	}
 	
-	printf("Yes...\n");
     return 0;
 }
 
@@ -550,8 +547,7 @@ int WsSaveState(const char *savename, int num)
     }
 	fwrite(Palette, sizeof(WORD), 16 * 16, fp);
     fclose(fp);
-    
-    printf("Yes...\n");
+
     return 0;
 }
 

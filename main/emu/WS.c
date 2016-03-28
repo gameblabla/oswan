@@ -14,8 +14,6 @@ extern void graphics_paint(void);
 #include "WSFileio.h"
 #include "cpu/necintrf.h"
 
-#include "hack.h"
-
 #define IPeriod 32          	/* HBlank/8 (256/8)					*/
 
 /*int Run;*/
@@ -43,11 +41,7 @@ static unsigned char RtcCount;
 static unsigned long WaveMap;
 #endif
 
-#if BITDEPTH_OSWAN == 32
 #define MONO(C) (C)<<12 | (C)<<7 | (C)<<1
-#else
-#define MONO(C) (C)<<12 | (C)<<7 | (C)<<1
-#endif
 
 static WORD DefColor[] = {
     MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),

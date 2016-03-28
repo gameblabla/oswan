@@ -1,21 +1,16 @@
-CC 			= gcc
+CC = /opt/diet/bin/diet gcc -nostdinc
 
-CFLAGS  	= -Os -fno-omit-frame-pointer -fdata-sections -ffunction-sections -s -ansi -I./main/emu -I./main/sdl -I./main/headers
+CFLAGS  	= -Os -nostdinc -fno-omit-frame-pointer -fdata-sections -ffunction-sections -I./main/emu -I./main/sdl -I./main/headers
 CFLAGS 	   += ${DEFINES}
-CFLAGS 	   += $(shell sdl-config --cflags)
+CFLAGS 	   += -I/usr/include/SDL
 DEFINES 	= -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION -DPOSIX -DNATIVE_RESOLUTION
-LDFLAGS 	= $(shell sdl-config --libs) -Wl,--as-needed
+LDFLAGS 	= -L/usr/lib/x86_64-linux-gnu -Wl,--as-needed $(sdl-config --static-libs) -static -lSDL -lSDLmain
 OUT  		= oswan
 
-SDL 		= main/sdl/main.c main/sdl/menu.c  main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c main/sdl/gui_drawing.c
+SDL 		= main/sdl/main_dietlibc.c main/sdl/menu.c  main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c main/sdl/gui_drawing.c
 CPU 		= main/emu/cpu/nec.c
 CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
 SOURCES 	= ${SDL} ${CPU} ${CORE} 
-
-# Comment the 3 lines below to disable zip support
-CFLAGS 	   += -DZIP_SUPPORT -I./minizip
-LDFLAGS	   += -lz
-THIRD_PARTY+= minizip/unzip.o minizip/ioapi.o
 
 # Comment the 2 lines below to disable Scaling support
 #CFLAGS 	   += -DSCALING

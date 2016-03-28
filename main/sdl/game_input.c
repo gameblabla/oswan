@@ -20,7 +20,7 @@
 	short x_joy = 0, y_joy = 0;
 #endif
 
-inline void exit_button(void)
+void exit_button(void)
 {
 	 /* SLIDER/SELECT or ESC -> MENU UI*/
 	if (button_state[12] || button_state[13])
@@ -94,7 +94,7 @@ int WsInputGetState(int mode)
 	if (GameConf.reserved3)
 	{
 		/* Save (L button)	*/
-		if (button_state[8] == 1) 
+		if (button_state[8]) 
 		{
 			strcpy(szFile, gameName);
 			#ifdef _TINSPIRE
@@ -105,7 +105,7 @@ int WsInputGetState(int mode)
 			WsSaveState(szFile, GameConf.reserved1);
 		}
 		/* Load (R button)	*/
-		else if (button_state[9] == 1) 
+		else if (button_state[9]) 
 		{
 			strcpy(szFile, gameName);
 			#ifdef _TINSPIRE
@@ -117,150 +117,124 @@ int WsInputGetState(int mode)
 		}
 	}
 	
-
-	if (GameConf.input_layout == 0)
+	switch(GameConf.input_layout)
 	{
-			if (button_state[15]>0) 
-				button |= (1<<5); 	/* RIGHT -> X2	*/
-			if (button_state[14]>0)  
-				button |= (1<<7); 	/* LEFT -> X4	*/
-			if (button_state[17]>0)  
-				button |= (1<<6); 	/* DOWN -> X3	*/
-			if (button_state[16]>0)    
-				button |= (1<<4); 	/* UP -> X1		*/
-				
-			if (button_state[4]>0) 
-				button |= (1<<10);  /* Button A	*/
-			if (button_state[5]>0) 
-				button |= (1<<11);  /* Button B	*/
+		case 0:
+			/* RIGHT -> X2 */
+			button |= button_state[15] ? (1<<5) : 0; 
+			/* LEFT -> X4 */
+			button |= button_state[14] ? (1<<7) : 0; 
+			/* DOWN -> X3 */
+			button |= button_state[17] ? (1<<6) : 0; 
+			/* UP -> X1	*/
+			button |= button_state[16] ? (1<<4) : 0; 
+			
+			/* Button A	*/
+			button |= button_state[4] ? (1<<10) : 0; 
+			/* Button B	*/
+			button |= button_state[5] ? (1<<11) : 0; 
 			
 			#ifdef JOYSTICK
-			if (x_joy > 7500) 
+			if (JOYSTICK_RIGHT) 
 				button |= (1<<1); 	/* RIGHT -> Y1 */
-			else if (x_joy < -7500) 
+			else if (JOYSTICK_LEFT) 
 				button |= (1<<3); 	/* LEFT -> Y1 */
 					
-			if (y_joy > 7500) 
+			if (JOYSTICK_DOWN) 
 				button |= (1<<2); 	/* DOWN -> Y1 */
-			else if (y_joy < -7500) 
+			else if (JOYSTICK_UP) 
 				button |= (1<<0); 	/*UP -> Y1 */
 			#endif
-	}
-	else if (GameConf.input_layout == 1)
-	{
-			if (button_state[15]>0) 
-				button |= (1<<1); 	/* RIGHT -> Y2 */
-			if (button_state[14]>0)  
-				button |= (1<<3); 	/* LEFT -> Y4 */
-			if (button_state[17]>0)  
-				button |= (1<<2); 	/* DOWN -> Y3 */
-			if (button_state[16]>0)    
-				button |= (1<<0); 	/* UP -> Y1	*/
-				
-			if (button_state[4]>0) 
-				button |= (1<<10);  /* Button A */
-			if (button_state[5]>0) 
-				button |= (1<<11);  /* Button B */
+		break;
+		case 1:
+			/* RIGHT -> X2 */
+			button |= button_state[15] ? (1<<1) : 0; 
+			/* LEFT -> X4 */
+			button |= button_state[14] ? (1<<3) : 0; 
+			/* DOWN -> X3 */
+			button |= button_state[17] ? (1<<2) : 0; 
+			/* UP -> X1	*/
+			button |= button_state[16] ? (1<<0) : 0; 
+			
+			/* Button A	*/
+			button |= button_state[4] ? (1<<10) : 0; 
+			/* Button B	*/
+			button |= button_state[5] ? (1<<11) : 0; 
 			
 			#ifdef JOYSTICK
-			if (x_joy > 7500) 
+			if (JOYSTICK_RIGHT) 
 				button |= (1<<5); 	/* RIGHT -> X1	*/
-			else if (x_joy < -7500) 
+			else if (JOYSTICK_LEFT) 
 				button |= (1<<7); 	/* LEFT -> X1	*/
 					
-			if (y_joy > 7500) 
+			if (JOYSTICK_DOWN) 
 				button |= (1<<6); 	/* DOWN -> X1	*/
-			else if (y_joy < -7500) 
+			else if (JOYSTICK_UP) 
 				button |= (1<<4); 	/* UP -> X1		*/
 			#endif
-	}
-	else if (GameConf.input_layout == 2)
-	{
-			if (button_state[15]>0) 
-				button |= (1<<10);
-			if (button_state[17]>0)  
-				button |= (1<<11); 
-				
-			if (button_state[4]>0) 
-				button |= (1<<5); 
-			if (button_state[5]>0) 
-				button |= (1<<6); 
-			if (button_state[6]>0) 
-				button |= (1<<7); 
-			if (button_state[7]>0) 
-				button |= (1<<4); 
+		break;
+		case 2:
+			button |= button_state[15] ? (1<<10) : 0; 
+			button |= button_state[17] ? (1<<11) : 0; 
+
+			button |= button_state[4] ? (1<<5) : 0; 
+			button |= button_state[5] ? (1<<6) : 0; 
+
+			button |= button_state[6] ? (1<<7) : 0; 
+			button |= button_state[7] ? (1<<4) : 0; 
 			
 			#ifdef JOYSTICK
-			if (x_joy > 7500) 
+			if (JOYSTICK_RIGHT) 
 				button |= (1<<1); /* RIGHT -> Y1*/
-			else if (x_joy < -7500) 
+			else if (JOYSTICK_LEFT) 
 				button |= (1<<3); /* LEFT -> Y1	*/
 					
-			if (y_joy > 7500) 
+			if (JOYSTICK_DOWN) 
 				button |= (1<<2); /* DOWN -> Y1	*/
-			else if (y_joy < -7500) 
+			else if (JOYSTICK_UP) 
 				button |= (1<<0); /* UP -> Y1	*/
 			#endif
-	}
-	else if (GameConf.input_layout == 3)
-	{
-			if (button_state[15]>0) 
-				button |= (1<<5); /* RIGHT -> X2	*/
-			if (button_state[14]>0)  
-				button |= (1<<7); /* LEFT -> X4		*/
-			if (button_state[17]>0)  
-				button |= (1<<6); /* DOWN -> X3		*/
-			if (button_state[16]>0)    
-				button |= (1<<4); /* UP -> X1		*/
-				
-			if (button_state[4]>0) 
-				button |= (1<<1); /* DOWN -> Y1	*/
-			if (button_state[5]>0) 
-				button |= (1<<2); /* RIGHT -> Y1*/
-			if (button_state[6]>0) 
-				button |= (1<<3); /* LEFT -> Y1	*/
-			if (button_state[7]>0) 
-				button |= (1<<0); /* UP -> Y1	*/
+		break;
+		case 3:
+			button |= button_state[15] ? (1<<5) : 0; 
+			button |= button_state[14] ? (1<<7) : 0; 
+			button |= button_state[17] ? (1<<6) : 0; 
+			button |= button_state[16] ? (1<<4) : 0; 
+			
+			button |= button_state[4] ? (1<<1) : 0; 
+			button |= button_state[5] ? (1<<2) : 0; 
+			button |= button_state[6] ? (1<<3) : 0; 
+			button |= button_state[7] ? (1<<0) : 0; 
 			
 			#ifdef JOYSTICK
-			if (x_joy > 7500) 
+			if (JOYSTICK_RIGHT) 
 				button |= (1<<10);
-			if (y_joy > 7500) 
+			if (JOYSTICK_DOWN) 
 				button |= (1<<11); 
 			#endif
-	}
-	else if (GameConf.input_layout == 4)
-	{
-			if (button_state[15]>0) 
-				button |= (1<<1); 	/* RIGHT -> X2	*/
-			if (button_state[14]>0)  
-				button |= (1<<3); 	/* LEFT -> X4	*/
-			if (button_state[17]>0)  
-				button |= (1<<2); 	/* DOWN -> X3	*/
-			if (button_state[16]>0)    
-				button |= (1<<0); 	/* UP -> X1		*/
-				
-			if (button_state[4]>0) 
-				button |= (1<<5);  /* Button A - Right	*/
-			if (button_state[5]>0) 
-				button |= (1<<6);  /* Button B - Down	*/
-				
-			if (button_state[6]>0) 
-				button |= (1<<7);  /* Button X - Left	*/
-			if (button_state[7]>0) 
-				button |= (1<<4);  /* Button Y - Up	*/
+		break;
+		case 4:
+			button |= button_state[15] ? (1<<1) : 0; 
+			button |= button_state[14] ? (1<<3) : 0; 
+			button |= button_state[17] ? (1<<2) : 0; 
+			button |= button_state[16] ? (1<<0) : 0; 
+			
+			button |= button_state[4] ? (1<<5) : 0; 
+			button |= button_state[5] ? (1<<6) : 0; 
+			button |= button_state[6] ? (1<<7) : 0; 
+			button |= button_state[7] ? (1<<4) : 0; 
 			
 			#ifdef JOYSTICK
-			if (x_joy > 7500) 
+			if (JOYSTICK_RIGHT) 
 				button |= (1<<10);
-			if (y_joy > 7500) 
+			if (JOYSTICK_DOWN) 
 				button |= (1<<11);
 			#endif
+		break;
 	}
 			
-			
-	if (button_state[10])  /* START -> START */
-		button |= (1<<9); 
+	/* START BUTTON */		
+	button |= button_state[10] ? (1<<9) : 0; 		
 			
 	return button;
 }
@@ -270,43 +244,45 @@ int Fire_buttons(void)
 	static unsigned char x_button = 0, y_button = 0;
 	int button = 0;
 	
-	if (GameConf.input_layout < 2)
+	switch (GameConf.input_layout)
 	{
-		if (button_state[6]>0) 
-			x_button++;		/*(Rapid Fire A)*/
-		else
-			x_button = 0;
-			
-		if (button_state[7]>0) 
-			y_button++;		/*(Rapid Fire B)*/
-		else
-			y_button = 0;
-	}	
-	else if (GameConf.input_layout == 2)
-	{
-		if (button_state[14]>0) 
-			x_button++;		/*(Rapid Fire A)*/
-		else
-			x_button = 0;
-			
-		if (button_state[16]>0) 
-			y_button++;		/*(Rapid Fire B)*/
-		else
-			y_button = 0;
-	}
-	else if (GameConf.input_layout == 3 || GameConf.input_layout == 4)
-	{
-#ifdef JOYSTICK
-		if (x_joy < -7500) 
-			x_button++;   	/*(Rapid Fire A)*/
-		else
-			x_button = 0;	
-			
-		if (y_joy < -7500) 
-			y_button++;		/*(Rapid Fire B)*/
-		else
-			y_button = 0;
-#endif
+		case 0:
+		case 1:
+			if (button_state[6]>0) 
+				x_button++;			/*(Rapid Fire A)*/
+			else
+				x_button = 0;
+				
+			if (button_state[7]>0) 
+				y_button++;			/*(Rapid Fire B)*/
+			else
+				y_button = 0;
+		break;
+		case 2:
+			if (button_state[14]>0) 
+				x_button++;			/*(Rapid Fire A)*/
+			else
+				x_button = 0;
+				
+			if (button_state[16]>0) 
+				y_button++;			/*(Rapid Fire B)*/
+			else
+				y_button = 0;
+		break;
+		case 3:
+		case 4:
+			#ifdef JOYSTICK
+				if (JOYSTICK_LEFT) 
+					x_button++;   	/*(Rapid Fire A)*/
+				else
+					x_button = 0;	
+						
+				if (JOYSTICK_UP) 
+					y_button++;		/*(Rapid Fire B)*/
+				else
+					y_button = 0;
+			#endif
+		break;
 	}
 	
 	if (x_button == 1)

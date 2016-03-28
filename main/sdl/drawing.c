@@ -1,24 +1,14 @@
 #include "drawing.h"
 #ifdef SCALING
 #include "gfx/SDL_rotozoom.h"
-#ifdef SYLLABLE
-#include <gui/desktop.h>
-#endif
 #endif
 
 void Get_resolution(void)
 {
 #ifdef SCALING
-	#ifdef SYLLABLE
-	os::Desktop cDesktop;
-	os::IPoint point = cDesktop.GetResolution();
-	screen_scale.w_display = point.x;
-	screen_scale.h_display = point.y;
-	#else
 	const SDL_VideoInfo* info = SDL_GetVideoInfo();
 	screen_scale.w_display = info->current_w;
 	screen_scale.h_display = info->current_h;
-	#endif
 #else
 	screen_scale.w_display = 320;
 	screen_scale.h_display = 240;
@@ -194,7 +184,7 @@ void flip_screen(SDL_Surface* screen)
 void take_screenshot(void)
 {
 #if !defined(NOSCREENSHOTS)
-	// Save current screen in screenshots's layer
+	/* Save current screen in screenshots's layer */
 	SDL_BlitSurface(actualScreen, NULL, screenshots, NULL);
 #endif
 }

@@ -34,10 +34,7 @@ void Buttons(void)
 	int pad = 0;
 #endif
 	
-#ifdef PSP
-	SceCtrlData pad_controller;
-	sceCtrlReadBufferPositive(&pad_controller, 1);	
-#elif defined(GECKO)
+#if defined(GECKO)
 	WPAD_ScanPads();
 	unsigned short buttonsHeld = WPAD_ButtonsHeld(0);
 #elif defined(_TINSPIRE)
@@ -129,9 +126,7 @@ void Buttons(void)
 		{
 			/* To avoid for the button for being pressed again */
 			case -1:
-#ifdef PSP
-				if (!(pad_controller.Buttons & pad))
-#elif defined(GECKO)
+#if defined(GECKO)
 				if (!(buttonsHeld & pad))
 #elif defined(_TINSPIRE)
 				if (!(isKeyPressed(pad)))
@@ -150,9 +145,7 @@ void Buttons(void)
 			break;
 			
 			case 0:
-#ifdef PSP
-				if (pad_controller.Buttons & pad)
-#elif defined(GECKO)
+#if defined(GECKO)
 				if ((buttonsHeld & pad))
 #elif defined(_TINSPIRE)
 				if (isKeyPressed(pad))
@@ -176,9 +169,7 @@ void Buttons(void)
 			break;
 				
 			case 2:
-#ifdef PSP
-				if (!(pad_controller.Buttons & pad))
-#elif defined(GECKO)
+#if defined(GECKO)
 				if (!(buttonsHeld & pad))
 #elif defined(_TINSPIRE)
 				if (!(isKeyPressed(pad)))

@@ -1,6 +1,6 @@
 CC 			= i586-mingw32msvc-gcc
 
-CFLAGS  	= -O3 -fno-omit-frame-pointer -fdata-sections -ffunction-sections -g -std=gnu89 -I./main/emu -I./main/sdl 
+CFLAGS  	= -O3 -fno-omit-frame-pointer -fdata-sections -ffunction-sections -g -std=gnu89 -I./main/emu -I./main/sdl -I./main/headers 
 CFLAGS 	   += ${DEFINES}
 DEFINES 	= -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION -DNATIVE_RESOLUTION
 LDFLAGS 	= -lmingw32 -lSDLmain -lSDL -mwindows -Wl,--as-needed

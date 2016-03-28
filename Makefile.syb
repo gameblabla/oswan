@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
 
-CFLAGS = -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -I./src -I./src/gfx -I/boot/system/index/include/SDL -I/boot/system/index/include -I/resources/indexes/include -I/resources/indexes/include/SDL -I. `sdl-config --cflags` $(DEFINES)
+CFLAGS = -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -I./src -I./src/gfx -I./main/headers -I/boot/system/index/include/SDL -I/boot/system/index/include -I/resources/indexes/include -I/resources/indexes/include/SDL -I. `sdl-config --cflags` $(DEFINES)
 LDFLAGS = `sdl-config --libs` -lm -lsyllable -Wl--gc-sections -Wl,--as-needed
 DEFINES = -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION
 OUT = oswan
@@ -10,10 +10,6 @@ SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/drawing.c main/sdl/input.c main
 CPU 		= main/emu/cpu/nec.c
 CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
 SOURCES 	= ${SDL} ${CPU} ${CORE} 
-
-# Enable Hacks for some black and white games. Recommended (for now)
-CFLAGS 	   += -DHACKS
-THIRD_PARTY+= main/sdl/hack.c main/sdl/md5.c
 
 SOURCES	   += ${THIRD_PARTY}
 OBJS 		= ${SOURCES:.c=.o}

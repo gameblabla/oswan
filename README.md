@@ -6,22 +6,13 @@ Gameblabla's Oswan is a Wonderswan/Wonderswan color, based on OswanJ by bird_may
 
 It can play most, if not all Wonderswan games properly. (except some B&W games)
 
-
-It used to be based on Alekmaul's Oswan port but the numerous issues it introduced
-
-(including incompatibility with some games) pushed me to convert everything over OswanJ SVN.
+It used to be based on Alekmaul's Oswan port but significant modifications were done to it.
 
 This fork is also even more accurate than upstream : 
 
 Games are now playing at the proper speed,  
 
 games like Klonoa and Beatmania now sound closer to real hardware.
-
-
-The CPU core comes from NomadSwan (GPLv2 or later).
-
-Somes changes were made in order to remove useless code.
-
 
 A stripped-down version of Minizip is provided as well. 
 
@@ -31,11 +22,9 @@ Minizip is licensed under a 3-clause BSD license.
 COMPATIBILITY
 =================
 
-Since 10/18/2015, 
+The only problematic games are Pocket Figher and the One Piece games : they have some graphical glitches.
 
-the only known issues are the incorrect palettes and flickering winning screen in Pocket Fighter.
-
-Not all games were tested but as far as i know, all the other Wonderswan games play properly.
+Sound is far from accurate. (not even Mednafen is close to real hardware)
 
 =================
 COMPILLING

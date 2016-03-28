@@ -33,29 +33,14 @@ void SetPalette(const int addr)
 
     /* RGB444 format */
     color = *(WORD*)(IRAM + (addr & 0xFFFE));
-	
-#if BITDEPTH_OSWAN == 32
-	r = ((color & 0x0F00));
-	g = ((color & 0x00F0));
-	b = ((color & 0x000F));
-	r = r * 17;
-	g = g * 17;
-	b = b * 17;
-	r = r << 8;
-	g = g << 4;
-	b = b << 0;
-	pal = (r)  | (g) | (b) ;
-#else
-  
+
 	/* RGB565 */
 	r = ((color & 0x0F00) << 4);
 	g = ((color & 0x00F0) << 3);
 	b = ((color & 0x000F) << 1);
 	pal = (r) | (g) | (b);
-#endif
 
 	Palette[(addr & 0x1E0)>>5][(addr & 0x1E) >> 1] = pal;
-    /*Palette[(addr & 0x1E0) >> 5][(addr & 0x1E) >> 1] = color | 0xF000;*/
 }
 
 void RefreshLine(const unsigned short Line)

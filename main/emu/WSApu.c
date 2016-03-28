@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #include "WSHard.h"
 #include "WSApu.h"
@@ -275,7 +275,7 @@ void apuSweep(void)
 WORD apuShiftReg(void)
 {
     static int nPos = 0;
-    // Noise counter
+    /* Noise counter */
     if (++nPos >= BUFSIZEN)
     {
         nPos = 0;
@@ -285,18 +285,12 @@ WORD apuShiftReg(void)
 
 void apuWaveSet(void)
 {
-#ifdef NO_FLOAT
-	static  unsigned short point[] = {0, 0, 0, 0};
-    static  unsigned short preindex[] = {0, 0, 0, 0};
-    short   value = 0, lVol[4], rVol[4];
-    short   LL, RR, vVol;
-#else
 	#define FLOAT_SND double
 	static FLOAT_SND point[] = {0.0, 0.0, 0.0, 0.0};
     static FLOAT_SND preindex[] = {0.0, 0.0, 0.0, 0.0};
     FLOAT_SND   value = 0.0, lVol[4], rVol[4];
     FLOAT_SND   LL, RR, vVol;
-#endif
+
     int channel;
     unsigned int index;
     int i;
@@ -342,7 +336,7 @@ void apuWaveSet(void)
             }
             preindex[channel] = index;
             point[channel]++;
-            lVol[channel] = value * Ch[channel].volL; // -8*15=-120, 7*15=105
+            lVol[channel] = value * Ch[channel].volL; /* -8*15=-120, 7*15=105 */
             rVol[channel] = value * Ch[channel].volR;
         }
 		else

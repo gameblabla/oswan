@@ -34,9 +34,7 @@ void menuSaveBmp(void);
 const char mnuABXY[5][16] = {"Normal", "Swap Dpad-Stick", "Swap DPAD-ABXY", "Swap ABXY-Stick", "Swap ALL"};
 const char mnuYesNo[2][16] = {"No", "Yes"};
 const char mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
-#if !defined(PSP)
 const char mnuRatio[3][16] = { "1x size","Full screen", "Keep Aspect"};
-#endif
 
 
 #ifdef _TINSPIRE

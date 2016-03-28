@@ -1,10 +1,8 @@
+- Improve the code : it's a mess. (seriously)
 - Proper 32-bits support
 On Linux, if the bpp is different from the display, it will be converted but there will be a significant drop in speed.
-The only problem is the palette : it is not properly converted to 32 bits and it's DIFFICULT !
+The only problem is the palette : it is not properly converted to 32 bits...
 Look at emu/WSRender.c and SetPalette function for more info.
 
 - Improve resolution support on computers
-
-- Improve abstraction. (Portability)
-
 - Improve input code
