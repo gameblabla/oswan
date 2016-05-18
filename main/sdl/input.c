@@ -28,18 +28,13 @@ unsigned char button_time[18];
 void Buttons(void)
 {
 	unsigned char i = 0;
-#ifdef _TINSPIRE
+#if defined(_TINSPIRE)
 	t_key pad;
+	#define CHECK_PAD isKeyPressed(pad)
 #else
 	int pad = 0;
-#endif
+	#define CHECK_PAD keys[pad]
 	
-#if defined(GECKO)
-	WPAD_ScanPads();
-	unsigned short buttonsHeld = WPAD_ButtonsHeld(0);
-#elif defined(_TINSPIRE)
-
-#else
 	SDL_Event event;
 	SDL_PollEvent(&event);
 	unsigned char *keys = SDL_GetKeyState(NULL);
@@ -126,13 +121,7 @@ void Buttons(void)
 		{
 			/* To avoid for the button for being pressed again */
 			case -1:
-#if defined(GECKO)
-				if (!(buttonsHeld & pad))
-#elif defined(_TINSPIRE)
-				if (!(isKeyPressed(pad)))
-#else
-				if (!(keys[pad]))
-#endif
+				if (!(CHECK_PAD))
 				{
 					button_time[i]++;
 				}
@@ -145,13 +134,7 @@ void Buttons(void)
 			break;
 			
 			case 0:
-#if defined(GECKO)
-				if ((buttonsHeld & pad))
-#elif defined(_TINSPIRE)
-				if (isKeyPressed(pad))
-#else
-				if (keys[pad])
-#endif
+				if (CHECK_PAD)
 				{
 					button_state[i] = 1;
 					button_time[i] = 0;
@@ -169,13 +152,7 @@ void Buttons(void)
 			break;
 				
 			case 2:
-#if defined(GECKO)
-				if (!(buttonsHeld & pad))
-#elif defined(_TINSPIRE)
-				if (!(isKeyPressed(pad)))
-#else
-				if (!(keys[pad]))
-#endif
+				if (!(CHECK_PAD))
 				{
 					button_state[i] = 3;
 					button_time[i] = 0;

@@ -1,3 +1,9 @@
+-- 05/18/2016
+
+input.c looks a bit nicer now.
+I have added Dingux support too, it's based on the GCW version for now.
+This will change however.
+
 -- 02/27/2016
 
 I'm trying to clean up the code base.

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "n2DLib.h"
 #include "n2DLib_font.h"
 

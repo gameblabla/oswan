@@ -1,9 +1,9 @@
-CC 			= mipsel-linux-gcc
+CC 		= mipsel-linux-gcc
 
 CFLAGS 		= -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -mips32r2 -std=gnu89 -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
 DEFINES 	= -DGCW -DBETTER_ACCURACY
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto -lSDL -s
-OUT	 		= oswan
+OUT	 	= oswan
 
 SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/sdl/drawing.c main/sdl/gui_drawing.c
 CPU 		= main/emu/cpu/nec.c
@@ -30,6 +30,7 @@ pack	:
 		mipsel-linux-strip oswan
 		mv oswan ./opk/oswan
 		mksquashfs ./opk oswan.opk -all-root -noappend -no-exports -no-xattrs
+		mv oswan.opk ./release/oswan.opk
 
 ${OUT}	: ${OBJS}
 		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
@@ -37,3 +38,4 @@ ${OUT}	: ${OBJS}
 clean	:
 		rm ${OBJS}
 		rm ${OUT}
+		rm ./opk/${OUT}

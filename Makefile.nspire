@@ -1,7 +1,7 @@
 CC			= nspire-gcc
 
 CFLAGS  	= -Ofast -std=gnu89 -I./main/emu -I./main/sdl -I./main/nspire -I./main/headers
-CFLAGS     += -fno-omit-frame-pointer -fdata-sections -ffunction-sections -marm -march=armv5te -mtune=arm926ej-s -fno-ipa-sra
+CFLAGS         += -fdata-sections -ffunction-sections -marm -march=armv5te -mtune=arm926ej-s -fno-ipa-sra -Wall -Wextra
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto
 OUT  		= oswan
 
@@ -28,6 +28,7 @@ mkprg	:
 		rm ${OUT}.tns
 		rm ${OUT}
 		mv  ${OUT}.prg.tns ${OUT}.tns
+		mv ${OUT}.tns ./release/${OUT}.tns
 
 ${OUT}	: ${OBJS}
 		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}

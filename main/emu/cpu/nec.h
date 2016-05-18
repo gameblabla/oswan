@@ -9,12 +9,13 @@ typedef enum { AW, CW, DW, BW, SP, BP, IX, IY } WREGS;
 #define FALSE 0
 #define TRUE 1
 #endif
-/*#if _BYTEORDER == SDL_LIL_ENDIAN*/
-typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;/*
-#else
+
+#ifdef BIG_ENDIAN_
 typedef enum { AH,AL,CH,CL,DH,DL,BH,BL,SPH,SPL,BPH,BPL,IXH,IXL,IYH,IYL } BREGS;
+#else
+typedef enum { AL,AH,CL,CH,DL,DH,BL,BH,SPL,SPH,BPL,BPH,IXL,IXH,IYL,IYH } BREGS;
 #endif
-*/
+
 
 /* parameter x = result, y = source 1, z = source 2 */
 

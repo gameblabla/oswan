@@ -15,9 +15,9 @@ extern BYTE IRAM[0x10000];
 extern BYTE IO[0x100];
 extern BYTE MemDummy[0x10000];
 extern BYTE *ROMMap[0x100];     			/* C-ROMバンクマップ 	*/
-extern unsigned short ROMBanks;            	/* C-ROMバンク数 		*/
+extern unsigned short ROMBanks;            		/* C-ROMバンク数 		*/
 extern BYTE *RAMMap[0x100];     			/* C-RAMバンクマップ	*/
-extern unsigned char RAMBanks;            	/* C-RAMバンク数 		*/
+extern unsigned char RAMBanks;            		/* C-RAMバンク数 		*/
 extern int RAMSize;             			/* C-RAM総容量 		*/
 extern WORD IEep[64];
 extern struct EEPROM sIEep;

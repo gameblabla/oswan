@@ -6,23 +6,19 @@
 
 #include "WSFileio.h"
 
-#define JOYSTICK_UP y_joy < -7500
-#define JOYSTICK_LEFT	x_joy < -7500
-#define JOYSTICK_DOWN y_joy > 7500
-#define JOYSTICK_RIGHT	x_joy > 7500
-
 
 #ifdef JOYSTICK
-	#ifdef GECKO
-		struct expansion_t data;
-	#endif
 	SDL_Joystick* joy;
 	short x_joy = 0, y_joy = 0;
+	#define JOYSTICK_UP y_joy < -7500
+	#define JOYSTICK_LEFT	x_joy < -7500
+	#define JOYSTICK_DOWN y_joy > 7500
+	#define JOYSTICK_RIGHT	x_joy > 7500
 #endif
 
 void exit_button(void)
 {
-	 /* SLIDER/SELECT or ESC -> MENU UI*/
+	 /* SLIDER/SELECT or ESC -> MENU UI */
 	if (button_state[12] || button_state[13])
 	{
 		take_screenshot();
@@ -53,33 +49,6 @@ int WsInputGetState(int mode)
 	button = Fire_buttons();
 
 	#ifdef JOYSTICK
-		#ifdef GECKO
-			struct expansion_t data;
-			WPAD_Expansion(WPAD_CHAN_0, &data);
-			if (data.type == WPAD_EXP_NUNCHUK)
-			{ 
-				//Nunchuck Up
-				if((data.nunchuk.js.ang>=315 || data.nunchuk.js.ang<=45) && data.nunchuk.js.mag>=0.9)
-				{
-					y_joy = -8000;
-				}
-				//Nunchuck Down
-				else if((data.nunchuk.js.ang>=180-45 && data.nunchuk.js.ang<=180+45) && data.nunchuk.js.mag>=0.9)
-				{
-					y_joy = 8000;
-				}
-				//Nunchuck Left
-				if((data.nunchuk.js.ang>=270-45 && data.nunchuk.js.ang<=270+45) && data.nunchuk.js.mag>=0.9)
-				{
-					x_joy = -8000;
-				}
-				// Nunchuck Right
-				else if((data.nunchuk.js.ang>=90-45 && data.nunchuk.js.ang<=90+45) && data.nunchuk.js.mag>=0.9)
-				{
-					x_joy = 8000;
-				}
-			}
-		#else
 		if (SDL_NumJoysticks() > 0)
 			joy = SDL_JoystickOpen(0);
 		
@@ -87,7 +56,6 @@ int WsInputGetState(int mode)
 		y_joy = SDL_JoystickGetAxis(joy, 1);
 			
 		SDL_JoystickUpdate();
-		#endif
 	#endif
 
 	/* If Quick Saves are enabled */

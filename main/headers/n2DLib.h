@@ -35,9 +35,6 @@ extern void drawString(int*, int*, int, const char*, unsigned short, unsigned sh
 extern void drawChar(int*, int*, int, char, unsigned short, unsigned short);
 extern int numberWidth(int);
 extern int stringWidth(const char*);
-extern int get_key_pressed(t_key*);
-extern int isKey(t_key, t_key);
-
 #define BUFF_BYTES_SIZE (320*240*2)
 extern unsigned short *BUFF_BASE_ADDRESS;
 #ifdef __cplusplus

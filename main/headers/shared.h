@@ -10,7 +10,6 @@
 #ifdef GECKO
 #include <ogcsys.h>
 #include <gccore.h>
-#include <wiiuse/wpad.h>
 #endif
 
 
@@ -171,27 +170,32 @@
 	
 #elif defined(GECKO)
 
-	#define PAD_XUP		WPAD_BUTTON_UP
-	#define PAD_XLEFT	WPAD_BUTTON_LEFT
-	#define PAD_XRIGHT	WPAD_BUTTON_RIGHT
-	#define PAD_XDOWN	WPAD_BUTTON_DOWN
-
-	#define PAD_UP		WPAD_BUTTON_UP
-	#define PAD_LEFT	WPAD_BUTTON_LEFT
-	#define PAD_RIGHT	WPAD_BUTTON_RIGHT
-	#define PAD_DOWN	WPAD_BUTTON_DOWN
+	#define PAD_XUP		SDLK_UP
+	#define PAD_XLEFT	SDLK_LEFT
+	#define PAD_XRIGHT	SDLK_RIGHT
+	#define PAD_XDOWN	SDLK_DOWN
 	
-	#define PAD_A		WPAD_BUTTON_A
-	#define PAD_B		WPAD_BUTTON_B
+	#define PAD_YUP		SDLK_t
+	#define PAD_YLEFT	SDLK_y
+	#define PAD_YRIGHT	SDLK_u
+	#define PAD_YDOWN	SDLK_i
 	
-	#define PAD_X		WPAD_NUNCHUK_BUTTON_C
-	#define PAD_Y		WPAD_NUNCHUK_BUTTON_Z
+	#define PAD_UP		SDLK_UP
+	#define PAD_LEFT	SDLK_LEFT
+	#define PAD_RIGHT	SDLK_RIGHT
+	#define PAD_DOWN	SDLK_DOWN
 	
-	#define PAD_L		WPAD_BUTTON_1
-	#define PAD_R		WPAD_BUTTON_2
+	#define PAD_A		SDLK_LCTRL
+	#define PAD_B		SDLK_LALT
 	
-	#define PAD_START		WPAD_BUTTON_PLUS
-	#define PAD_SELECT		WPAD_BUTTON_HOME
+	#define PAD_X		SDLK_LSHIFT
+	#define PAD_Y		SDLK_SPACE
+	
+	#define PAD_L		SDLK_s
+	#define PAD_R		SDLK_l
+	
+	#define PAD_START		SDLK_RETURN
+	#define PAD_SELECT		SDLK_BACKSPACE
 	
 	#define PAD_SLIDER		0
 	

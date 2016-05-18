@@ -1,7 +1,7 @@
-CC 			= powerpc-eabi-gcc
+CC 		= powerpc-eabi-gcc
 
 CFLAGS  	= -O2  -mrvl -mcpu=750 -meabi -mhard-float -I./main/emu -I./main/sdl -I./main/headers 
-CFLAGS 	   += ${DEFINES}
+CFLAGS 	   	+= ${DEFINES}
 DEFINES 	= -DGEKKO -DSOUND_ON -DSOUND_EMULATION
 LDFLAGS 	= -lSDL -lwiikeyboard -lfat -lwiiuse -lbte -logc -lm
 OUT  		= boot.dol
