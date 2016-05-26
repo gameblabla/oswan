@@ -36,6 +36,12 @@
 	#endif
 #endif
 
+#ifdef DINGOO
+	#ifndef NOWAIT
+	#define NOWAIT
+	#endif
+#endif
+
 #ifdef _TINSPIRE
 	#ifndef NO_WAIT
 	#define NO_WAIT

@@ -1,8 +1,8 @@
 CC 		= gcc
 
-CFLAGS 		= -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -std=gnu89 $(shell sdl-config --cflags) -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
-DEFINES 	= -DGCW -DBETTER_ACCURACY
-LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto -lSDL -s
+CFLAGS 		= -O2 -g -std=gnu89 $(shell sdl-config --cflags) -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+DEFINES 	= -DDINGOO -DBETTER_ACCURACY
+LDFLAGS 	= -Wl,--as-needed -flto -lSDL
 OUT	 	= oswan.dge
 
 SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/sdl/drawing.c main/sdl/gui_drawing.c

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Oswan
+Comment=Wonderswan emulator
+Exec=oswan.dge
+Icon=icon
+Terminal=false
+Categories=emulators;
