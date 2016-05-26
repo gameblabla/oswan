@@ -174,6 +174,35 @@
 	
 	#define PAD_QUIT		SDLK_ESCAPE
 	
+
+#elif defined(DINGOO)
+
+	#define PAD_XUP		SDLK_UP
+	#define PAD_XLEFT	SDLK_LEFT
+	#define PAD_XRIGHT	SDLK_RIGHT
+	#define PAD_XDOWN	SDLK_DOWN
+
+	#define PAD_UP		SDLK_UP
+	#define PAD_LEFT	SDLK_LEFT
+	#define PAD_RIGHT	SDLK_RIGHT
+	#define PAD_DOWN	SDLK_DOWN
+	
+	#define PAD_A		SDLK_LCTRL
+	#define PAD_B		SDLK_LALT
+	
+	#define PAD_X		SDLK_LSHIFT
+	#define PAD_Y		SDLK_SPACE
+	
+	#define PAD_L		SDLK_TAB
+	#define PAD_R		SDLK_BACKSPACE
+	
+	#define PAD_START		SDLK_RETURN
+	#define PAD_SELECT		SDLK_ESCAPE
+	
+	#define PAD_SLIDER		SDLK_HOME
+	
+	#define PAD_QUIT		SDLK_ESCAPE
+	
 #elif defined(GECKO)
 
 	#define PAD_XUP		SDLK_UP
