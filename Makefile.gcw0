@@ -5,7 +5,7 @@ DEFINES 	= -DGCW -DBETTER_ACCURACY
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto -lSDL -s
 OUT	 	= oswan
 
-SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/sdl/drawing.c main/sdl/gui_drawing.c
+SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/gcw0/drawing.c main/sdl/gui_drawing.c
 CPU 		= main/emu/cpu/nec.c
 CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
 

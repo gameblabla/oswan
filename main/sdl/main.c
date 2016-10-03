@@ -94,7 +94,9 @@ int main(int argc, char *argv[])
 #ifdef GECKO
 	fatInitDefault();
 	WPAD_Init();
-#endif
+#endif	
+
+	m_Flag = GF_MAINUI;
 	
 	/* Init graphics & sound */
 	initSDL();
@@ -122,7 +124,6 @@ int main(int argc, char *argv[])
 	snprintf(current_conf_app, sizeof(current_conf_app), "%soswan.cfg%s", PATH_DIRECTORY, EXTENSION);
 #endif
 	
-	m_Flag = GF_MAINUI;
 	system_loadcfg(current_conf_app);
 
     /*	load rom file via args if a rom path is supplied	*/

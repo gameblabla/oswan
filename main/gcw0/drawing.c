@@ -13,12 +13,25 @@ void Set_resolution(unsigned short w, unsigned short h)
 void SetVideo(unsigned char mode)
 {
 	int flags = FLAG_VIDEO;
-	unsigned short w = 320, h = 240;
+	unsigned short w = 224, h = 144;
 	
-	if (mode == 1) 
+	if (m_Flag == GF_MAINUI) 
 	{
-		w = 224;
-		h = 144;
+		w = 320;
+		h = 240;
+	}
+	else
+	{
+		if (mode == 2)
+		{
+			w = 224;
+			h = 144;
+		}
+		else
+		{
+			w = 320;
+			h = 240;	
+		}
 	}
 
 	if (actualScreen) SDL_FreeSurface(actualScreen);
@@ -29,20 +42,12 @@ void SetVideo(unsigned char mode)
 	
 	Set_resolution(w, h);
 	
-	if (!SDL_WasInit(SDL_INIT_VIDEO)) 
-	{	
-		SDL_Init(SDL_INIT_VIDEO);
-		SDL_ShowCursor(SDL_DISABLE);
-	}
+	if (SDL_WasInit(SDL_INIT_VIDEO)) 
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_ShowCursor(SDL_DISABLE);
 
-	if (mode == 1) 
-	{
-		actualScreen = SDL_SetVideoMode(224, 144, BITDEPTH_OSWAN, flags);
-	}
-	else
-	{
-		actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
-	}
+	actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
 	
 	#if !defined(NOSCREENSHOTS)
 		screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, w, h, BITDEPTH_OSWAN, 0,0,0,0);
@@ -52,11 +57,31 @@ void SetVideo(unsigned char mode)
 void Set_DrawRegion(void)
 {
 	/* Clear screen too to avoid graphical glitches */
+	/* Clear screen too to avoid graphical glitches */
 	SDL_FillRect(actualScreen, NULL, 0);
-	screen_to_draw_region.w	= 224;
-	screen_to_draw_region.h	= 144;
-	screen_to_draw_region.offset_x = 0;
-	screen_to_draw_region.offset_y = 0; 
+
+	if (GameConf.m_ScreenRatio == 2)
+	{
+		screen_to_draw_region.w	= 224;
+		screen_to_draw_region.h	= 144;
+		screen_to_draw_region.offset_x = 0;
+		screen_to_draw_region.offset_y = 0; 
+	}
+	else if (GameConf.m_ScreenRatio == 1)
+	{
+		screen_to_draw_region.w	= 320;
+		screen_to_draw_region.h	= 240;
+		screen_to_draw_region.offset_x = 0;
+		screen_to_draw_region.offset_y = 0; 
+	}
+	else if (GameConf.m_ScreenRatio == 0)
+	{
+		screen_to_draw_region.w	= 224;
+		screen_to_draw_region.h	= 144;
+		screen_to_draw_region.offset_x = ((actualScreen->w - SYSVID_WIDTH)/2);
+		screen_to_draw_region.offset_y = ((actualScreen->h - SYSVID_HEIGHT)/2); 
+	}
+	SetVideo(GameConf.m_ScreenRatio);
 }
 
 void screen_draw(void)
@@ -73,30 +98,37 @@ void screen_draw(void)
 	ix=(SYSVID_WIDTH<<16)/W;
 	iy=(SYSVID_HEIGHT<<16)/H;
 	
-	buffer_scr += (y)*320;
-	buffer_scr += (x);
+	if (GameConf.m_ScreenRatio != 2) 
+	{
+		buffer_scr += (y)*320;
+		buffer_scr += (x);
+	}
+	
 	do   
 	{
 		unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-		W=screen_to_draw_region.w; 
-		x=0;
+		W=screen_to_draw_region.w; x=0;
 		do 
 		{
 			*buffer_scr++=buffer_mem[x>>16];
 			x+=ix;
 		} while (--W);
 		y+=iy;
+		if (GameConf.m_ScreenRatio == 0) buffer_scr += actualScreen->pitch - 320 - SYSVID_WIDTH;
 	} while (--H);
 	
 	static char buffer[4];
 	if (GameConf.m_DisplayFPS) 
 	{
-		SDL_Rect pos;
-		pos.x = 0;
-		pos.y = 0;
-		pos.w = 0;
-		pos.h = 0;
-		SDL_FillRect(actualScreen, &pos, 0);
+		if (GameConf.m_ScreenRatio == 2 || GameConf.m_ScreenRatio == 0)
+		{
+			SDL_Rect pos;
+			pos.x = 0;
+			pos.y = 0;
+			pos.w = 17;
+			pos.h = 16;
+			SDL_FillRect(actualScreen, &pos, 0);
+		}
 		sprintf(buffer,"%d",FPS);
 		print_string_video(2,2,buffer);
 	}
@@ -107,8 +139,8 @@ void screen_draw(void)
 
 void take_screenshot(void)
 {
-#if !defined(NOSCREENSHOTS)
-	// Save current screen in screenshots's layer
+#ifndef NOSCREENSHOTS
+	/* Save current screen in screenshots's layer */
 	SDL_BlitSurface(actualScreen, NULL, screenshots, NULL);
 #endif
 }

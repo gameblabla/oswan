@@ -18,10 +18,6 @@ A stripped-down version of Minizip is provided as well.
 
 Minizip is licensed under a 3-clause BSD license.
 
-The source code (especially the front-end) is incredibly hacked-up : 
-
-i miss the days where the source code was nice and clean...
-
 =================
 COMPATIBILITY
 =================

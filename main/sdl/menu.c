@@ -264,10 +264,10 @@ void menuContinue(void)
 {
 	if (cartridge_IsLoaded()) 
 	{
+		m_Flag = GF_GAMERUNNING;
 		Set_DrawRegion();
 		Reset_Controls();
 		gameMenu=false;
-		m_Flag = GF_GAMERUNNING;
 		Reset_Controls();
 	}
 }
@@ -674,6 +674,7 @@ void menuLoadState(void)
 	
 	if (cartridge_IsLoaded()) 
 	{
+		m_Flag = GF_GAMERUNNING;
 		Reset_Controls();
 		/* Clear screen before loading savestate*/
 		Set_DrawRegion();
@@ -688,7 +689,6 @@ void menuLoadState(void)
 		print_string("Load OK",COLOR_OK,COLOR_BG, 8+10*8,240-5 -10*3);
 		flip_screen(actualScreen);
 		gameMenu=false;
-		m_Flag = GF_GAMERUNNING;
 	}
 }
 

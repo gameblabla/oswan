@@ -6,7 +6,6 @@
 
 #include "WSFileio.h"
 
-
 #ifdef JOYSTICK
 	SDL_Joystick* joy;
 	short x_joy = 0, y_joy = 0;
@@ -21,8 +20,12 @@ void exit_button(void)
 	 /* SLIDER/SELECT or ESC -> MENU UI */
 	if (button_state[12] || button_state[13])
 	{
-		take_screenshot();
 		m_Flag = GF_MAINUI;
+		take_screenshot();
+		/* HACK - FIX ME*/
+#ifdef GCW
+		if (GameConf.m_ScreenRatio == 2) SetVideo(0);
+#endif
 	}
 }
 
@@ -42,7 +45,7 @@ int WsInputGetState(int mode)
 	 * 10 = A 
 	 * 11 = B
 	*/
-	char szFile[512];
+	char szFile[256];
 	int button = 0;
 	
 	Buttons();
