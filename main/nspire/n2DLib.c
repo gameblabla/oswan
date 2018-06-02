@@ -10,90 +10,36 @@ extern "C" {
  *  Buffering  *
  *             */
 
-unsigned short *BUFF_BASE_ADDRESS, *ALT_SCREEN_BASE_ADDRESS, *INV_BUFF, *temp;
-void *SCREEN_BACKUP;
-int swapped = 0;
+unsigned short *BUFF_BASE_ADDRESS;
 
-void initBuffering()
+void Init_Video()
 {
+	unsigned char init_scr;
+	
 	BUFF_BASE_ADDRESS = (unsigned short*)malloc(BUFF_BYTES_SIZE);
-	if(!BUFF_BASE_ADDRESS) exit(0);
-	
-	SCREEN_BACKUP = *(void**)0xC0000010;
-	
-	// Handle monochrome screens-specific shit
-	if(is_classic)
-		*(int32_t*)(0xC000001C) = (*((int32_t*)0xC000001C) & ~0x0e) | 0x08;
-	
-	ALT_SCREEN_BASE_ADDRESS = (unsigned short*)malloc(BUFF_BYTES_SIZE + 8);
-	if(!ALT_SCREEN_BASE_ADDRESS)
+	if(!BUFF_BASE_ADDRESS)
 	{
-		free(BUFF_BASE_ADDRESS);
-		*((int32_t*)0xC000001C) = (*((int32_t*)0xC000001C) & ~0x0e) | 0x04;
-		*(void**)0xC0000010 = SCREEN_BACKUP;
+		lcd_init(SCR_TYPE_INVALID);
 		exit(0);
 	}
 	
-	INV_BUFF = (unsigned short*)malloc(BUFF_BYTES_SIZE);
-	if(!INV_BUFF)
+	init_scr = lcd_init(SCR_320x240_565);
+	if (init_scr == 0)
 	{
-		free(ALT_SCREEN_BASE_ADDRESS);
-		free(BUFF_BASE_ADDRESS);
-		*((int32_t*)0xC000001C) = (*((int32_t*)0xC000001C) & ~0x0e) | 0x04;
-		*(void**)0xC0000010 = SCREEN_BACKUP;
+		lcd_init(SCR_TYPE_INVALID);
 		exit(0);
 	}
-	
-	*(void**)0xC0000010 = ALT_SCREEN_BASE_ADDRESS;
 }
 
-void updateScreen()
+void Update_screen()
 {
-	unsigned int *dest, *src, i, c;
-	// I use different methods for refreshing the screen for GS and color screens because according to my tests, the fastest for one isn't the fastest for the other
-	if(has_colors)
-	{
-		dest = (unsigned int*)ALT_SCREEN_BASE_ADDRESS;
-		src = (unsigned int*)BUFF_BASE_ADDRESS;
-		for(i = 0; i < 160 * 240; i++)
-			*dest++ = *src++;
-	}
-	else
-	{
-		dest = (unsigned int*)INV_BUFF;
-		src = (unsigned int*)BUFF_BASE_ADDRESS;
-		for(i = 0; i < 160 * 240; i++)
-		{
-			c = *src++;
-			c = ~c;
-			// c holds two 16-bits colors, decompose them while keeping them that way
-			*dest++ = ((c & 0x1f) + (((c >> 5) & 0x3f) >> 1) + ((c >> 11) & 0x1f)) / 3
-				+ ((((c >> 16) & 0x1f) + (((c >> 21) & 0x3f) >> 1) + ((c >> 27) & 0x1f)) / 3 << 16);
-			
-		}
-		
-		temp = *(void**)0xC0000010;
-		*(void**)0xC0000010 = INV_BUFF;
-		INV_BUFF = temp;
-		swapped = !swapped;
-	}
+	lcd_blit(BUFF_BASE_ADDRESS, SCR_320x240_565);
 }
 
-void deinitBuffering()
+void Kill_Video()
 {
-	// Handle monochrome screens-specific shit again
-	if(is_classic)
-		*((int32_t*)0xC000001C) = (*((int32_t*)0xC000001C) & ~0x0e) | 0x04;
-	*(void**)(0xC0000010) = SCREEN_BACKUP;
-	if(swapped)
-	{
-		temp = *(void**)0xC0000010;
-		*(void**)0xC0000010 = INV_BUFF;
-		INV_BUFF = temp;
-	}
-	free(INV_BUFF);
-	free(ALT_SCREEN_BASE_ADDRESS);
-	free(BUFF_BASE_ADDRESS);
+	if (BUFF_BASE_ADDRESS) free(BUFF_BASE_ADDRESS);
+	lcd_init(SCR_TYPE_INVALID);
 }
 
 /*            *
@@ -103,7 +49,7 @@ void deinitBuffering()
 void clearBufferB()
 {
 	int i;
-	for(i = 0; i < 160 * 240; i++)
+	for(i = 0; i < 38400; i++)
 		((unsigned int*)BUFF_BASE_ADDRESS)[i] = 0;
 }
 

@@ -13,6 +13,7 @@
 *.PBP
 *.SFO
 *.prx
+./core
 /oswan/main/*.sh
 /oswan/main/*.txt
 ./oswan

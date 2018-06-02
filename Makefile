@@ -1,6 +1,6 @@
 CC 			= gcc
 
-CFLAGS  	= -Os -fno-omit-frame-pointer -fdata-sections -ffunction-sections -s -ansi -I./main/emu -I./main/sdl -I./main/headers
+CFLAGS  	= -Ofast -fomit-frame-pointer -fdata-sections -ffunction-sections -s -ansi -I./main/emu -I./main/sdl -I./main/headers
 CFLAGS 	   += ${DEFINES}
 CFLAGS 	   += $(shell sdl-config --cflags)
 DEFINES 	= -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION -DPOSIX -DNATIVE_RESOLUTION

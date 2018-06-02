@@ -1,0 +1,46 @@
+CHAINPREFIX=/opt/rs97-toolchain
+CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/mipsel-linux-
+CC = $(CROSS_COMPILE)gcc
+CXX = $(CROSS_COMPILE)g++
+STRIP = $(CROSS_COMPILE)strip
+SYSROOT     := $(CHAINPREFIX)/usr/mipsel-buildroot-linux-uclibc/sysroot
+SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
+SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
+
+CFLAGS 		= -Ofast -fomit-frame-pointer -fdata-sections -ffunction-sections -mips32 -std=gnu89 -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+CFLAGS		+= $(SDL_CFLAGS)
+DEFINES 	= -DRS97
+LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto $(SDL_LIBS) -s
+OUT	 		= oswan.dge
+
+SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/rs97/drawing.c main/sdl/gui_drawing.c
+CPU 		= main/emu/cpu/nec.c
+CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
+
+# Sound support
+CORE 	   += main/emu/WSApu.c 
+DEFINES    += -DSOUND_ON -DSOUND_EMULATION
+
+# Enable this to support zip files
+# Here, Support for zips is enabled
+#CFLAGS 	   +=-DZIP_SUPPORT -I./minizip
+#LDFLAGS	   +=-lz
+#THIRD_PARTY = minizip/unzip.o minizip/ioapi.o
+
+SOURCES 	= ${SDL} ${CPU} ${CORE} 
+SOURCES	   += ${THIRD_PARTY}
+
+OBJS 		= ${SOURCES:.c=.o}
+
+all		: ${OUT} pack
+
+pack	:
+		mipsel-linux-strip $(OUT)
+		mv $(OUT) ./oswan-rs97/oswan.dge
+		zip -r oswan-rs97.zip oswan-rs97
+
+${OUT}	: ${OBJS}
+		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
+	
+clean	:
+		rm ${OBJS} ${OUT} ./oswan-rs97/${OUT}

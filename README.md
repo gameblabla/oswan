@@ -1,4 +1,3 @@
-=======================
 Gameblabla's Oswan
 =======================
 
@@ -22,7 +21,6 @@ The source code (especially the front-end) is incredibly hacked-up :
 
 i miss the days where the source code was nice and clean...
 
-=================
 COMPATIBILITY
 =================
 
@@ -30,7 +28,6 @@ The only problematic games are Pocket Figher and the One Piece games : they have
 
 Sound is far from accurate. (not even Mednafen is close to real hardware)
 
-=================
 COMPILLING
 =================
 
@@ -60,7 +57,6 @@ Make sure to compile libSDL with it and put them in MinGW paths.
 
 Then do a make -f Makefile.mingw
 
-===========
 CREDITS
 ===========
 

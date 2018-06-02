@@ -29,7 +29,7 @@ static unsigned char PDataN[8][BUFSIZEN];
 static unsigned int RandData[BUFSIZEN];
 static short sndbuffer[SND_RNGSIZE][2]; /* Sound Ring Buffer */
 
-static int  rBuf, wBuf;
+static int rBuf, wBuf;
 
 extern BYTE *Page[16];
 extern BYTE IO[0x100];
@@ -59,14 +59,12 @@ void mixaudioCallback(void *userdata, unsigned char *stream, int len)
         return;
         
 	SDL_LockMutex(sound_mutex);
-
-	/*printf("%d\n", apuBufLen());*/
 	
-	if (/*SDL_GetAudioStatus() == SDL_AUDIO_PAUSED &&*/ apuBufLen() < len) 
+	if (apuBufLen() < len) 
 	{
 		memset(stream,0,len);
 	}
-	else 
+	else
 	{
 		while(i > 3) 
 		{
@@ -134,7 +132,7 @@ void apuEnd(void)
 
 unsigned int apuMrand(unsigned int Degree)
 {
-#define BIT(n) (1<<n)
+	#define BIT(n) (1<<n)
     typedef struct
     {
         unsigned int N;
@@ -285,15 +283,21 @@ WORD apuShiftReg(void)
 
 void apuWaveSet(void)
 {
-	#define FLOAT_SND double
+	/* This needs to be at least in float format.
+	 * For some reasons, SDL port of Oswan used integers rather than floats.
+	 * As a result, some games like Klonoa will sound awful due to improper divisions.
+	 * No need for using double though, float is enough for divisions.
+	 * Floats should run faster on hardware that supports only single-precision FPUs.
+	 * */
+	#define FLOAT_SND float
 	static FLOAT_SND point[] = {0.0, 0.0, 0.0, 0.0};
     static FLOAT_SND preindex[] = {0.0, 0.0, 0.0, 0.0};
     FLOAT_SND   value = 0.0, lVol[4], rVol[4];
     FLOAT_SND   LL, RR, vVol;
 
-    int channel;
-    unsigned int index;
-    int i;
+    unsigned char channel;
+    unsigned long index;
+    unsigned long i;
 
     SDL_LockMutex(sound_mutex);
     

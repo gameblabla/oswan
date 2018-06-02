@@ -17,7 +17,7 @@
 
 void exit_button(void)
 {
-	 /* SLIDER/SELECT or ESC -> MENU UI */
+	/* SLIDER/SELECT or ESC -> MENU UI */
 	if (button_state[12] || button_state[13])
 	{
 		m_Flag = GF_MAINUI;

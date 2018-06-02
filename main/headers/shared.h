@@ -12,7 +12,6 @@
 #include <gccore.h>
 #endif
 
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -31,6 +30,12 @@
 	#ifndef JOYSTICK
 	#define JOYSTICK
 	#endif
+	#ifndef POSIX
+	#define POSIX
+	#endif
+#endif
+
+#ifdef RS97
 	#ifndef POSIX
 	#define POSIX
 	#endif
@@ -79,6 +84,11 @@
 	#define FLAG_VIDEO SDL_SWSURFACE
 	#define REAL_SCREEN_WIDTH 320
 	#define REAL_SCREEN_HEIGHT 240
+#elif defined(RS97)
+	#define BITDEPTH_OSWAN 16
+	#define FLAG_VIDEO SDL_HWSURFACE
+	#define REAL_SCREEN_WIDTH 320
+	#define REAL_SCREEN_HEIGHT 480
 #elif defined(DREAMCAST)
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
@@ -147,6 +157,35 @@
 	#define PAD_QUIT		KEY_NSPIRE_ESC
 
 #elif defined(GCW)
+
+	#define PAD_XUP		SDLK_UP
+	#define PAD_XLEFT	SDLK_LEFT
+	#define PAD_XRIGHT	SDLK_RIGHT
+	#define PAD_XDOWN	SDLK_DOWN
+
+	#define PAD_UP		SDLK_UP
+	#define PAD_LEFT	SDLK_LEFT
+	#define PAD_RIGHT	SDLK_RIGHT
+	#define PAD_DOWN	SDLK_DOWN
+	
+	#define PAD_A		SDLK_LCTRL
+	#define PAD_B		SDLK_LALT
+	
+	#define PAD_X		SDLK_LSHIFT
+	#define PAD_Y		SDLK_SPACE
+	
+	#define PAD_L		SDLK_TAB
+	#define PAD_R		SDLK_BACKSPACE
+	
+	#define PAD_START		SDLK_RETURN
+	#define PAD_SELECT		SDLK_ESCAPE
+	
+	#define PAD_SLIDER		SDLK_HOME
+	
+	#define PAD_QUIT		SDLK_ESCAPE
+	
+
+#elif defined(RS97)
 
 	#define PAD_XUP		SDLK_UP
 	#define PAD_XLEFT	SDLK_LEFT
