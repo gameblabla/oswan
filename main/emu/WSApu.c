@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 #include "WSHard.h"
 #include "WSApu.h"

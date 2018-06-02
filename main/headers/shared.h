@@ -4,7 +4,7 @@
 #ifdef _TINSPIRE
 #include <os.h>
 #else
-#include <SDL.h>
+#include <SDL/SDL.h>
 #endif
 
 #ifdef GECKO
@@ -102,7 +102,7 @@
 #endif
 
 #ifdef _TINSPIRE
-	#define PATH_DIRECTORY NDLESS_DIR
+	#define PATH_DIRECTORY "./"
 	#define SAVE_DIRECTORY ".oswan/"
 	#define EXTENSION ".tns"
 #elif defined(GCW)

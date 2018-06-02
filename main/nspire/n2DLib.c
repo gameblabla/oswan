@@ -12,7 +12,7 @@ extern "C" {
 
 unsigned short *BUFF_BASE_ADDRESS;
 
-void Init_Video()
+void initBuffering()
 {
 	unsigned char init_scr;
 	
@@ -31,12 +31,12 @@ void Init_Video()
 	}
 }
 
-void Update_screen()
+void updateScreen()
 {
 	lcd_blit(BUFF_BASE_ADDRESS, SCR_320x240_565);
 }
 
-void Kill_Video()
+void deinitBuffering()
 {
 	if (BUFF_BASE_ADDRESS) free(BUFF_BASE_ADDRESS);
 	lcd_init(SCR_TYPE_INVALID);

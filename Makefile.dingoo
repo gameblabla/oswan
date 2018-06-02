@@ -1,9 +1,9 @@
-CC 		= gcc
+CC 		= mipsel-linux-gcc
 
-CFLAGS 		= -O2 -g -std=gnu89 $(shell sdl-config --cflags) -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
-DEFINES 	= -DDINGOO -DBETTER_ACCURACY
-LDFLAGS 	= -Wl,--as-needed -flto -lSDL
-OUT	 	= oswan.dge
+CFLAGS 		= -O2 -msoft-float -std=gnu89 $(shell sdl-config --cflags) -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+DEFINES 	= -DDINGOO
+LDFLAGS 	= -Wl,--as-needed -flto -lSDL -s
+OUT	 		= oswan.dge
 
 SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/sdl/drawing.c main/sdl/gui_drawing.c
 CPU 		= main/emu/cpu/nec.c
