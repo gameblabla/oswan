@@ -13,7 +13,7 @@ DEFINES 	= -DRS97
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto $(SDL_LIBS) -s
 OUT	 		= oswan.dge
 
-SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/rs97/drawing.c main/sdl/gui_drawing.c
+SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/rs97/drawing.c main/rs97/gui_drawing.c
 CPU 		= main/emu/cpu/nec.c
 CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
 

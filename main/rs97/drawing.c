@@ -47,7 +47,6 @@ void SetVideo(unsigned char mode)
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	//actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
 	actualScreen = SDL_SetVideoMode(320, 480, BITDEPTH_OSWAN, flags);
 	
 	#if !defined(NOSCREENSHOTS)
@@ -101,7 +100,6 @@ void screen_draw(void)
 	
 	if (GameConf.m_ScreenRatio != 2) 
 	{
-		//buffer_scr += (y)*320;
 		buffer_scr += (x);
 	}
 	
