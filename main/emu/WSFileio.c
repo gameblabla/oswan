@@ -314,7 +314,15 @@ int WsCreate(char *CartName)
     }
     if (RAMSize)
     {
-		snprintf(SaveName, sizeof(SaveName), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(CartName, '/')+1, EXTENSION);
+		char* tmp =  strstr(CartName, "/");
+		if (tmp == NULL)
+		{
+			snprintf(SaveName, sizeof(SaveName), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, CartName, EXTENSION);
+		}
+		else
+		{
+			snprintf(SaveName, sizeof(SaveName), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(CartName, '/')+1, EXTENSION);
+		}
         
         if ((fp = fopen(SaveName, "rb")) != NULL)
         {

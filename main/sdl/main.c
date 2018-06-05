@@ -90,7 +90,10 @@ void initSDL(void)
 
 int main(int argc, char *argv[]) 
 {
-	
+#ifdef NOROMLOADER
+	if (argc < 2) return 0;	
+#endif
+
 #ifdef GECKO
 	fatInitDefault();
 	WPAD_Init();
@@ -213,6 +216,7 @@ int main(int argc, char *argv[])
 
 void exit_oswan()
 {
+	printf("LOL\n");
 	#ifdef SOUND_ON
 		SDL_PauseAudio(1);
 	#endif

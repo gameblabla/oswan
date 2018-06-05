@@ -1,7 +1,9 @@
 #include "shared.h"
 
 MENUITEM MainMenuItems[] = {
+#ifndef NOROMLOADER
 	{"Load ROM", NULL, 0, NULL, &menuFileBrowse},
+#endif
 	{"Continue", NULL, 0, NULL, &menuContinue},
 	{"Reset", NULL, 0, NULL, &menuReset},
 	{"Load State: ", (short *) &GameConf.reserved1,  8, (char *) &mnuSaves, &menuLoadState},
@@ -25,6 +27,9 @@ MENUITEM MainMenuItems[] = {
 
 MENU mnuMainMenu = { 
 	11
+	#if defined(NOROMLOADER)
+	-1
+	#endif
 	#if defined(NOSCREENSHOTS)
 	-1
 	#endif
