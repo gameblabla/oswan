@@ -7,7 +7,7 @@ SYSROOT     := $(CHAINPREFIX)/usr/mipsel-buildroot-linux-uclibc/sysroot
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
-CFLAGS 		= -Ofast -fomit-frame-pointer -fdata-sections -ffunction-sections -mips32 -std=gnu89 -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+CFLAGS 		= -Ofast -fomit-frame-pointer -fdata-sections -ffunction-sections -mhard-float -mips32 -std=gnu89 -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
 CFLAGS		+= $(SDL_CFLAGS)
 DEFINES 	= -DRS97 -DNOROMLOADER
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto $(SDL_LIBS) -s

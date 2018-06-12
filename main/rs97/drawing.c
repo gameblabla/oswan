@@ -46,7 +46,7 @@ void screen_draw(void)
 	x=0;
 	y=0; 
 	W=320;
-	H=480;
+	H=240;
 	ix=(SYSVID_WIDTH<<16)/W;
 	iy=(SYSVID_HEIGHT<<16)/H;
 	do   
@@ -59,6 +59,7 @@ void screen_draw(void)
 			x+=ix;
 		} while (--W);
 		y+=iy;
+		buffer_scr+= 320;
 	} while (--H);
 	
 	static char buffer[3];
