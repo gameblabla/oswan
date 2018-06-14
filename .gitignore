@@ -16,6 +16,7 @@
 ./core
 /oswan/main/*.sh
 /oswan/main/*.txt
+oswan-rs97/*.dge
 ./oswan
 /opk/oswan
 main/sdl/*.o

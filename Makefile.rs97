@@ -7,11 +7,12 @@ SYSROOT     := $(CHAINPREFIX)/usr/mipsel-buildroot-linux-uclibc/sysroot
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
-CFLAGS 		= -Ofast -fomit-frame-pointer -fdata-sections -ffunction-sections -mhard-float -mips32 -std=gnu89 -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+CFLAGS 		= -Ofast -fdata-sections -ffunction-sections -mhard-float -mips32 -mno-mips16 -std=gnu89 -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
 CFLAGS		+= $(SDL_CFLAGS)
 DEFINES 	= -DRS97 -DNOROMLOADER
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto $(SDL_LIBS) -s
 OUT	 		= oswan.dge
+ZIPFILE		= oswan-rs97.zip
 
 SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c main/rs97/drawing.c main/rs97/gui_drawing.c
 CPU 		= main/emu/cpu/nec.c
@@ -37,10 +38,10 @@ all		: ${OUT} pack
 pack	:
 		$(STRIP) $(OUT)
 		mv $(OUT) ./oswan-rs97/oswan.dge
-		zip -r oswan-rs97.zip oswan-rs97
+		zip -r ${ZIPFILE} oswan-rs97
 
 ${OUT}	: ${OBJS}
 		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
 	
 clean	:
-		rm ${OBJS} ${OUT} ./oswan-rs97/${OUT}
+		rm ${OBJS} ${OUT} ./oswan-rs97/${OUT} ./${ZIPFILE}

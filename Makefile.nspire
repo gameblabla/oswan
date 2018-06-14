@@ -1,7 +1,7 @@
 CC			= nspire-gcc
 
 CFLAGS  	= -Ofast -std=gnu89 -I./main/emu -I./main/sdl -I./main/nspire -I./main/headers
-CFLAGS         += -fdata-sections -ffunction-sections -marm -march=armv5te -mtune=arm926ej-s -fno-ipa-sra -Wall -Wextra
+CFLAGS 		+= -fdata-sections -ffunction-sections -marm -march=armv5te -mtune=arm926ej-s -Wall -Wextra
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto
 OUT  		= oswan
 

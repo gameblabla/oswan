@@ -7,15 +7,11 @@ It can play most, if not all Wonderswan games properly. (except some B&W games)
 
 It used to be based on Alekmaul's Oswan port but significant modifications were done to it.
 
-This fork is also even more accurate than upstream : 
+This fork is also even more accurate than upstream, while still being faster and portable : 
 
-Games are now playing at the proper speed,  
+Games are now playing at the proper speed, games like Klonoa and Beatmania now sound closer to real hardware.
 
-games like Klonoa and Beatmania now sound closer to real hardware.
-
-A stripped-down version of Minizip is provided as well. 
-
-Minizip is licensed under a 3-clause BSD license.
+A stripped-down version of Minizip is provided as well. Minizip is licensed under a 3-clause BSD license.
 
 The source code (especially the front-end) is incredibly hacked-up : 
 

@@ -17,29 +17,29 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 #include "game_input.h"
 
 #ifndef NO_WAIT
-void msleep(unsigned char milisec);
+void msleep(uint8_t milisec);
 #endif
 void exit_oswan();
 
-extern void mixaudioCallback(void *userdata, unsigned char *stream, int len);
+extern void mixaudioCallback(void *userdata, uint8_t *stream, int32_t len);
 
-unsigned int m_Flag;
-unsigned int interval;
+uint32_t m_Flag;
+uint32_t interval;
 
 gamecfg GameConf;
-char gameName[512];
-char current_conf_app[MAX__PATH];
+int8_t gameName[512];
+int8_t current_conf_app[MAX__PATH];
 
-unsigned long nextTick, lastTick = 0, newTick, currentTick, wait;
-unsigned char FPS = 60; 
-unsigned char pastFPS = 0; 
+uint32_t nextTick, lastTick = 0, newTick, currentTick, wait;
+uint8_t FPS = 60; 
+uint8_t pastFPS = 0; 
 
 SDL_Surface *actualScreen;
 #if !defined(NOSCREENSHOTS)
 SDL_Surface *screenshots;
 #endif
 
-unsigned long SDL_UXTimerRead(void) 
+uint32_t SDL_UXTimerRead(void) 
 {
 	struct timeval tval; /* timing	*/
   	gettimeofday(&tval, 0);
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 	getcwd(current_conf_app, MAX__PATH);
 	
 #if defined(HOME_SUPPORT)
-	char home_path[256];
+	int8_t home_path[256];
 	snprintf(home_path, sizeof(home_path), "%s/.oswan", PATH_DIRECTORY);
 	/* 
 	 * If folder does not exists then create it 
@@ -216,7 +216,6 @@ int main(int argc, char *argv[])
 
 void exit_oswan()
 {
-	printf("LOL\n");
 	#ifdef SOUND_ON
 		SDL_PauseAudio(1);
 	#endif
@@ -242,7 +241,7 @@ void exit_oswan()
 }
 
 #ifndef NO_WAIT
-void msleep(unsigned char milisec)
+void msleep(uint8_t milisec)
 {
 /* 
  * nanosleep is better in every way.
@@ -250,7 +249,7 @@ void msleep(unsigned char milisec)
 */
 #ifdef POSIX
 	struct timespec req={0};
-	time_t sec=(unsigned short)(milisec/1000);
+	time_t sec=(uint16_t)(milisec/1000);
 
 	milisec=milisec-(sec*1000);
 	req.tv_sec=sec;

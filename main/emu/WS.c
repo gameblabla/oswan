@@ -16,42 +16,42 @@ extern void graphics_paint(void);
 
 #define IPeriod 32          	/* HBlank/8 (256/8)					*/
 
-/*int Run;*/
-BYTE *Page[16];             	/* バンク割り当て 						*/
-BYTE IRAM[0x10000];         	/* 内部RAM 64kB = Page[0]			*/
-BYTE IO[0x100];             	/* IO								*/
-BYTE MemDummy[0x10000];     	/* ダミーバンク 64kB					*/
-BYTE *ROMMap[0x100];        	/* C-ROMバンクマップ					*/
-unsigned short ROMBanks;    	/* C-ROMバンク数						*/
-BYTE *RAMMap[0x100];        	/* C-RAMバンクマップ					*/
-unsigned char RAMBanks;     	/* C-RAMバンク数						*/
-int RAMSize;               	 	/* C-RAM総容量						*/
-WORD IEep[64];              	/* 内蔵EEPROM						*/
+/*int32_t Run;*/
+uint8_t *Page[16];             	/* バンク割り当て 						*/
+uint8_t IRAM[0x10000];         	/* 内部RAM 64kB = Page[0]			*/
+uint8_t IO[0x100];             	/* IO								*/
+uint8_t MemDummy[0x10000];     	/* ダミーバンク 64kB					*/
+uint8_t *ROMMap[0x100];        	/* C-ROMバンクマップ					*/
+uint16_t ROMBanks;    	/* C-ROMバンク数						*/
+uint8_t *RAMMap[0x100];        	/* C-RAMバンクマップ					*/
+uint8_t RAMBanks;     	/* C-RAMバンク数						*/
+int32_t RAMSize;               	 	/* C-RAM総容量						*/
+uint16_t IEep[64];              	/* 内蔵EEPROM						*/
 struct EEPROM sIEep;        	/* EEPROM読み書き用構造体（内蔵）		*/
 struct EEPROM sCEep;        	/* EEPROM読み書き用構造体（カートリッジ）	*/
-unsigned char CartKind;     	/* セーブメモリの種類（CK_EEP = EEPROM）	*/
+uint8_t CartKind;     	/* セーブメモリの種類（CK_EEP = EEPROM）	*/
 
-static int ButtonState = 0x0000;    /* Button state: B.A.START.OPTION.X4.X3.X2.X1.Y4.Y3.Y2.Y1	*/
-static unsigned char HVMode;
-static WORD HTimer;
-static WORD VTimer;
-static unsigned char RtcCount;
+static int32_t ButtonState = 0x0000;    /* Button state: B.A.START.OPTION.X4.X3.X2.X1.Y4.Y3.Y2.Y1	*/
+static uint8_t HVMode;
+static uint16_t HTimer;
+static uint16_t VTimer;
+static uint8_t RtcCount;
 
 #ifdef SOUND_EMULATION
-static unsigned long WaveMap;
+static uint32_t WaveMap;
 #endif
 
 #define MONO(C) (C)<<12 | (C)<<7 | (C)<<1
 
-static WORD DefColor[] = {
+static uint16_t DefColor[] = {
     MONO(0xF), MONO(0xE), MONO(0xD), MONO(0xC), MONO(0xB), MONO(0xA), MONO(0x9), MONO(0x8),
     MONO(0x7), MONO(0x6), MONO(0x5), MONO(0x4), MONO(0x3), MONO(0x2), MONO(0x1), MONO(0x0)
 };
 
-void ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
+void ComEeprom(struct EEPROM *eeprom, const uint16_t *cmd, uint16_t *data)
 {
-    int i, j, op, addr;
-    const int tblmask[16][5]=
+    int32_t i, j, op, addr;
+    const int32_t tblmask[16][5]=
     {
         {0x0000, 0, 0x0000, 0, 0x0000}, /* dummy */
         {0x0000, 0, 0x0000, 0, 0x0000},
@@ -139,22 +139,22 @@ void ComEeprom(struct EEPROM *eeprom, const WORD *cmd, WORD *data)
     }
 }
 
-BYTE ReadMem(const DWORD A)
+uint8_t ReadMem(const uint32_t A)
 {
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
 
-void WriteMem(const DWORD A, const BYTE V)
+void WriteMem(const uint32_t A, const uint8_t V)
 {
     (*WriteMemFnTable[(A >> 16) & 0x0F])(A, V);
 }
 
-static void WriteRom(const DWORD A, const BYTE V)
+static void WriteRom(const uint32_t A, const uint8_t V)
 {
     /*ErrorMsg(ERR_WRITE_ROM);*/
 }
 
-static void WriteIRam(const DWORD A, const BYTE V)
+static void WriteIRam(const uint32_t A, const uint8_t V)
 {
     IRAM[A & 0xFFFF] = V;
     if((A & 0xFE00) == 0xFE00)
@@ -182,15 +182,15 @@ static void WriteIRam(const DWORD A, const BYTE V)
 #define FLASH_CMD_CONTINUE_RES2 0xF0
 #define FLASH_CMD_CONTINUE_RES3 0x00
 #define FLASH_CMD_WRITE         0xA0
-static void WriteCRam(const DWORD A, const BYTE V)
+static void WriteCRam(const uint32_t A, const uint8_t V)
 {
-    static int flashCommand1 = 0;
-    static int flashCommand2 = 0;
-    static int flashWriteSet = 0;
-    static int flashWriteOne = 0;
-    static int flashWriteReset = 0;
-    static int flashWriteEnable = 0;
-    int offset = A & 0xFFFF;
+    static int32_t flashCommand1 = 0;
+    static int32_t flashCommand2 = 0;
+    static int32_t flashWriteSet = 0;
+    static int32_t flashWriteOne = 0;
+    static int32_t flashWriteReset = 0;
+    static int32_t flashWriteEnable = 0;
+    int32_t offset = A & 0xFFFF;
 
 	/* 
     if (offset >= RAMSize)
@@ -279,9 +279,9 @@ static void WriteCRam(const DWORD A, const BYTE V)
     }
 }
 
-void WriteIO(const DWORD A, BYTE V)
+void WriteIO(const uint32_t A, uint8_t V)
 {
-    int i, j, k;
+    int32_t i, j, k;
 
     if(A >= 0x100)
     {
@@ -356,16 +356,16 @@ void WriteIO(const DWORD A, BYTE V)
     case 0x48:
         if(V & 0x80)
         {
-            i = *(DWORD*)(IO + DMASRC); /* IO[]が4バイト境界にあることが必要 */
-            j = *(WORD*)(IO + DMADST);
-            k = *(WORD*)(IO + DMACNT);
+            i = *(uint32_t*)(IO + DMASRC); /* IO[]が4バイト境界にあることが必要 */
+            j = *(uint16_t*)(IO + DMADST);
+            k = *(uint16_t*)(IO + DMACNT);
             while(k--)
             {
                 WriteMem(j++, ReadMem(i++));
             }
-            *(WORD*)(IO + DMACNT) = 0;
-            *(DWORD*)(IO + DMASRC) = i; /* IO[]が4バイト境界にあることが必要 */
-            *(WORD*)(IO + DMADST) = j;
+            *(uint16_t*)(IO + DMACNT) = 0;
+            *(uint32_t*)(IO + DMASRC) = i; /* IO[]が4バイト境界にあることが必要 */
+            *(uint16_t*)(IO + DMADST) = j;
             V &= 0x7F;
         }
         break;
@@ -373,22 +373,22 @@ void WriteIO(const DWORD A, BYTE V)
     case 0x80:
     case 0x81:
         IO[A] = V;
-        Ch[0].freq = *(WORD*)(IO + SND1FRQ);
+        Ch[0].freq = *(uint16_t*)(IO + SND1FRQ);
         return;
     case 0x82:
     case 0x83:
         IO[A] = V;
-        Ch[1].freq = *(WORD*)(IO + SND2FRQ);
+        Ch[1].freq = *(uint16_t*)(IO + SND2FRQ);
         return;
     case 0x84:
     case 0x85:
         IO[A] = V;
-        Ch[2].freq = *(WORD*)(IO + SND3FRQ);
+        Ch[2].freq = *(uint16_t*)(IO + SND3FRQ);
         return;
     case 0x86:
     case 0x87:
         IO[A] = V;
-        Ch[3].freq = *(WORD*)(IO + SND4FRQ);
+        Ch[3].freq = *(uint16_t*)(IO + SND4FRQ);
         return;
     case 0x88:
         Ch[0].volL = (V >> 4) & 0x0F;
@@ -440,7 +440,7 @@ void WriteIO(const DWORD A, BYTE V)
     case 0xA2:
         if(V & 0x01)
         {
-            HTimer = *(WORD*)(IO + HPRE);
+            HTimer = *(uint16_t*)(IO + HPRE);
         }
         else
         {
@@ -448,7 +448,7 @@ void WriteIO(const DWORD A, BYTE V)
         }
         if(V & 0x04)
         {
-            VTimer = *(WORD*)(IO + VPRE);
+            VTimer = *(uint16_t*)(IO + VPRE);
         }
         else
         {
@@ -458,7 +458,7 @@ void WriteIO(const DWORD A, BYTE V)
     case 0xA4:
     case 0xA5:
         IO[A] = V;
-        HTimer = *(WORD*)(IO + HPRE); /* FF */
+        HTimer = *(uint16_t*)(IO + HPRE); /* FF */
         return;
     case 0xA6:
     case 0xA7:
@@ -466,7 +466,7 @@ void WriteIO(const DWORD A, BYTE V)
         IO[A + 4] = V; /* Dark eyes */
         if(IO[TIMCTL] & 0x04)
         {
-            VTimer = *(WORD*)(IO + VPRE);
+            VTimer = *(uint16_t*)(IO + VPRE);
         }
         return;
     case 0xB3:
@@ -477,16 +477,16 @@ void WriteIO(const DWORD A, BYTE V)
         V |= 0x04;
         break;
     case 0xB5:
-        IO[KEYCTL] = (BYTE)(V & 0xF0);
-        if(IO[KEYCTL] & 0x40) IO[KEYCTL] |= (BYTE)((ButtonState >> 8) & 0x0F);
-        if(IO[KEYCTL] & 0x20) IO[KEYCTL] |= (BYTE)((ButtonState >> 4) & 0x0F);
-        if(IO[KEYCTL] & 0x10) IO[KEYCTL] |= (BYTE)(ButtonState & 0x0F);
+        IO[KEYCTL] = (uint8_t)(V & 0xF0);
+        if(IO[KEYCTL] & 0x40) IO[KEYCTL] |= (uint8_t)((ButtonState >> 8) & 0x0F);
+        if(IO[KEYCTL] & 0x20) IO[KEYCTL] |= (uint8_t)((ButtonState >> 4) & 0x0F);
+        if(IO[KEYCTL] & 0x10) IO[KEYCTL] |= (uint8_t)(ButtonState & 0x0F);
         return;
     case 0xB6:
-        IO[IRQACK] &= (BYTE)~V;
+        IO[IRQACK] &= (uint8_t)~V;
         return;
     case 0xBE:
-        ComEeprom(&sIEep, (WORD*)(IO + EEPCMD), (WORD*)(IO + EEPDATA));
+        ComEeprom(&sIEep, (uint16_t*)(IO + EEPCMD), (uint16_t*)(IO + EEPDATA));
         V >>= 4;
         break;
     case 0xC0:
@@ -525,7 +525,7 @@ void WriteIO(const DWORD A, BYTE V)
         Page[3] = ROMMap[V];
         break;
     case 0xC8:
-        ComEeprom(&sCEep, (WORD*)(IO + CEEPCMD), (WORD*)(IO + CEEPDATA));
+        ComEeprom(&sCEep, (uint16_t*)(IO + CEEPCMD), (uint16_t*)(IO + CEEPDATA));
         if(V & 0x10)
         {
             V >>= 4;
@@ -554,7 +554,7 @@ void WriteIO(const DWORD A, BYTE V)
 }
 
 #define  BCD(value) ((value / 10) << 4) | (value % 10)
-BYTE ReadIO(const DWORD A)
+uint8_t ReadIO(const uint32_t A)
 {
     switch(A)
     {
@@ -563,7 +563,7 @@ BYTE ReadIO(const DWORD A)
     case 0xCB:
         if (IO[RTCCMD] == 0x15)  /* Get time command */
         { 
-            BYTE year, mon, mday, wday, hour, min, sec, j;
+            uint8_t year, mon, mday, wday, hour, min, sec, j;
             struct tm *newtime;
             time_t long_time;
 
@@ -636,7 +636,7 @@ WriteMemFn WriteMemFnTable[16]= {
 
 void WsReset (void)
 {
-    int i, j;
+    int32_t i, j;
 
     Page[0x0] = IRAM;
     sIEep.data = IEep;
@@ -644,7 +644,7 @@ void WsReset (void)
     if(CartKind & CK_EEP)
     {
         Page[0x1] = MemDummy;
-        sCEep.data = (WORD*)(RAMMap[0x00]);
+        sCEep.data = (uint16_t*)(RAMMap[0x00]);
         sCEep.we = 0;
     }
     else
@@ -737,7 +737,7 @@ void WsReset (void)
     nec_set_reg(NEC_SP, 0x2000);
 }
 
-void WsRomPatch(const BYTE *buf)
+void WsRomPatch(const uint8_t *buf)
 {
     if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x16)) 					/* SWJ-BANC16 STAR HEARTS 			*/
     {
@@ -759,10 +759,10 @@ void WsRomPatch(const BYTE *buf)
     }
 }
 
-int Interrupt(void)
+int32_t Interrupt(void)
 {
-    static int LCount=0, Joyz=0x0000;
-    int i, j;
+    static int32_t LCount=0, Joyz=0x0000;
+    int32_t i, j;
 
     if(++LCount>=8) 	/* 8回で1Hblank期間 */
     {
@@ -773,7 +773,7 @@ int Interrupt(void)
         case 0:
             if (IO[RSTRL] == 144)
             {
-                DWORD VCounter;
+                uint32_t VCounter;
 
                 ButtonState = WsInputGetState(HVMode);
                 if((ButtonState ^ Joyz) & Joyz)
@@ -785,17 +785,17 @@ int Interrupt(void)
                 }
                 Joyz = ButtonState;
                 /* Vblankカウントアップ */
-                VCounter = *(WORD*)(IO + VCNTH) << 16 | *(WORD*)(IO + VCNTL);
+                VCounter = *(uint16_t*)(IO + VCNTH) << 16 | *(uint16_t*)(IO + VCNTL);
                 VCounter++;
-                *(WORD*)(IO + VCNTL) = (WORD)VCounter;
-                *(WORD*)(IO + VCNTH) = (WORD)(VCounter >> 16);
+                *(uint16_t*)(IO + VCNTL) = (uint16_t)VCounter;
+                *(uint16_t*)(IO + VCNTH) = (uint16_t)(VCounter >> 16);
             }
             break;
 #ifdef SOUND_ON
         case 2:
             /* Hblank毎に1サンプルセットすることで12KHzのwaveデータが出来る */
             apuWaveSet();
-			*(WORD*)(IO + NCSR) = apuShiftReg();
+			*(uint16_t*)(IO + NCSR) = apuShiftReg();
             break;
 #endif
         case 4:
@@ -829,7 +829,7 @@ int Interrupt(void)
                 {
                     if(IO[TIMCTL] & 0x02)
                     {
-                        HTimer = *(WORD*)(IO + HPRE);
+                        HTimer = *(uint16_t*)(IO + HPRE);
                     }
                     if(IO[IRQENA] & HTM_IFLAG)
                     {
@@ -837,7 +837,7 @@ int Interrupt(void)
                     }
                 }
             }
-            else if(*(WORD*)(IO + HPRE) == 1)
+            else if(*(uint16_t*)(IO + HPRE) == 1)
             {
                 if(IO[IRQENA] & HTM_IFLAG)
                 {
@@ -855,7 +855,7 @@ int Interrupt(void)
                 {
                     if(IO[TIMCTL] & 0x08)
                     {
-                        VTimer = *(WORD*)(IO + VPRE);
+                        VTimer = *(uint16_t*)(IO + VPRE);
                     }
                     if(IO[IRQENA] & VTM_IFLAG)
                     {
@@ -875,7 +875,7 @@ int Interrupt(void)
                 IO[RSTRL] = 0;
             }
             /* Hblankカウントアップ */
-            (*(WORD*)(IO + HCNT))++;
+            (*(uint16_t*)(IO + HCNT))++;
             break;
         default:
             break;
@@ -883,11 +883,11 @@ int Interrupt(void)
     return IO[IRQACK];
 }
 
-int WsRun(void)
+int32_t WsRun(void)
 {
-    static int period = IPeriod;
-    int i, iack, inum;
-    unsigned short cycle;
+    static int32_t period = IPeriod;
+    int32_t i, iack, inum;
+    uint16_t cycle;
     
     for(i = 0; i < 1706; i++)
     {
@@ -910,7 +910,7 @@ int WsRun(void)
     return 0;
 }
 
-void SetHVMode(const unsigned char Mode)
+void SetHVMode(const uint8_t Mode)
 {
     HVMode = Mode;
 }

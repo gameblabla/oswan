@@ -4,7 +4,7 @@ void Get_resolution(void)
 {
 }
 
-void Set_resolution(unsigned short w, unsigned short h)
+void Set_resolution(uint16_t w, uint16_t h)
 {
 	screen_scale.w_display = w;
 	screen_scale.h_display = h;
@@ -12,8 +12,8 @@ void Set_resolution(unsigned short w, unsigned short h)
 
 void SetVideo(unsigned char mode)
 {
-	int flags = FLAG_VIDEO;
-	unsigned short w = 224, h = 144;
+	int32_t flags = FLAG_VIDEO;
+	uint16_t w = 224, h = 144;
 	
 	if (m_Flag == GF_MAINUI) 
 	{
@@ -86,8 +86,8 @@ void Set_DrawRegion(void)
 
 void screen_draw(void)
 {
-	unsigned short *buffer_scr = (unsigned short *) actualScreen->pixels;
-	unsigned int W,H,ix,iy,x,y;
+	uint16_t *buffer_scr = (uint16_t *) actualScreen->pixels;
+	uint32_t W,H,ix,iy,x,y;
 	
 	SDL_LockSurface(actualScreen);
 	
@@ -106,7 +106,7 @@ void screen_draw(void)
 	
 	do   
 	{
-		unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
+		uint16_t *buffer_mem=(uint16_t *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
 		W=screen_to_draw_region.w; x=0;
 		do 
 		{

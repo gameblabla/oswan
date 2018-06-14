@@ -8,7 +8,7 @@
 
 #ifdef JOYSTICK
 	SDL_Joystick* joy;
-	short x_joy = 0, y_joy = 0;
+	int16_t x_joy = 0, y_joy = 0;
 	#define JOYSTICK_UP y_joy < -7500
 	#define JOYSTICK_LEFT	x_joy < -7500
 	#define JOYSTICK_DOWN y_joy > 7500
@@ -29,7 +29,7 @@ void exit_button(void)
 	}
 }
 
-int WsInputGetState(int mode)
+int32_t WsInputGetState(int32_t mode)
 {
 	/*
 	 * 0 = Up  (Y1)
@@ -45,8 +45,8 @@ int WsInputGetState(int mode)
 	 * 10 = A 
 	 * 11 = B
 	*/
-	char szFile[256];
-	int button = 0;
+	int8_t szFile[256];
+	int32_t button = 0;
 	
 	Buttons();
 	button = Fire_buttons();
@@ -210,10 +210,10 @@ int WsInputGetState(int mode)
 	return button;
 }
 
-int Fire_buttons(void)
+int32_t Fire_buttons(void)
 {
-	static unsigned char x_button = 0, y_button = 0;
-	int button = 0;
+	static uint8_t x_button = 0, y_button = 0;
+	int32_t button = 0;
 	
 	switch (GameConf.input_layout)
 	{

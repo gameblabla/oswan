@@ -10,13 +10,13 @@ extern "C" {
  *  Buffering  *
  *             */
 
-unsigned short *BUFF_BASE_ADDRESS;
+uint16_t *BUFF_BASE_ADDRESS;
 
 void initBuffering()
 {
-	unsigned char init_scr;
+	uint8_t init_scr;
 	
-	BUFF_BASE_ADDRESS = (unsigned short*)malloc(BUFF_BYTES_SIZE);
+	BUFF_BASE_ADDRESS = (uint16_t*)malloc(BUFF_BYTES_SIZE);
 	if(!BUFF_BASE_ADDRESS)
 	{
 		lcd_init(SCR_TYPE_INVALID);
@@ -48,28 +48,28 @@ void deinitBuffering()
 
 void clearBufferB()
 {
-	int i;
+	int32_t i;
 	for(i = 0; i < 38400; i++)
-		((unsigned int*)BUFF_BASE_ADDRESS)[i] = 0;
+		((uint32_t*)BUFF_BASE_ADDRESS)[i] = 0;
 }
 
 
-inline void setPixelUnsafe(unsigned int x, unsigned int y, unsigned short c)
+inline void setPixelUnsafe(uint32_t x, uint32_t y, uint16_t c)
 {
-	*((unsigned short*)BUFF_BASE_ADDRESS + x + y * 320) = c;
+	*((uint16_t*)BUFF_BASE_ADDRESS + x + y * 320) = c;
 }
 
 
-inline void setPixel(unsigned int x, unsigned int y, unsigned short c)
+inline void setPixel(uint32_t x, uint32_t y, uint16_t c)
 {
 	if(x < 320 && y < 240)
-		*((unsigned short*)BUFF_BASE_ADDRESS + x + y * 320) = c;
+		*((uint16_t*)BUFF_BASE_ADDRESS + x + y * 320) = c;
 }
 
 
-void fillRect(int x, int y, int w, int h, unsigned short c)
+void fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t c)
 {
-	unsigned int _x = max(x, 0), _y = max(y, 0), _w = min(320 - _x, w - _x + x), _h = min(240 - _y, h - _y + y), i, j;
+	uint32_t _x = max(x, 0), _y = max(y, 0), _w = min(320 - _x, w - _x + x), _h = min(240 - _y, h - _y + y), i, j;
 	if(_x < 320 && _y < 240)
 	{
 		for(j = _y; j < _y + _h; j++)
@@ -82,14 +82,14 @@ void fillRect(int x, int y, int w, int h, unsigned short c)
  *  Geometry  *
  *            */
  
-void drawLine(int x1, int y1, int x2, int y2, unsigned short c)
+void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint16_t c)
 {
-	int dx = abs(x2-x1);
-	int dy = abs(y2-y1);
-	int sx = (x1 < x2)?1:-1;
-	int sy = (y1 < y2)?1:-1;
-	int err = dx-dy;
-	int e2;
+	int32_t dx = abs(x2-x1);
+	int32_t dy = abs(y2-y1);
+	int32_t sx = (x1 < x2)?1:-1;
+	int32_t sy = (y1 < y2)?1:-1;
+	int32_t err = dx-dy;
+	int32_t e2;
 
 	while (!(x1 == x2 && y1 == y2))
 	{
@@ -113,9 +113,9 @@ void drawLine(int x1, int y1, int x2, int y2, unsigned short c)
  *  Text  *
  *        */
 
-int isOutlinePixel(unsigned char* charfont, int x, int y)
+int32_t isOutlinePixel(uint8_t* charfont, int32_t x, int32_t y)
 {
-	int xis0 = !x, xis7 = x == 7, yis0 = !y, yis7 = y == 7;
+	int32_t xis0 = !x, xis7 = x == 7, yis0 = !y, yis7 = y == 7;
 	
 	if(xis0)
 	{
@@ -155,7 +155,7 @@ int isOutlinePixel(unsigned char* charfont, int x, int y)
 	}
 	else
 	{
-		char b = 1 << (7 - x);
+		int8_t b = 1 << (7 - x);
 		if(yis0)
 		{
 			return !(*charfont & b) && (
@@ -178,10 +178,10 @@ int isOutlinePixel(unsigned char* charfont, int x, int y)
 	}
 }
 
-void drawChar(int *x, int *y, int margin, char ch, unsigned short fc, unsigned short olc)
+void drawChar(int32_t *x, int32_t *y, int32_t margin, int8_t ch, uint16_t fc, uint16_t olc)
 {
-	int i, j;
-	unsigned char *charSprite;
+	int32_t i, j;
+	uint8_t *charSprite;
 	if(ch == '\n')
 	{
 		*x = margin;
@@ -205,9 +205,9 @@ void drawChar(int *x, int *y, int margin, char ch, unsigned short fc, unsigned s
 	}
 }
 
-void drawString(int *x, int *y, int _x, const char *str, unsigned short fc, unsigned short olc)
+void drawString(int32_t *x, int32_t *y, int32_t _x, const int8_t *str, uint16_t fc, uint16_t olc)
 {
-	int i, max = strlen(str) + 1;
+	int32_t i, max = strlen(str) + 1;
 	for(i = 0; i < max; i++)
 		drawChar(x, y, _x, str[i], fc, olc);
 }

@@ -1,10 +1,10 @@
 CC 			= gcc
 
-CFLAGS  	= -Ofast -fomit-frame-pointer -fdata-sections -ffunction-sections -s -ansi -I./main/emu -I./main/sdl -I./main/headers
+CFLAGS  	= -Ofast -fdata-sections -ffunction-sections -ansi -I./main/emu -I./main/sdl -I./main/headers
 CFLAGS 	   += ${DEFINES}
 CFLAGS 	   += $(shell sdl-config --cflags)
 DEFINES 	= -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION -DPOSIX -DNATIVE_RESOLUTION
-LDFLAGS 	= $(shell sdl-config --libs) -Wl,--as-needed
+LDFLAGS 	= $(shell sdl-config --libs) -Wl,--as-needed -s
 OUT  		= oswan
 
 SDL 		= main/sdl/main.c main/sdl/menu.c  main/sdl/drawing.c main/sdl/input.c main/sdl/game_input.c main/sdl/gui_drawing.c

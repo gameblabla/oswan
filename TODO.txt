@@ -1,4 +1,9 @@
 - Improve the code : it's a mess. (seriously)
+* I have converted most of the DWORD, WORD, BYTE as well as unsigned short, unsigned char etc...
+to uint32_t, int32_t, int16_t, int8_t etc... I need to check for any regressions but it already fixed voices on hardware without FPUs.
+
+- Sound is somewhat broken. On slow hardware, it can still skip after the buffer is filled for a while.
+
 - Proper 32-bits support
 On Linux, if the bpp is different from the display, it will be converted but there will be a significant drop in speed.
 The only problem is the palette : it is not properly converted to 32 bits...
@@ -6,3 +11,5 @@ Look at emu/WSRender.c and SetPalette function for more info.
 
 - Improve resolution support on computers
 - Improve input code
+
+- Eventually merge code with Dualswan. (Not sure if there are any benefits from doing so but according to its author, it runs like 20 FPS faster on the same hardware)

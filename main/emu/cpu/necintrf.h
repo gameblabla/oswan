@@ -8,14 +8,14 @@ enum {
 	NEC_VECTOR, NEC_PENDING, NEC_NMI_STATE, NEC_IRQ_STATE };
 
 /* Public variables */
-extern int nec_ICount;
+extern int32_t nec_ICount;
 
 /* Public functions */
 
-void nec_set_reg(const int regnum, const unsigned val);
-unsigned short nec_execute(const unsigned short cycles);
-short nec_get_reg(const int regnum);
+void nec_set_reg(const int32_t regnum, const uint32_t val);
+uint16_t nec_execute(const uint16_t cycles);
+int16_t nec_get_reg(const int32_t regnum);
 void nec_reset (void *param);
-void nec_int(const DWORD wektor);
+void nec_int(const uint32_t wektor);
 
 #endif

@@ -56,7 +56,7 @@
 	#define NOSCREENSHOTS
 	#endif
 	
-	#define SDL_Surface int
+	#define SDL_Surface int32_t
 #endif
 
 #ifdef DREAMCAST
@@ -338,16 +338,16 @@
 #define cartridge_IsLoaded() (strlen(gameName) != 0)
 
 typedef struct {
-	unsigned short sndLevel;
-	unsigned short m_ScreenRatio; 	/* 0 = 1x size, 1 = full screen, 2 = Keep Aspect */
-	unsigned short OD_Joy[12]; 		/* each key mapping	*/
-	unsigned short m_DisplayFPS;
-	char current_dir_rom[MAX__PATH];
-	unsigned short input_layout;
-	unsigned short reserved1;
-	unsigned short reserved2;
-	unsigned short reserved3;
-	unsigned short reserved4;
+	uint16_t sndLevel;
+	uint16_t m_ScreenRatio; 	/* 0 = 1x size, 1 = full screen, 2 = Keep Aspect */
+	uint16_t OD_Joy[12]; 		/* each key mapping	*/
+	uint16_t m_DisplayFPS;
+	int8_t current_dir_rom[MAX__PATH];
+	uint16_t input_layout;
+	uint16_t reserved1;
+	uint16_t reserved2;
+	uint16_t reserved3;
+	uint16_t reserved4;
 } gamecfg;
 
 extern SDL_Surface* actualScreen;	/* Main program screen */
@@ -360,22 +360,22 @@ extern SDL_Event event;
 #endif
 
 extern gamecfg GameConf;
-extern unsigned int m_Flag;
+extern uint32_t m_Flag;
 
-extern char gameName[512];
-extern char current_conf_app[MAX__PATH];
+extern int8_t gameName[512];
+extern int8_t current_conf_app[MAX__PATH];
 
-extern void system_loadcfg(const char *cfg_name);
-extern void system_savecfg(const char *cfg_name);
+extern void system_loadcfg(const int8_t *cfg_name);
+extern void system_savecfg(const int8_t *cfg_name);
 
 extern void mainemuinit();
 
 /* menu */
 extern void screen_showtopmenu(void);
-extern void print_string_video(short x, const short y, const char *s);
+extern void print_string_video(int16_t x, const int16_t y, const int8_t *s);
 
 extern void Buttons(void);
-extern short button_state[18];
-extern unsigned char button_time[18];
+extern int16_t button_state[18];
+extern uint8_t button_time[18];
 
 #endif

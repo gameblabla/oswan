@@ -8,8 +8,8 @@
 #define MAP_BANK 0x2000
 #define MAP_HREV 0x4000
 #define MAP_VREV 0x8000
-BYTE *Scr1TMap;
-BYTE *Scr2TMap;
+uint8_t *Scr1TMap;
+uint8_t *Scr2TMap;
 
 #define SPR_TILE 0x01FF
 #define SPR_PAL  0x0E00
@@ -17,22 +17,22 @@ BYTE *Scr2TMap;
 #define SPR_LAYR 0x2000
 #define SPR_HREV 0x4000
 #define SPR_VREV 0x8000
-BYTE *SprTTMap;
-BYTE *SprETMap;
-BYTE SprTMap[512];
+uint8_t *SprTTMap;
+uint8_t *SprETMap;
+uint8_t SprTMap[512];
 
-WORD Palette[16][16];
-WORD MonoColor[8];
-WORD FrameBuffer[320*240];
-const unsigned char Layer[3] = {1, 1, 1};
+uint16_t Palette[16][16];
+uint16_t MonoColor[8];
+uint16_t FrameBuffer[320*240];
+const uint8_t Layer[3] = {1, 1, 1};
 
-void SetPalette(const int addr)
+void SetPalette(const uint32_t addr)
 {
-    WORD color, r, g, b;
-    unsigned short pal;
+    uint16_t color, r, g, b;
+    uint16_t pal;
 
     /* RGB444 format */
-    color = *(WORD*)(IRAM + (addr & 0xFFFE));
+    color = *(uint16_t*)(IRAM + (addr & 0xFFFE));
 
 	/* RGB565 */
 	r = ((color & 0x0F00) << 4);
@@ -43,24 +43,24 @@ void SetPalette(const int addr)
 	Palette[(addr & 0x1E0)>>5][(addr & 0x1E) >> 1] = pal;
 }
 
-void RefreshLine(const unsigned short Line)
+void RefreshLine(const uint16_t Line)
 {
-    WORD *pSBuf;            /* データ書き込みバッファ */
-    WORD *pSWrBuf;          /* ↑の書き込み位置用ポインタ*/
-    int *pZ;                /* ↓のインクリメント用ポインタ*/
-    int ZBuf[0x100];        /* FGレイヤーの非透明部を保存*/
-    int *pW;                /*↓のインクリメント用ポインタ*/
-    int WBuf[0x100];        /* FGレイヤーのウィンドーを保存*/
-    int OffsetX;             
-    int OffsetY;            
-    BYTE *pbTMap;           
-    int TMap;               
-    int TMapX;              
-    int TMapXEnd;           
-    BYTE *pbTData;          
-    int PalIndex;             
-    short i, j, k, index[8];
-    WORD BaseCol; 
+    uint16_t *pSBuf;            /* データ書き込みバッファ */
+    uint16_t *pSWrBuf;          /* ↑の書き込み位置用ポインタ*/
+    int32_t *pZ;                /* ↓のインクリメント用ポインタ*/
+    int32_t ZBuf[0x100];        /* FGレイヤーの非透明部を保存*/
+    int32_t *pW;                /*↓のインクリメント用ポインタ*/
+    int32_t WBuf[0x100];        /* FGレイヤーのウィンドーを保存*/
+    int32_t OffsetX;             
+    int32_t OffsetY;            
+    uint8_t *pbTMap;           
+    int32_t TMap;               
+    int32_t TMapX;              
+    int32_t TMapXEnd;           
+    uint8_t *pbTData;          
+    int32_t PalIndex;             
+    int16_t i, j, k, index[8];
+    uint16_t BaseCol; 
     pSBuf = FrameBuffer + Line * 320;
     pSWrBuf = pSBuf;
 

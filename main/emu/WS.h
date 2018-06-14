@@ -5,34 +5,34 @@
 
 struct EEPROM
 {
-    WORD *data;
-    int we;
+    uint16_t *data;
+    int32_t we;
 };
 
-extern int Run;
-extern BYTE *Page[0x10];
-extern BYTE IRAM[0x10000];
-extern BYTE IO[0x100];
-extern BYTE MemDummy[0x10000];
-extern BYTE *ROMMap[0x100];     			/* C-ROMバンクマップ 	*/
-extern unsigned short ROMBanks;            		/* C-ROMバンク数 		*/
-extern BYTE *RAMMap[0x100];     			/* C-RAMバンクマップ	*/
-extern unsigned char RAMBanks;            		/* C-RAMバンク数 		*/
-extern int RAMSize;             			/* C-RAM総容量 		*/
-extern WORD IEep[64];
+extern int32_t Run;
+extern uint8_t *Page[0x10];
+extern uint8_t IRAM[0x10000];
+extern uint8_t IO[0x100];
+extern uint8_t MemDummy[0x10000];
+extern uint8_t *ROMMap[0x100];     			/* C-ROMバンクマップ 	*/
+extern uint16_t ROMBanks;            		/* C-ROMバンク数 		*/
+extern uint8_t *RAMMap[0x100];     			/* C-RAMバンクマップ	*/
+extern uint8_t RAMBanks;            		/* C-RAMバンク数 		*/
+extern int32_t RAMSize;             			/* C-RAM総容量 		*/
+extern uint16_t IEep[64];
 extern struct EEPROM sIEep;
 extern struct EEPROM sCEep;
 
 #define CK_EEP 1
-extern unsigned char CartKind;
+extern uint8_t CartKind;
 
-void WriteIO(const DWORD A, BYTE V);
+void WriteIO(const uint32_t A, uint8_t V);
 void WsReset (void);
-void WsRomPatch(const BYTE *buf);
+void WsRomPatch(const uint8_t *buf);
 void WsSetDir(void);
-int WsRun(void);
+int32_t WsRun(void);
 void WsInit(void);
 void WsDeInit(void);
-void SetHVMode(const unsigned char Mode);
+void SetHVMode(const uint8_t Mode);
 
 #endif

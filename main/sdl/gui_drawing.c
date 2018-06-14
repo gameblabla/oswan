@@ -11,20 +11,20 @@
 /* Re-adujusting Menu Y position */
 #define OFF_Y (-6)
 
-void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, const int fg_color, const int bg_color) 
+void screen_showchar(SDL_Surface *s, int32_t x, int32_t y, uint8_t a, const int32_t fg_color, const int32_t bg_color) 
 {
-	unsigned short *dst;
-	unsigned short w, h;
+	uint16_t *dst;
+	uint16_t w, h;
 
 	SDL_LockSurface(s);
 	for(h = 8; h; h--) 
 	{
 
-		dst = (unsigned short *)s->pixels + ((y+8-h)*s->w + x);
+		dst = (uint16_t *)s->pixels + ((y+8-h)*s->w + x);
 		
 		for(w = 8; w; w--) 
 		{
-			unsigned short color = *dst; /* background */
+			uint16_t color = *dst; /* background */
 			if((fontdata8x8[a*8 + (8-h)] >> w) & 1) color = fg_color;
 			*dst++ = color;
 		}
@@ -32,13 +32,13 @@ void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, const int fg
 	SDL_UnlockSurface(s);
 }
 
-void print_string(const char *s, const  unsigned short fg_color, const unsigned short bg_color, int x, int y) 
+void print_string(const int8_t *s, const  uint16_t fg_color, const uint16_t bg_color, int32_t x, int32_t y) 
 {
-	int i, j = strlen(s);
+	int32_t i, j = strlen(s);
 	for(i = 0; i < j; i++, x += 6) screen_showchar(actualScreen, x, y, s[i], fg_color, bg_color);
 }
 
-void print_string_video(short x, const short y, const char *s) 
+void print_string_video(int16_t x, const int16_t y, const int8_t *s) 
 {
 	if (GameConf.m_ScreenRatio != 1)
 	{
@@ -50,7 +50,8 @@ void print_string_video(short x, const short y, const char *s)
 		SDL_FillRect(actualScreen, &rect, 0);
 	}
 	
-	int i, j = strlen(s);
+	int32_t i;
+	const int8_t j = strlen(s);
 	for(i = 0; i < j; i++, x += 8) 
 	{
 		screen_showchar(actualScreen, x, y, s[i], SDL_MapRGB(actualScreen->format,255, 0, 0), 0);
@@ -63,7 +64,7 @@ void clear_screen_menu(void)
 	SDL_FillRect(actualScreen, NULL, 0);
 }
 
-void draw_bluerect_menu(unsigned char i)
+void draw_bluerect_menu(uint8_t i)
 {
 	SDL_Rect position_select;
 	position_select.w  = 320;
@@ -73,7 +74,7 @@ void draw_bluerect_menu(unsigned char i)
 	SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
 }
 
-void draw_bluerect_file(unsigned char i)
+void draw_bluerect_file(uint8_t i)
 {
 	SDL_Rect position_select;
 	position_select.w  = 320;

@@ -15,12 +15,12 @@
 #include "menu.h"
 #include "gui_text.h"
 
-extern unsigned int m_Flag;
-unsigned char gameMenu;
+extern uint32_t m_Flag;
+uint8_t gameMenu;
 
-void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color) 
+void screen_showitem(const int16_t x, const int16_t y, MENUITEM *m, int32_t fg_color) 
 {
-	static char i_str[24];
+	static int8_t i_str[24];
 
 	/* if no parameters, show simple menu item	*/
 	if(m->itemPar == NULL) 
@@ -45,16 +45,16 @@ void screen_showitem(const short x, const short y, MENUITEM *m, int fg_color)
 
 void screen_showmenu(MENU *menu) 
 {
-	unsigned char i;
+	uint8_t i;
 	MENUITEM *mi = menu->m;
-	char szVal[100];
+	int8_t szVal[100];
 	
 	print_string("Gameblabla's Oswan", COLOR_ACTIVE_ITEM, COLOR_BG, (SPRX+10)+72+OFF_X, 16);
 	
 	/* show menu lines */
 	for(i = 0; i < menu->itemNum; i++, mi++) 
 	{
-		unsigned short fg_color;
+		uint16_t fg_color;
 		
 		if(menu->itemCur == i)
 		{
@@ -78,7 +78,7 @@ void screen_showmenu(MENU *menu)
 	flip_screen(actualScreen);
 }
 
-unsigned char ifactive(void)
+uint8_t ifactive(void)
 {
 	if (button_state[4] || button_state[5] || button_state[0] || button_state[1] || button_state[2] || button_state[3] || button_state[8] || button_state[9]) 
 		return 1; 	/* Yes, active	*/
@@ -209,10 +209,10 @@ void screen_showtopmenu(void)
 }
 
 /* find a filename for bmp or state saving */
-void findNextFilename(const char *szFileFormat, char *szFilename) 
+void findNextFilename(const int8_t *szFileFormat, int8_t *szFilename) 
 {
-	unsigned short uBcl;
-	short fp;
+	uint16_t uBcl;
+	int16_t fp;
 	
 	for (uBcl = 0; uBcl<999; uBcl++) 
 	{
@@ -276,12 +276,12 @@ void menuContinue(void)
 #define MAX_FILES 512
 typedef struct  
 {
-	char name[255];
-	unsigned int type;
+	int8_t name[255];
+	uint32_t type;
 } filedirtype;
 filedirtype filedir_list[MAX_FILES];
 
-int sort_function(const void *src_str_ptr, const void *dest_str_ptr) 
+int32_t sort_function(const void *src_str_ptr, const void *dest_str_ptr) 
 {
   filedirtype *p1 = (filedirtype *) src_str_ptr;
   filedirtype *p2 = (filedirtype *) dest_str_ptr;
@@ -289,7 +289,7 @@ int sort_function(const void *src_str_ptr, const void *dest_str_ptr)
   return strcmp (p1->name, p2->name);
 }
 
-char strcmp_function(const char *s1, const char *s2)
+int8_t strcmp_function(const int8_t *s1, const int8_t *s2)
 {
 	int i;
 
@@ -302,34 +302,34 @@ char strcmp_function(const char *s1, const char *s2)
 	return 0;
 }
 
-signed int load_file(const char **wildcards, char *result) 
+int32_t load_file(const int8_t **wildcards, int8_t *result) 
 {
 	#define MENU_WAIT 64
-	char current_dir_name[MAX__PATH];
+	int8_t current_dir_name[MAX__PATH];
 	DIR *current_dir;
 	struct dirent *current_file;
 	struct stat file_info;
-	char current_dir_short[81];
-	unsigned int current_dir_length;
-	unsigned int num_filedir;
+	int8_t current_dir_short[81];
+	uint32_t current_dir_length;
+	uint32_t num_filedir;
 
-	char *file_name;
-	unsigned int file_name_length;
-	unsigned int ext_pos = 0;
-	signed int return_value = 1;
-	unsigned int repeat;
-	unsigned int i;
+	int8_t *file_name;
+	uint32_t file_name_length;
+	uint32_t ext_pos = 0;
+	int32_t return_value = 1;
+	uint32_t repeat;
+	uint32_t i;
 	
-	unsigned short i_hold = 1;
+	uint16_t i_hold = 1;
 
-	unsigned int current_filedir_scroll_value;
-	unsigned int current_filedir_selection;
-	unsigned int current_filedir_in_scroll;
-	unsigned int current_filedir_number;
+	uint32_t current_filedir_scroll_value;
+	uint32_t current_filedir_selection;
+	uint32_t current_filedir_in_scroll;
+	uint32_t current_filedir_number;
 	
-	unsigned char down_wait = 0, up_wait = 0;
+	uint8_t down_wait = 0, up_wait = 0;
 	
-	char print_buffer[81];
+	int8_t print_buffer[81];
 	
 	/* Init dir with saved one	*/
 	strcpy(current_dir_name,GameConf.current_dir_rom);
@@ -607,7 +607,7 @@ void menuFileBrowse(void)
 #if !defined(NOSCREENSHOTS)
 void menuSaveBmp(void) 
 {
-    char szFile[512], szFile1[512];
+    int8_t szFile[512], szFile1[512];
 	
 	if (cartridge_IsLoaded()) {
 		snprintf(szFile, sizeof(szFile), "%s%s%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(gameName,'/')+1);
@@ -649,7 +649,7 @@ void menuSaveBmp(void)
 /* Save current state of game emulated	*/
 void menuSaveState(void) 
 {
-    char szFile[512];
+    int8_t szFile[512];
 	
 	if (cartridge_IsLoaded()) 
 	{
@@ -670,7 +670,7 @@ void menuSaveState(void)
 /* Load current state of game emulated	*/
 void menuLoadState(void) 
 {
-    char szFile[512];
+    int8_t szFile[512];
 	
 	if (cartridge_IsLoaded()) 
 	{
@@ -693,9 +693,9 @@ void menuLoadState(void)
 }
 
 
-void system_loadcfg(const char *cfg_name) 
+void system_loadcfg(const int8_t *cfg_name) 
 {
-  int fd;
+  int32_t fd;
   fd = open(cfg_name, O_RDONLY | O_BINARY);
   if (fd >= 0) 
   {
@@ -730,7 +730,7 @@ void system_loadcfg(const char *cfg_name)
 	}
 }
 
-void system_savecfg(const char *cfg_name) 
+void system_savecfg(const int8_t *cfg_name) 
 {
 	int fd;
 	fd = open(cfg_name, O_CREAT | O_RDWR | O_BINARY | O_TRUNC, S_IRUSR | S_IWUSR);

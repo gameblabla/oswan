@@ -1,25 +1,23 @@
 #ifndef WSHARD_H_
 #define WSHARD_H_
 
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef unsigned long DWORD;
+#include <stdint.h>
 
-typedef void  (*WriteMemFn) (DWORD A, BYTE V);
+typedef void  (*WriteMemFn) (uint32_t A, uint8_t V);
 extern WriteMemFn WriteMemFnTable[0x10];
-BYTE ReadMem(DWORD A);
-void WriteMem(DWORD A, BYTE V);
-void WriteIO(DWORD A, BYTE V);
-BYTE ReadIO(DWORD A);
+uint8_t ReadMem(uint32_t A);
+void WriteMem(uint32_t A, uint8_t V);
+void WriteIO(uint32_t A, uint8_t V);
+uint8_t ReadIO(uint32_t A);
 
 #define cpu_readop(A)               (ReadMem(A))
 #define cpu_readop_arg(A)           (ReadMem(A))
 #define cpu_readmem20(A)            (ReadMem(A))
-#define cpu_writemem20(A, D)        (WriteMem((A), (BYTE)(D)))
+#define cpu_writemem20(A, D)        (WriteMem((A), (uint8_t)(D)))
 #define cpu_readport(port)          (ReadIO((port)))
-#define cpu_writeport(port, val)    (WriteIO((port), (BYTE)(val)))
+#define cpu_writeport(port, val)    (WriteIO((port), (uint8_t)(val)))
 #define cpu_readport16(port)        (ReadIO((port)))
-#define cpu_writeport16(port, val)  (WriteIO((port), (BYTE)(val)))
+#define cpu_writeport16(port, val)  (WriteIO((port), (uint8_t)(val)))
 
 /*
 ---------------------------------------------------------------------------

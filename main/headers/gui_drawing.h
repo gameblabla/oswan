@@ -27,12 +27,12 @@
 /* Re-adujusting Menu Y position */
 #define OFF_Y (-6)
 
-void screen_showchar(SDL_Surface *s, int x, int y, unsigned char a, const int fg_color, const int bg_color);
+void screen_showchar(SDL_Surface *s, int32_t x, int32_t y, uint8_t a, const int32_t fg_color, const int32_t bg_color);
 
-void print_string(const char *s, const  unsigned short fg_color, const unsigned short bg_color, int x, int y);
-void print_string_video(short x, const short y, const char *s) ;
+void print_string(const int8_t *s, const uint16_t fg_color, const uint16_t bg_color, int32_t x, int32_t y);
+void print_string_video(int16_t x, const int16_t y, const int8_t *s) ;
 
 void clear_screen_menu(void);
 
-void draw_bluerect_menu(unsigned char i);
-void draw_bluerect_file(unsigned char i);
+void draw_bluerect_menu(uint8_t i);
+void draw_bluerect_file(uint8_t i);

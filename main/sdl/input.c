@@ -21,23 +21,23 @@
 17: PAD_XDOWN;
 */
 
-short button_state[18];
-unsigned char button_time[18];
+int16_t button_state[18];
+uint8_t button_time[18];
 
 /* Uses button_state global */
 void Buttons(void)
 {
-	unsigned char i = 0;
+	uint8_t i = 0;
 #if defined(_TINSPIRE)
 	t_key pad;
 	#define CHECK_PAD isKeyPressed(pad)
 #else
-	int pad = 0;
+	int32_t pad = 0;
 	#define CHECK_PAD keys[pad]
 	
 	SDL_Event event;
 	SDL_PollEvent(&event);
-	unsigned char *keys = SDL_GetKeyState(NULL);
+	uint8_t *keys = SDL_GetKeyState(NULL);
 #endif
 
 	for(i=0;i<18;i++)

@@ -11,18 +11,18 @@
 
 #ifdef ZIP_SUPPORT  
 #include "unzip.h"
-char tempfilecartname_[512];
+int8_t tempfilecartname_[512];
 #endif
 
-int result;
-char SaveName[512]; 
-char StateName[512];
-char IEepPath[512]; 
+int32_t result;
+int8_t SaveName[512]; 
+int8_t StateName[512];
+int8_t IEepPath[512]; 
 
 #ifdef ZIP_SUPPORT  
-int check_zip(char *filename)
+int32_t check_zip(char *filename)
 {
-    unsigned char buf[2];
+    uint8_t buf[2];
     FILE *fd = NULL;
     fd = fopen(filename, "rb");
     if(!fd) return (0);
@@ -33,13 +33,13 @@ int check_zip(char *filename)
 }
 #endif
 
-int WsSetPdata(void)
+int32_t WsSetPdata(void)
 {
     ROMBanks = 4;
 	RAMBanks = 1;
 	RAMSize = 0x2000;
 	CartKind = 0;
-    if ((ROMMap[0xFF] = (BYTE*)malloc(0x10000)) == NULL)
+    if ((ROMMap[0xFF] = (uint8_t*)malloc(0x10000)) == NULL)
     {
 		fprintf(stderr,"WsSetPdata\n");
         return 0;
@@ -49,11 +49,11 @@ int WsSetPdata(void)
     return 1;
 }
 
-int WsCreate(char *CartName)
+int32_t WsCreate(int8_t *CartName)
 {
-    int Checksum, i, j;
+    int32_t Checksum, i, j;
     FILE* fp;
-    BYTE buf[16];
+    uint8_t buf[16];
 
     for (i = 0; i < 256; i++)
     {
@@ -73,7 +73,7 @@ int WsCreate(char *CartName)
 	if(check_zip(CartName))
 	{
 		#define READ_SIZE 8192
-		char read_buffer[READ_SIZE];
+		int8_t read_buffer[READ_SIZE];
 		unzFile *zipfile = unzOpen(CartName);
 		unz_global_info global_info;
 		if ( unzGetGlobalInfo( zipfile, &global_info ) != UNZ_OK )
@@ -85,7 +85,7 @@ int WsCreate(char *CartName)
 
         /* Get info about current file. */
         unz_file_info file_info;
-        char filename[512];
+        int8_t filename[512];
         if ( unzGetCurrentFileInfo( zipfile, &file_info, filename, 512, NULL, 0, NULL, 0 ) != UNZ_OK )
         {
             printf( "Could not read file info\n" );
@@ -105,7 +105,7 @@ int WsCreate(char *CartName)
 		snprintf(tempfilecartname_, sizeof(tempfilecartname_), "%s.ws", CartName);
 		
 		/* Open a file to write out the data. */
-		char tempfilename[512];
+		int8_t tempfilename[512];
 		snprintf(tempfilename, sizeof(tempfilename), "%s%s%s%s", PATH_DIRECTORY, SAVE_DIRECTORY, tempfilecartname_, EXTENSION);
 		
 		FILE *out = fopen( tempfilename, "wb" );
@@ -117,7 +117,7 @@ int WsCreate(char *CartName)
 			return -1;
 		}
 		
-		short error = UNZ_OK;
+		int16_t error = UNZ_OK;
 		do    
 		{
 			error = unzReadCurrentFile( zipfile, read_buffer, READ_SIZE );
@@ -260,12 +260,12 @@ int WsCreate(char *CartName)
 
     WsRomPatch(buf);
     
-    Checksum = (int)((buf[9] << 8) + buf[8]);
-    Checksum += (int)(buf[9] + buf[8]);
+    Checksum = (int32_t)((buf[9] << 8) + buf[8]);
+    Checksum += (int32_t)(buf[9] + buf[8]);
     for (i = ROMBanks - 1; i >= 0; i--)
     {
         fseek(fp, (ROMBanks - i) * -0x10000, 2);
-        if ((ROMMap[0x100 - ROMBanks + i] = (BYTE*)malloc(0x10000)) != NULL)
+        if ((ROMMap[0x100 - ROMBanks + i] = (uint8_t*)malloc(0x10000)) != NULL)
         {
             if (fread(ROMMap[0x100 - ROMBanks + i], 1, 0x10000, fp) == 0x10000)
             {
@@ -274,13 +274,6 @@ int WsCreate(char *CartName)
                     Checksum -= ROMMap[0x100 - ROMBanks + i][j];
                 }
             }
-			/* 
-			else
-            {
-				fprintf(stderr,"ERR_FREAD_ROM\n");
-                break;
-            }
-			*/
         }
         else
         {
@@ -301,7 +294,7 @@ int WsCreate(char *CartName)
     {
         for (i = 0; i < RAMBanks; i++)
         {
-            if ((RAMMap[i] = (BYTE*)malloc(0x10000)) != NULL)
+            if ((RAMMap[i] = (uint8_t*)malloc(0x10000)) != NULL)
             {
                 memset(RAMMap[i], 0x00, 0x10000);
             }
@@ -314,7 +307,7 @@ int WsCreate(char *CartName)
     }
     if (RAMSize)
     {
-		char* tmp =  strstr(CartName, "/");
+		int8_t* tmp =  strstr(CartName, "/");
 		if (tmp == NULL)
 		{
 			snprintf(SaveName, sizeof(SaveName), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, CartName, EXTENSION);
@@ -366,7 +359,7 @@ int WsCreate(char *CartName)
 void WsRelease(void)
 {
     FILE* fp;
-    int i;
+    int32_t i;
 
     if (SaveName[0] != 0)
     {
@@ -415,12 +408,12 @@ void WsLoadEeprom(void)
 
     if ((fp = fopen(IEepPath, "rb")) != NULL)
     {
-        result = fread(IEep, sizeof(WORD), 64, fp);
+        result = fread(IEep, sizeof(uint16_t), 64, fp);
         fclose(fp);
     }
 	else
 	{
-		WORD* p = IEep + 0x30;
+		uint16_t* p = IEep + 0x30;
 		memset(IEep, 0xFF, 0x60);
 		memset(p, 0, 0x20);
 		*p++ = 0x211D;
@@ -440,20 +433,20 @@ void WsSaveEeprom(void)
 
     if ((fp = fopen(IEepPath, "wb")) != NULL)
     {
-        fwrite(IEep, sizeof(WORD), 64, fp);
+        fwrite(IEep, sizeof(uint16_t), 64, fp);
 		if (fp) fclose(fp);
     }
 }
 
 #define MacroLoadNecRegisterFromFile(F,R) \
-		result = fread(&value, sizeof(unsigned int), 1, fp); \
+		result = fread(&value, sizeof(uint32_t), 1, fp); \
 	    nec_set_reg(R,value); 
-int WsLoadState(const char *savename, int num)
+int32_t WsLoadState(const int8_t *savename, int32_t num)
 {
     FILE* fp;
-    char buf[256];
-	unsigned int value;
-	int i;
+    int8_t buf[256];
+	uint32_t value;
+	int32_t i;
 	
 	snprintf(buf, sizeof(buf), "%s%s%s.%d.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
     if ((fp = fopen(buf, "rb")) == NULL)
@@ -478,8 +471,8 @@ int WsLoadState(const char *savename, int num)
 	MacroLoadNecRegisterFromFile(fp,NEC_PENDING);
 	MacroLoadNecRegisterFromFile(fp,NEC_NMI_STATE);
 	MacroLoadNecRegisterFromFile(fp,NEC_IRQ_STATE);
-    result = fread(IRAM, sizeof(BYTE), 0x10000, fp);
-    result = fread(IO, sizeof(BYTE), 0x100, fp);
+    result = fread(IRAM, sizeof(uint8_t), 0x10000, fp);
+    result = fread(IO, sizeof(uint8_t), 0x100, fp);
     for (i  =0; i < RAMBanks; i++)
     {
         if (RAMSize < 0x10000)
@@ -491,7 +484,7 @@ int WsLoadState(const char *savename, int num)
             result = fread(RAMMap[i], 1, 0x10000, fp);
         }
     }
-	result = fread(Palette, sizeof(WORD), 16 * 16, fp);
+	result = fread(Palette, sizeof(uint16_t), 16 * 16, fp);
     fclose(fp);
 	WriteIO(0xC1, IO[0xC1]);
 	WriteIO(0xC2, IO[0xC2]);
@@ -507,14 +500,14 @@ int WsLoadState(const char *savename, int num)
 
 #define MacroStoreNecRegisterToFile(F,R) \
 	    value = nec_get_reg(R); \
-		fwrite(&value, sizeof(unsigned int), 1, fp);
+		fwrite(&value, sizeof(uint32_t), 1, fp);
 		
-int WsSaveState(const char *savename, int num)
+int32_t WsSaveState(const int8_t *savename, int32_t num)
 {
     FILE* fp;
-    char buf[256];
-	unsigned int value;
-	int i;
+    int8_t buf[256];
+	uint32_t value;
+	int32_t i;
 	
 	snprintf(buf, sizeof(buf), "%s%s%s.%d.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
     if ((fp = fopen(buf, "w+")) == NULL)
@@ -540,8 +533,8 @@ int WsSaveState(const char *savename, int num)
 	MacroStoreNecRegisterToFile(fp,NEC_PENDING);
 	MacroStoreNecRegisterToFile(fp,NEC_NMI_STATE);
 	MacroStoreNecRegisterToFile(fp,NEC_IRQ_STATE);
-    fwrite(IRAM, sizeof(BYTE), 0x10000, fp);
-    fwrite(IO, sizeof(BYTE), 0x100, fp);
+    fwrite(IRAM, sizeof(uint8_t), 0x10000, fp);
+    fwrite(IO, sizeof(uint8_t), 0x100, fp);
     for (i  =0; i < RAMBanks; i++)
     {
         if (RAMSize < 0x10000)
@@ -553,7 +546,7 @@ int WsSaveState(const char *savename, int num)
             fwrite(RAMMap[i], 1, 0x10000, fp);
         }
     }
-	fwrite(Palette, sizeof(WORD), 16 * 16, fp);
+	fwrite(Palette, sizeof(uint16_t), 16 * 16, fp);
     fclose(fp);
 
     return 0;

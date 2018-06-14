@@ -7,7 +7,7 @@ void Get_resolution(void)
 	screen_scale.h_display = 240;
 }
 
-void Set_resolution(unsigned short w, unsigned short h)
+void Set_resolution(uint16_t w, uint16_t h)
 {
 	screen_scale.w_display = w;
 	screen_scale.h_display = h;
@@ -51,8 +51,8 @@ void Set_DrawRegion(void)
 
 void screen_draw(void)
 {
-	unsigned short *buffer_scr = (unsigned short *)BUFF_BASE_ADDRESS;
-	unsigned int W,H,ix,iy,x,y;
+	uint16_t *buffer_scr = (uint16_t *)BUFF_BASE_ADDRESS;
+	uint32_t W,H,ix,iy,x,y;
 	
 	x=screen_to_draw_region.offset_x;
 	y=screen_to_draw_region.offset_y; 
@@ -65,7 +65,7 @@ void screen_draw(void)
 	buffer_scr += (x);
 	do   
 	{
-		unsigned short *buffer_mem=(unsigned short *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
+		uint16_t *buffer_mem=(uint16_t *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
 		//W=screen_to_draw_region.w; 
 		W=320;
 		x=0;

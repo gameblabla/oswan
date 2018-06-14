@@ -19,27 +19,27 @@
 SOUND Ch[4];
 SWEEP Swp;
 NOISE Noise; 
-char VoiceOn;
-short Sound[7] = {1, 1, 1, 1, 1, 1, 1};
+int8_t VoiceOn;
+int16_t Sound[7] = {1, 1, 1, 1, 1, 1, 1};
 
-static int convert_multiplier = MULT;
+static int32_t convert_multiplier = MULT;
 
-static unsigned char PData[4][32];
-static unsigned char PDataN[8][BUFSIZEN];
-static unsigned int RandData[BUFSIZEN];
-static short sndbuffer[SND_RNGSIZE][2]; /* Sound Ring Buffer */
+static uint8_t PData[4][32];
+static uint8_t PDataN[8][BUFSIZEN];
+static uint32_t RandData[BUFSIZEN];
+static int16_t sndbuffer[SND_RNGSIZE][2]; /* Sound Ring Buffer */
 
-static int rBuf, wBuf;
+static int32_t rBuf, wBuf;
 
-extern BYTE *Page[16];
-extern BYTE IO[0x100];
+extern uint8_t *Page[16];
+extern uint8_t IO[0x100];
 
 SDL_mutex *sound_mutex;
 SDL_cond *sound_cv;
 
-static unsigned long read_pos;
+static uint32_t read_pos;
 
-int apuBufLen(void)
+int32_t apuBufLen(void)
 {
 	if (wBuf >= rBuf) 
 	{
@@ -50,14 +50,16 @@ int apuBufLen(void)
 }
 
 
-void mixaudioCallback(void *userdata, unsigned char *stream, int len)
+void mixaudioCallback(void *userdata, uint8_t *stream, int32_t len)
 {
-	int i = len;
-	unsigned short *buffer = (unsigned short *) stream;
+	int32_t i = len;
+	uint16_t *buffer = (uint16_t *) stream;
 	
     if(len <= 0 || !buffer)
+    {
         return;
-        
+	}
+	   
 	SDL_LockMutex(sound_mutex);
 	
 	if (apuBufLen() < len) 
@@ -95,7 +97,7 @@ void apuWaveRelease(void)
 
 void apuInit(void)
 {
-    int i, j;
+    int32_t i, j;
     
     convert_multiplier = MULT;
 
@@ -130,14 +132,14 @@ void apuEnd(void)
 	SDL_CondSignal(sound_cv);
 }
 
-unsigned int apuMrand(unsigned int Degree)
+uint32_t apuMrand(uint32_t Degree)
 {
 	#define BIT(n) (1<<n)
     typedef struct
     {
-        unsigned int N;
-        int InputBit;
-        int Mask;
+        uint32_t N;
+        int32_t InputBit;
+        int32_t Mask;
     } POLYNOMIAL;
 
     static POLYNOMIAL TblMask[]=
@@ -159,9 +161,9 @@ unsigned int apuMrand(unsigned int Degree)
         { 0,      0,      0},
     };
     static POLYNOMIAL *pTbl = TblMask;
-    static int ShiftReg = BIT(2)-1;
-    int XorReg = 0;
-    int Masked;
+    static int32_t ShiftReg = BIT(2)-1;
+    int32_t XorReg = 0;
+    int32_t Masked;
 
     if(pTbl->N != Degree)
     {
@@ -201,25 +203,25 @@ unsigned int apuMrand(unsigned int Degree)
     return ShiftReg;
 }
 
-void apuSetPData(int addr, unsigned char val)
+void apuSetPData(int32_t addr, uint8_t val)
 {
-    int i, j;
+    int32_t i, j;
 
     i = (addr & 0x30) >> 4;
     j = (addr & 0x0F) << 1;
-    PData[i][j]=(unsigned char)(val & 0x0F);
-    PData[i][j + 1]=(unsigned char)((val & 0xF0)>>4);
+    PData[i][j]=(uint8_t)(val & 0x0F);
+    PData[i][j + 1]=(uint8_t)((val & 0xF0)>>4);
 }
 
-unsigned char apuVoice(void)
+uint8_t apuVoice(void)
 {
-    static int index = 0, b = 0;
-    unsigned char v;
+    static int32_t index = 0, b = 0;
+    uint8_t v;
 
     if ((IO[SDMACTL] & 0x98) == 0x98) /* Hyper voice */
     { 
-        v = Page[IO[SDMASH] + b][*(WORD*)(IO + SDMASL) + index++];
-        if ((*(WORD*)(IO + SDMASL) + index) == 0)
+        v = Page[IO[SDMASH] + b][*(uint16_t*)(IO + SDMASL) + index++];
+        if ((*(uint16_t*)(IO + SDMASL) + index) == 0)
         {
             b++;
         }
@@ -231,7 +233,7 @@ unsigned char apuVoice(void)
         {
             v -= 0x80;
         }
-        if (*(WORD*)(IO+SDMACNT) <= index)
+        if (*(uint16_t*)(IO+SDMACNT) <= index)
         {
             index = 0;
             b = 0;
@@ -240,15 +242,15 @@ unsigned char apuVoice(void)
     }
     else if ((IO[SDMACTL] & 0x88) == 0x80) /* DMA start */
     { 
-        IO[SND2VOL] = Page[IO[SDMASH] + b][*(WORD*)(IO + SDMASL) + index++];
-        if ((*(WORD*)(IO + SDMASL) + index) == 0)
+        IO[SND2VOL] = Page[IO[SDMASH] + b][*(uint16_t*)(IO + SDMASL) + index++];
+        if ((*(uint16_t*)(IO + SDMASL) + index) == 0)
         {
             b++;
         }
-        if (*(WORD*)(IO + SDMACNT) <= index)
+        if (*(uint16_t*)(IO + SDMACNT) <= index)
         {
             IO[SDMACTL] &= 0x7F; /* DMA end */
-            *(WORD*)(IO + SDMACNT) = 0;
+            *(uint16_t*)(IO + SDMACNT) = 0;
             index = 0;
             b = 0;
         }
@@ -270,9 +272,9 @@ void apuSweep(void)
     }
 }
 
-WORD apuShiftReg(void)
+uint16_t apuShiftReg(void)
 {
-    static int nPos = 0;
+    static int32_t nPos = 0;
     /* Noise counter */
     if (++nPos >= BUFSIZEN)
     {
@@ -283,21 +285,16 @@ WORD apuShiftReg(void)
 
 void apuWaveSet(void)
 {
-	/* This needs to be at least in float format.
-	 * For some reasons, SDL port of Oswan used integers rather than floats.
-	 * As a result, some games like Klonoa will sound awful due to improper divisions.
-	 * No need for using double though, float is enough for divisions.
-	 * Floats should run faster on hardware that supports only single-precision FPUs.
-	 * */
-	#define FLOAT_SND float
-	static FLOAT_SND point[] = {0.0, 0.0, 0.0, 0.0};
-    static FLOAT_SND preindex[] = {0.0, 0.0, 0.0, 0.0};
-    FLOAT_SND   value = 0.0, lVol[4], rVol[4];
-    FLOAT_SND   LL, RR, vVol;
+	/* It was using floats before, turns out it wasn't needed ! */
+	#define SND_LENGH uint32_t
+	static uint32_t point[] = {0, 0, 0, 0};
+    static uint32_t preindex[] = {0, 0, 0, 0};
+    uint32_t value = 0, lVol[4], rVol[4];
+    uint32_t LL, RR, vVol;
 
-    unsigned char channel;
-    unsigned long index;
-    unsigned long i;
+    uint8_t channel;
+    uint32_t index;
+    uint32_t i;
 
     SDL_LockMutex(sound_mutex);
     
