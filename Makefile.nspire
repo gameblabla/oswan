@@ -1,6 +1,6 @@
 CC			= nspire-gcc
 
-CFLAGS  	= -Ofast -std=gnu89 -I./main/emu -I./main/sdl -I./main/nspire -I./main/headers
+CFLAGS  	= -Ofast -std=gnu89 -I./main/emu -I./main/sdl -I./main/nspire -I./main/headers -DFRAMESKIP
 CFLAGS 		+= -fdata-sections -ffunction-sections -marm -march=armv5te -mtune=arm926ej-s -Wall -Wextra -mlong-calls
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto
 OUT  		= oswan
@@ -18,7 +18,7 @@ SOURCES 	= ${SDL} ${CPU} ${CORE}
 SOURCES	   += ${THIRD_PARTY}
 OBJS 		= ${SOURCES:.c=.o}
 
-all 	: ${OUT} gen mkprg
+all 	: ${OUT} gen
 
 gen 	:
 		genzehn --input ${OUT} --output ${OUT}.tns --compress
