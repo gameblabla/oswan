@@ -7,10 +7,11 @@ SYSROOT     := $(CHAINPREFIX)/usr/mipsel-buildroot-linux-uclibc/sysroot
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
-CFLAGS 		= -Ofast -fdata-sections -ffunction-sections -mhard-float -mips32 -mno-mips16 -std=gnu89 -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+CFLAGS 		= -O2 -fdata-sections -ffunction-sections -mno-abicalls -fno-pic -fno-pie -msym32 -mlong-calls -mhard-float -mips32 -mno-mips16 -std=gnu89 -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+CFLAGS		+= -mno-relax-pic-calls -mlong32 -mlocal-sdata -mframe-header-opt -mno-check-zero-division -mfp32 -mgp32 -mno-embedded-data -fno-pic -mno-interlink-compressed -mno-mt -mno-micromips -mno-interlink-mips16
 CFLAGS		+= $(SDL_CFLAGS)
-DEFINES 	= -DRS97 -DNOROMLOADER
-LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto $(SDL_LIBS) -s
+DEFINES 	= -DRS97
+LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto -s -lSDL 
 OUT	 		= oswan.dge
 ZIPFILE		= oswan-rs97.zip
 
@@ -20,7 +21,7 @@ CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
 
 # Sound support
 CORE 	   += main/emu/WSApu.c 
-DEFINES    += -DSOUND_ON -DSOUND_EMULATION
+DEFINES    += -DSOUND_ON -DSOUND_EMULATION -DFRAMESKIP -DNOROMLOADER
 
 # Enable this to support zip files
 # Here, Support for zips is enabled
@@ -33,7 +34,7 @@ SOURCES	   += ${THIRD_PARTY}
 
 OBJS 		= ${SOURCES:.c=.o}
 
-all		: ${OUT} pack
+all		: ${OUT}
 
 pack	:
 		$(STRIP) $(OUT)

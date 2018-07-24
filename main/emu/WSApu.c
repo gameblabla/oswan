@@ -56,8 +56,8 @@ void mixaudioCallback(void *userdata, uint8_t *stream, int32_t len)
 	uint16_t *buffer = (uint16_t *) stream;
 	
     if(len <= 0 || !buffer)
-    {
-        return;
+	{
+		return;
 	}
 	   
 	SDL_LockMutex(sound_mutex);
@@ -285,16 +285,21 @@ uint16_t apuShiftReg(void)
 
 void apuWaveSet(void)
 {
-	/* It was using floats before, turns out it wasn't needed ! */
-	#define SND_LENGH uint32_t
-	static uint32_t point[] = {0, 0, 0, 0};
-    static uint32_t preindex[] = {0, 0, 0, 0};
-    uint32_t value = 0, lVol[4], rVol[4];
-    uint32_t LL, RR, vVol;
-
+	/* Do you like them, The Wonders of uninitialized variables ?
+	* Especially when the compiler gives you no insight on that ?
+	* If lVol and rVol are not initiliased, then it will sound wrong on
+	* games like Klonoa with voices. After initializing them,
+	* it would work and it would still sound fine if we're using a 16-bits
+	* size for them. This should hopefully make things faster on
+	* some platforms. No FPU needed !
+	*/
+	static uint16_t point[4] = {0, 0, 0, 0};
+    static uint16_t preindex[4] = {0, 0, 0, 0};
+    uint16_t value = 0, lVol[4] = {0, 0, 0, 0}, rVol[4] = {0, 0, 0, 0};
+    uint16_t LL, RR, vVol;
     uint8_t channel;
-    uint32_t index;
-    uint32_t i;
+    uint16_t index;
+    uint16_t i;
 
     SDL_LockMutex(sound_mutex);
     

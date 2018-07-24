@@ -39,6 +39,10 @@ SDL_Surface *actualScreen;
 SDL_Surface *screenshots;
 #endif
 
+#ifdef FRAMESKIP
+extern int32_t FrameSkip;
+#endif
+
 uint32_t SDL_UXTimerRead(void) 
 {
 	struct timeval tval; /* timing	*/
@@ -57,6 +61,11 @@ void graphics_paint(void)
 		pastFPS = 0;
 		lastTick = newTick;
 	}
+	#ifdef FRAMESKIP
+	FrameSkip = 80 - FPS;
+	if (FrameSkip < 0) FrameSkip = 0;
+	else if (FrameSkip > 4) FrameSkip=4;
+	#endif
 }
 
 void initSDL(void) 
@@ -71,7 +80,7 @@ void initSDL(void)
 	
 	/*	Set up SDL sound */
 	fmt.freq = 44800;   
-	fmt.samples = 2048;
+	fmt.samples = 1024;
 	fmt.format = AUDIO_S16SYS;
 	fmt.channels = 2;
 	fmt.callback = mixaudioCallback;
