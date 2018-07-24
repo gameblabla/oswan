@@ -2,7 +2,7 @@ CC 		= mipsel-linux-gcc
 
 CFLAGS 		= -O2 -ffast-math -fomit-frame-pointer -fdata-sections -ffunction-sections -mips32r2 -std=gnu89 -Wall -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
 CFLAGS		+= -mno-relax-pic-calls -mno-abicalls -mlong-calls -mlong32 -mlocal-sdata -mno-check-zero-division -mfp32 -mgp32 -mno-embedded-data -fno-pic -mno-interlink-compressed -mno-mt -mno-micromips -mno-interlink-mips16
-DEFINES 	= -DGCW
+DEFINES 	= -DGCW 
 LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto -lSDL -s
 OUT	 	= oswan
 
@@ -12,7 +12,7 @@ CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
 
 # Sound support
 CORE 	   += main/emu/WSApu.c 
-DEFINES    += -DSOUND_ON -DSOUND_EMULATION
+DEFINES    += -DSOUND_ON -DSOUND_EMULATION -DFRAMESKIP
 
 # Enable this to support zip files
 # Here, Support for zips is enabled

@@ -3,6 +3,7 @@
 to uint32_t, int32_t, int16_t, int8_t etc... I need to check for any regressions but it already fixed voices on hardware without FPUs.
 
 - Sound is somewhat broken. On slow hardware, it can still skip after the buffer is filled for a while.
+* Seems to be related to the audio frequency... I lowered the audio buffer and it seems to have fixed some of the skipping.
 
 - Proper 32-bits support
 On Linux, if the bpp is different from the display, it will be converted but there will be a significant drop in speed.
