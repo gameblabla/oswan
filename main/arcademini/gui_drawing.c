@@ -20,7 +20,7 @@ void screen_showchar(SDL_Surface *s, int32_t x, int32_t y, uint8_t a, const int3
 	for(h = 8; h; h--) 
 	{
 
-		dst = (uint16_t *)s->pixels + ((y+8-h)*2*s->w + x);
+		dst = (uint16_t *)s->pixels + ((y+8-h)*s->w + x);
 		
 		for(w = 8; w; w--) 
 		{
@@ -32,9 +32,10 @@ void screen_showchar(SDL_Surface *s, int32_t x, int32_t y, uint8_t a, const int3
 	SDL_UnlockSurface(s);
 }
 
-void print_string(const int8_t *s, const uint16_t fg_color, const uint16_t bg_color, int32_t x, int32_t y) 
+void print_string(const int8_t *s, const  uint16_t fg_color, const uint16_t bg_color, int32_t x, int32_t y) 
 {
 	int32_t i, j = strlen(s);
+	x += 64;
 	for(i = 0; i < j; i++, x += 6) screen_showchar(actualScreen, x, y, s[i], fg_color, bg_color);
 }
 
@@ -67,20 +68,20 @@ void clear_screen_menu(void)
 void draw_bluerect_menu(uint8_t i)
 {
 	SDL_Rect position_select;
-	position_select.w  = 320;
-	position_select.h  = 12*2;
+	position_select.w  = 480;
+	position_select.h  = 12;
 	position_select.x  = 0 + OFF_X;
-	position_select.y  = ((44+i*15)-2+8 + OFF_Y) * 2;
+	position_select.y  = (44+i*15)-2+8 + OFF_Y;
 	SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
 }
 
 void draw_bluerect_file(uint8_t i)
 {
 	SDL_Rect position_select;
-	position_select.w  = 320;
-	position_select.h  = 8*2;
+	position_select.w  = 480;
+	position_select.h  = 8;
 	position_select.x  = 0;
-	position_select.y  = (10*3+((i + 2) * 8))*2;
+	position_select.y  = 10*3+((i + 2) * 8);
 	SDL_FillRect(actualScreen, &position_select, SDL_MapRGB(actualScreen->format,0,0,255));
 }
 

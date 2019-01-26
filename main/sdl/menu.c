@@ -302,6 +302,10 @@ int8_t strcmp_function(const int8_t *s1, const int8_t *s2)
 	return 0;
 }
 
+#define DRAW_RECT_CLEAR	\
+	clear_screen_menu();	\
+	draw_bluerect_file(i_hold);	\
+
 int32_t load_file(const int8_t **wildcards, int8_t *result) 
 {
 	#define MENU_WAIT 64
@@ -410,12 +414,11 @@ int32_t load_file(const int8_t **wildcards, int8_t *result)
 
 		repeat = 1;
 		
+		clear_screen_menu();
+		
 		while(repeat) 
 		{
 			#define CHARLEN ((320/6)-2)
-			
-			clear_screen_menu();
-			draw_bluerect_file(i_hold);
 			
 			/* Catch input	*/
 			Buttons();
@@ -463,6 +466,7 @@ int32_t load_file(const int8_t **wildcards, int8_t *result)
 			/* A - choose file or enter directory	*/
 			if (button_state[4] == 1) 
 			{ 
+				DRAW_RECT_CLEAR
 				if (filedir_list[current_filedir_selection].type == 1)   /* so it's a directory */
 				{ 
 					repeat = 0;
@@ -479,6 +483,8 @@ int32_t load_file(const int8_t **wildcards, int8_t *result)
 			/* B - exit or back to the menu	*/
 			if (button_state[5] == 1) 
 			{ 
+				DRAW_RECT_CLEAR
+				draw_bluerect_file(i_hold);
 				return_value = -1;
 				repeat = 0;
 			}
@@ -486,6 +492,7 @@ int32_t load_file(const int8_t **wildcards, int8_t *result)
 			/* UP - Go up */
 			if (button_state[2]==1 || up_wait > MENU_WAIT) 
 			{ 
+				DRAW_RECT_CLEAR
 				if(current_filedir_selection) 
 				{
 					current_filedir_selection--;
@@ -504,6 +511,7 @@ int32_t load_file(const int8_t **wildcards, int8_t *result)
 			/* DOWN - Go down */
 			if (button_state[3]==1 || down_wait > MENU_WAIT) 
 			{ 
+				DRAW_RECT_CLEAR
 				if(current_filedir_selection < (num_filedir - 1)) 
 				{
 					current_filedir_selection++;
@@ -523,6 +531,7 @@ int32_t load_file(const int8_t **wildcards, int8_t *result)
 			/* L trigger - Go up five times	*/
 			if (button_state[8]==1) 
 			{ 
+				DRAW_RECT_CLEAR
 				/*  HACKS !!! */
 				for(i=0;i<5;i++)
 				{
@@ -544,6 +553,7 @@ int32_t load_file(const int8_t **wildcards, int8_t *result)
 			/* R trigger - Go down five times */
 			if (button_state[9]==1)
 			{ 
+				DRAW_RECT_CLEAR
 				/*  HACKS !!! */
 				for(i=0;i<5;i++)
 				{

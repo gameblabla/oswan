@@ -1,4 +1,4 @@
-CC 		= powerpc-eabi-gcc
+CC 		= /opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc
 
 CFLAGS  	= -O2  -mrvl -mcpu=750 -meabi -mhard-float -I./main/emu -I./main/sdl -I./main/headers 
 CFLAGS 	   	+= ${DEFINES}

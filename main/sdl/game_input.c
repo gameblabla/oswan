@@ -7,18 +7,17 @@
 #include "WSFileio.h"
 
 #ifdef JOYSTICK
-	SDL_Joystick* joy;
-	int16_t x_joy = 0, y_joy = 0;
-	#define JOYSTICK_UP y_joy < -7500
-	#define JOYSTICK_LEFT	x_joy < -7500
-	#define JOYSTICK_DOWN y_joy > 7500
-	#define JOYSTICK_RIGHT	x_joy > 7500
+	extern int16_t joystick_axies[4];
+	#define JOYSTICK_UP (joystick_axies[1] < -2048 ? 1 : 0)
+	#define JOYSTICK_RIGHT	(joystick_axies[0] > 2048 ? 1 : 0)
+	#define JOYSTICK_LEFT	(joystick_axies[0] < -2048 ? 1 : 0)
+	#define JOYSTICK_DOWN (joystick_axies[1] > 2048 ? 1 : 0)
 #endif
 
 void exit_button(void)
 {
 	/* SLIDER/SELECT or ESC -> MENU UI */
-	if (button_state[12] || button_state[13])
+	if (button_state[12] || button_state[13] || (button_state[10] && button_state[11]))
 	{
 		m_Flag = GF_MAINUI;
 		take_screenshot();
@@ -51,16 +50,6 @@ int32_t WsInputGetState(int32_t mode)
 	Buttons();
 	button = Fire_buttons();
 
-	#ifdef JOYSTICK
-		if (SDL_NumJoysticks() > 0)
-			joy = SDL_JoystickOpen(0);
-		
-		x_joy = SDL_JoystickGetAxis(joy, 0);
-		y_joy = SDL_JoystickGetAxis(joy, 1);
-			
-		SDL_JoystickUpdate();
-	#endif
-
 	/* If Quick Saves are enabled */
 	if (GameConf.reserved3)
 	{
@@ -92,33 +81,6 @@ int32_t WsInputGetState(int32_t mode)
 	{
 		case 0:
 			/* RIGHT -> X2 */
-			button |= button_state[15] ? (1<<5) : 0; 
-			/* LEFT -> X4 */
-			button |= button_state[14] ? (1<<7) : 0; 
-			/* DOWN -> X3 */
-			button |= button_state[17] ? (1<<6) : 0; 
-			/* UP -> X1	*/
-			button |= button_state[16] ? (1<<4) : 0; 
-			
-			/* Button A	*/
-			button |= button_state[4] ? (1<<10) : 0; 
-			/* Button B	*/
-			button |= button_state[5] ? (1<<11) : 0; 
-			
-			#ifdef JOYSTICK
-			if (JOYSTICK_RIGHT) 
-				button |= (1<<1); 	/* RIGHT -> Y1 */
-			else if (JOYSTICK_LEFT) 
-				button |= (1<<3); 	/* LEFT -> Y1 */
-					
-			if (JOYSTICK_DOWN) 
-				button |= (1<<2); 	/* DOWN -> Y1 */
-			else if (JOYSTICK_UP) 
-				button |= (1<<0); 	/*UP -> Y1 */
-			#endif
-		break;
-		case 1:
-			/* RIGHT -> X2 */
 			button |= button_state[15] ? (1<<1) : 0; 
 			/* LEFT -> X4 */
 			button |= button_state[14] ? (1<<3) : 0; 
@@ -132,17 +94,38 @@ int32_t WsInputGetState(int32_t mode)
 			/* Button B	*/
 			button |= button_state[5] ? (1<<11) : 0; 
 			
-			#ifdef JOYSTICK
-			if (JOYSTICK_RIGHT) 
-				button |= (1<<5); 	/* RIGHT -> X1	*/
-			else if (JOYSTICK_LEFT) 
-				button |= (1<<7); 	/* LEFT -> X1	*/
-					
-			if (JOYSTICK_DOWN) 
-				button |= (1<<6); 	/* DOWN -> X1	*/
-			else if (JOYSTICK_UP) 
-				button |= (1<<4); 	/* UP -> X1		*/
-			#endif
+			/* RIGHT -> X1	*/
+			button |= button_state[1] ? (1<<5) : 0; 	
+			/* LEFT -> X1	*/
+			button |= button_state[0] ? (1<<7) : 0; 	
+			/* DOWN -> X1	*/
+			button |= button_state[3] ? (1<<6) : 0; 	
+			/* UP -> X1		*/
+			button |= button_state[2] ? (1<<4) : 0; 	
+		break;
+		case 1:
+			/* RIGHT -> X2 */
+			button |= button_state[15] ? (1<<5) : 0; 
+			/* LEFT -> X4 */
+			button |= button_state[14] ? (1<<7) : 0; 
+			/* DOWN -> X3 */
+			button |= button_state[17] ? (1<<6) : 0; 
+			/* UP -> X1	*/
+			button |= button_state[16] ? (1<<4) : 0; 
+			
+			/* Button A	*/
+			button |= button_state[4] ? (1<<10) : 0; 
+			/* Button B	*/
+			button |= button_state[5] ? (1<<11) : 0; 
+			
+			/* RIGHT -> X1	*/
+			button |= button_state[1] ? (1<<1) : 0; 
+			/* LEFT -> X1	*/
+			button |= button_state[0] ? (1<<3) : 0; 
+			/* DOWN -> X1	*/
+			button |= button_state[3] ? (1<<2) : 0; 	
+			/* UP -> X1		*/
+			button |= button_state[2] ? (1<<0) : 0; 
 		break;
 		case 2:
 			button |= button_state[15] ? (1<<10) : 0; 
@@ -154,17 +137,14 @@ int32_t WsInputGetState(int32_t mode)
 			button |= button_state[6] ? (1<<7) : 0; 
 			button |= button_state[7] ? (1<<4) : 0; 
 			
-			#ifdef JOYSTICK
-			if (JOYSTICK_RIGHT) 
-				button |= (1<<1); /* RIGHT -> Y1*/
-			else if (JOYSTICK_LEFT) 
-				button |= (1<<3); /* LEFT -> Y1	*/
-					
-			if (JOYSTICK_DOWN) 
-				button |= (1<<2); /* DOWN -> Y1	*/
-			else if (JOYSTICK_UP) 
-				button |= (1<<0); /* UP -> Y1	*/
-			#endif
+			/* RIGHT -> X1	*/
+			button |= button_state[1] ? (1<<1) : 0; 
+			/* LEFT -> X1	*/
+			button |= button_state[0] ? (1<<3) : 0; 
+			/* DOWN -> X1	*/
+			button |= button_state[3] ? (1<<2) : 0; 	
+			/* UP -> X1		*/
+			button |= button_state[2] ? (1<<0) : 0; 
 		break;
 		case 3:
 			button |= button_state[15] ? (1<<5) : 0; 
@@ -177,12 +157,10 @@ int32_t WsInputGetState(int32_t mode)
 			button |= button_state[6] ? (1<<3) : 0; 
 			button |= button_state[7] ? (1<<0) : 0; 
 			
-			#ifdef JOYSTICK
-			if (JOYSTICK_RIGHT) 
-				button |= (1<<10);
-			if (JOYSTICK_DOWN) 
-				button |= (1<<11); 
-			#endif
+			/* RIGHT -> X1	*/
+			button |= button_state[1] ? (1<<10) : 0;  
+			/* DOWN -> X1	*/
+			button |= button_state[3] ? (1<<11) : 0; 	
 		break;
 		case 4:
 			button |= button_state[15] ? (1<<1) : 0; 
@@ -195,12 +173,38 @@ int32_t WsInputGetState(int32_t mode)
 			button |= button_state[6] ? (1<<7) : 0; 
 			button |= button_state[7] ? (1<<4) : 0; 
 			
-			#ifdef JOYSTICK
-			if (JOYSTICK_RIGHT) 
-				button |= (1<<10);
-			if (JOYSTICK_DOWN) 
-				button |= (1<<11);
-			#endif
+			/* RIGHT -> X1	*/
+			button |= button_state[1] ? (1<<10) : 0; 
+			/* DOWN -> X1	*/
+			button |= button_state[3] ? (1<<11) : 0; 	
+		break;
+		case 5:
+			/* RIGHT -> X2 */
+			button |= button_state[15] ? (1<<5) : 0; 
+			/* LEFT -> X4 */
+			button |= button_state[14] ? (1<<7) : 0; 
+			/* DOWN -> X3 */
+			button |= button_state[17] ? (1<<6) : 0; 
+			/* UP -> X1	*/
+			button |= button_state[16] ? (1<<4) : 0; 
+			
+			/* Button A	*/
+			button |= button_state[4] ? (1<<5) : 0; 
+			/* Button B	*/
+			button |= button_state[5] ? (1<<7) : 0; 
+			/* Button X	*/
+			button |= button_state[6] ? (1<<6) : 0; 
+			/* Button Y	*/
+			button |= button_state[7] ? (1<<4) : 0; 
+			
+			/* RIGHT -> X1	*/
+			button |= button_state[2] ? (1<<1) : 0; 
+			/* LEFT -> X1	*/
+			button |= button_state[3] ? (1<<3) : 0; 
+			/* DOWN -> X1	*/
+			button |= button_state[1] ? (1<<2) : 0; 	
+			/* UP -> X1		*/
+			button |= button_state[0] ? (1<<0) : 0; 
 		break;
 	}
 			
@@ -220,23 +224,23 @@ int32_t Fire_buttons(void)
 		case 0:
 		case 1:
 			if (button_state[6]>0) 
-				x_button++;			/*(Rapid Fire A)*/
+				x_button++;			/* (Rapid Fire A) */
 			else
 				x_button = 0;
 				
 			if (button_state[7]>0) 
-				y_button++;			/*(Rapid Fire B)*/
+				y_button++;			/* (Rapid Fire B) */
 			else
 				y_button = 0;
 		break;
 		case 2:
 			if (button_state[14]>0) 
-				x_button++;			/*(Rapid Fire A)*/
+				x_button++;			/* (Rapid Fire A) */
 			else
 				x_button = 0;
 				
 			if (button_state[16]>0) 
-				y_button++;			/*(Rapid Fire B)*/
+				y_button++;			/* (Rapid Fire B) */
 			else
 				y_button = 0;
 		break;
@@ -244,12 +248,12 @@ int32_t Fire_buttons(void)
 		case 4:
 			#ifdef JOYSTICK
 				if (JOYSTICK_LEFT) 
-					x_button++;   	/*(Rapid Fire A)*/
+					x_button++;   	/* (Rapid Fire A) */
 				else
 					x_button = 0;	
 						
 				if (JOYSTICK_UP) 
-					y_button++;		/*(Rapid Fire B)*/
+					y_button++;		/* (Rapid Fire B) */
 				else
 					y_button = 0;
 			#endif

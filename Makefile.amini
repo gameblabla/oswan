@@ -3,31 +3,27 @@ CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/mipsel-linux-
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
 STRIP = $(CROSS_COMPILE)strip
-SYSROOT     := $(CHAINPREFIX)/usr/mipsel-buildroot-linux-musl/sysroot
+SYSROOT     := $(CHAINPREFIX)/usr/mipsel-buildroot-linux-uclibc/sysroot
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
-#-msym32 -mlong-calls
-#-fprofile-generate -fprofile-dir=/mnt/int_sd/profile
-#-fprofile-use -msym32 -mlong-calls
-CFLAGS 		= -Ofast -fdata-sections -ffunction-sections -fno-PIC -mips32 -mno-mips16 -mno-interlink-mips16 -mno-abicalls
-CFLAGS		+= $(SDL_CFLAGS) 
-#CFLAGS		+= -fprofile-generate=/mnt/int_sd/profile
-#CFLAGS		+= -fprofile-use
-CFLAGS		+= -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+# -msym32 -mlong-calls
+# -fprofile-generate -fprofile-dir=/mnt/int_sd/profile 
+CFLAGS 		= -Ofast -fprofile-use -mlong-calls -msym32 -fdata-sections -ffunction-sections -mno-abicalls -fno-pic -fno-pie -mhard-float -mips32 -mno-mips16 -std=gnu89 -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
+CFLAGS		+= -mno-relax-pic-calls -mlong32 -mlocal-sdata -mframe-header-opt -mno-check-zero-division -mfp32 -mgp32 -mno-embedded-data -fno-pic -mno-interlink-compressed -mno-mt -mno-micromips -mno-interlink-mips16
+CFLAGS		+= $(SDL_CFLAGS)
 DEFINES 	= -DRS97
-LDFLAGS 	= -no-pie -flto -lSDL
-LDFLAGS	+= -Wl,--as-needed -Wl,--gc-sections -s
+LDFLAGS 	= -Wl,--as-needed -Wl,--gc-sections -flto -s -lSDL 
 OUT	 		= oswan.dge
 
 SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c
 CPU 		= main/emu/cpu/nec.c
 CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
-DRAWING 	= main/sdl/gui_drawing.c main/sdl/drawing.c
- 
+DRAWING 	= main/arcademini/drawing.c main/arcademini/gui_drawing.c
+
 # Sound support
 CORE 	   += main/emu/WSApu.c 
-DEFINES    += -DSOUND_ON -DSOUND_EMULATION -DFRAMESKIP -DNOROMLOADER
+DEFINES    += -DSOUND_ON -DSOUND_EMULATION -DFRAMESKIP -DNOROMLOADER -DJOYSTICK
 
 # Enable this to support zip files
 # Here, Support for zips is enabled
@@ -46,4 +42,4 @@ ${OUT}	: ${OBJS}
 		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
 	
 clean	:
-		rm ${OBJS} ${OUT} ./oswan-rs97/${OUT} ./${ZIPFILE}
+		rm ${OBJS} ${OUT} ${OUT}

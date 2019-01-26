@@ -173,11 +173,8 @@ void screen_draw(void)
 #if defined(SCALING)
 void flip_screen(SDL_Surface* screen)
 {
-	SDL_Surface* doble;
-	doble = zoomSurface(actualScreen,screen_scale.w_scale,screen_scale.h_scale);
-	SDL_BlitSurface(doble,NULL,real_screen,&screen_position);
+	SDL_SoftStretch(actualScreen, NULL, real_screen, &screen_position);
 	SDL_Flip(real_screen);
-	SDL_FreeSurface(doble);
 }
 #endif
 

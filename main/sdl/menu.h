@@ -1,10 +1,10 @@
 #include "shared.h"
 
 typedef struct {
-	const int8_t itemName[16];
+	int8_t itemName[16];
 	int16_t *itemPar;
 	int16_t itemParMaxValue;
-	const int8_t *itemParName;
+	int8_t *itemParName;
 	void (*itemOnA)();
 } MENUITEM;
 
@@ -31,10 +31,10 @@ uint8_t ifactive(void);
 void menuSaveBmp(void);
 #endif
 
-const int8_t mnuABXY[5][16] = {"Normal", "Swap Dpad-Stick", "Swap DPAD-ABXY", "Swap ABXY-Stick", "Swap ALL"};
-const int8_t mnuYesNo[2][16] = {"No", "Yes"};
-const int8_t mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
-const int8_t mnuRatio[3][16] = { "1x size","Full screen", "Keep Aspect"};
+int8_t mnuABXY[6][16] = {"Normal", "Swap Dpad-Stick", "Swap DPAD-ABXY", "Swap ABXY-Stick", "Swap ALL", "Judgement"};
+int8_t mnuYesNo[2][16] = {"No", "Yes"};
+int8_t mnuSaves[10][16] = { "1","2","3","4","5","6","7","8","9"};
+int8_t mnuRatio[3][16] = { "1x size","Full screen", "Keep Aspect"};
 
 
 #ifdef _TINSPIRE
@@ -43,7 +43,7 @@ const int8_t *file_ext[] = {
 	NULL };
 #else
 const int8_t *file_ext[] = { 
-	(const int8_t *) ".ws",  (const int8_t *) ".wsc", 
+	(const int8_t *) ".ws",  (const int8_t *) ".wsc", (const int8_t *) ".bin", 
 #ifdef ZIP_SUPPORT  
 	(const int8_t *) ".zip",
 #endif

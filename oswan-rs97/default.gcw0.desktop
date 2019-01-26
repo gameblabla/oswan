@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Oswan
-Comment=Wonderswan emulator
-Exec=oswan.dge %f
-Icon=icon
-Categories=emulators;
-X-OD-Manual=readme.txt

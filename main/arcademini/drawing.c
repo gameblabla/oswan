@@ -1,32 +1,34 @@
 #include "drawing.h"
+#include "shared.h"
 
 void Get_resolution(void)
 {
 }
 
-void Set_resolution(uint16_t w, uint16_t h)
+void Set_resolution(uint16_t  w, uint16_t  h)
 {
 }
 
-void SetVideo(uint8_t mode)
+void SetVideo(unsigned char mode)
 {
-	int32_t flags = FLAG_VIDEO;
-	
-	if (actualScreen) SDL_FreeSurface(actualScreen);
-	#if !defined(NOSCREENSHOTS)
-		if (screenshots) SDL_FreeSurface(screenshots);
-	#endif
-	
 	if (!SDL_WasInit(SDL_INIT_VIDEO)) 
 	{	
 		SDL_Init(SDL_INIT_VIDEO);
 		SDL_ShowCursor(SDL_DISABLE);
 	}
-
-	actualScreen = SDL_SetVideoMode(320, 480, BITDEPTH_OSWAN, flags);
+	
+	if (actualScreen) SDL_FreeSurface(actualScreen);
 	
 	#if !defined(NOSCREENSHOTS)
-		screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, 320, 480, BITDEPTH_OSWAN, 0,0,0,0);
+		if (screenshots) SDL_FreeSurface(screenshots);
+	#endif
+	
+	Set_resolution(0, 0);
+
+	actualScreen = SDL_SetVideoMode(480, 272, 16, SDL_HWSURFACE);
+	
+	#if !defined(NOSCREENSHOTS)
+		screenshots = SDL_CreateRGBSurface(FLAG_VIDEO, 480, 272, BITDEPTH_OSWAN, 0,0,0,0);
 	#endif
 }
 
@@ -38,28 +40,27 @@ void Set_DrawRegion(void)
 
 void screen_draw(void)
 {
-	uint16_t *buffer_scr = (uint16_t *) actualScreen->pixels;
-	uint32_t W,H,x,y,iy,ix;
+	uint16_t  *buffer_scr = (uint16_t  *) actualScreen->pixels;
+	uint32_t  W,H,x,y,iy,ix;
 	
 	SDL_LockSurface(actualScreen);
 	
 	x=0;
 	y=0; 
-	W=320;
-	H=240;
+	W=480;
+	H=272;
 	ix=(SYSVID_WIDTH<<16)/W;
 	iy=(SYSVID_HEIGHT<<16)/H;
 	do   
 	{
-		uint16_t *buffer_mem=(uint16_t *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
-		W=320; x=0;
+		uint16_t  *buffer_mem=(uint16_t  *) (FrameBuffer+((y>>16)*SCREEN_WIDTH));
+		W=480; x=0;
 		do 
 		{
 			*buffer_scr++=buffer_mem[x>>16];
 			x+=ix;
 		} while (--W);
 		y+=iy;
-		buffer_scr+= 320;
 	} while (--H);
 	
 	static char buffer[3];
@@ -75,8 +76,8 @@ void screen_draw(void)
 
 void take_screenshot(void)
 {
-#ifndef NOSCREENSHOTS
-	/* Save current screen in screenshots's layer */
+#if !defined(NOSCREENSHOTS)
+	/* Save current screen in screenshots's layer	*/
 	SDL_BlitSurface(actualScreen, NULL, screenshots, NULL);
 #endif
 }

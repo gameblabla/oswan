@@ -1,16 +1,22 @@
-- Improve the code : it's a mess. (seriously)
-* I have converted most of the DWORD, WORD, BYTE as well as unsigned short, unsigned char etc...
-to uint32_t, int32_t, int16_t, int8_t etc... I need to check for any regressions but it already fixed voices on hardware without FPUs.
+Improve the code
+==================
+It became a mess. (seriously)
+The sound code need to be better seperated. 
+The input code really needs some improvements, there's a lot of duplication.
 
-- Sound is somewhat broken. On slow hardware, it can still skip after the buffer is filled for a while.
-* Seems to be related to the audio frequency... I lowered the audio buffer and it seems to have fixed some of the skipping.
+Sound code is broken
+====================
+Someone else added it to Oswan (alekmaul) but it's horrible and the buffer will run out after a while, before being refilled again.
+Unfortunately, i'm totally not familiar with this stuff. It could be ported to PortAudio but the SDL audio code
+will need to be improved too because SDL is the only audio library on some platforms (KolibriOS, Syllable etc...)
 
-- Proper 32-bits support
-On Linux, if the bpp is different from the display, it will be converted but there will be a significant drop in speed.
-The only problem is the palette : it is not properly converted to 32 bits...
+Proper 32-bits support
+=======================
+I need to add support for 32-bits output.
+Palette code needs to be adjusted for RGBA 32-bits.
 Look at emu/WSRender.c and SetPalette function for more info.
 
-- Improve resolution support on computers
-- Improve input code
-
-- Eventually merge code with Dualswan. (Not sure if there are any benefits from doing so but according to its author, it runs like 20 FPS faster on the same hardware)
+Menu code
+==========
+The menu code needs to be more flexible accross resolutions, without the use of something like SDL_ttf.
+Perhaps use bitmap fonts combined with software scaling ? 
