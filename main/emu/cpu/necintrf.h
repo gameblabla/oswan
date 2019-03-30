@@ -13,8 +13,8 @@ extern int32_t nec_ICount;
 /* Public functions */
 
 void nec_set_reg(const int32_t regnum, const uint32_t val);
-uint16_t nec_execute(const uint16_t cycles);
-int16_t nec_get_reg(const int32_t regnum);
+int32_t nec_execute(const int32_t cycles);
+uint32_t nec_get_reg(const uint32_t regnum);
 void nec_reset (void *param);
 void nec_int(const uint32_t wektor);
 

@@ -23,13 +23,14 @@ uint8_t SprTMap[512];
 
 uint16_t Palette[16][16];
 uint16_t MonoColor[8];
-uint16_t FrameBuffer[320*240];
+/* Width should be 256, not 224 for horizontal scrolling to look properly. */
+uint16_t FrameBuffer[320*144];
 const uint8_t Layer[3] = {1, 1, 1};
 
 void SetPalette(const uint32_t addr)
 {
-    uint16_t color, r, g, b;
-    uint16_t pal;
+    uint32_t color, r, g, b;
+    uint32_t pal;
 
     /* RGB444 format */
     color = *(uint16_t*)(IRAM + (addr & 0xFFFE));
@@ -60,8 +61,9 @@ void RefreshLine(const uint16_t Line)
     uint8_t *pbTData;          
     int32_t PalIndex;             
     int16_t i, j, k, index[8];
-    uint16_t BaseCol; 
-    pSBuf = FrameBuffer + Line * 320;
+    uint16_t BaseCol;
+    /* Should be the framebuffer's width size. */
+    pSBuf = FrameBuffer + (Line * 320);
     pSWrBuf = pSBuf;
 
     if(IO[LCDSLP] & 0x01)
@@ -87,7 +89,8 @@ void RefreshLine(const uint16_t Line)
     }
     if(!(IO[LCDSLP] & 0x01)) return;
 /*********************************************************************/
-    if((IO[DSPCTL] & 0x01) && Layer[0])                                 /* BG layer */
+	/* Background layer */
+    if((IO[DSPCTL] & 0x01) && Layer[0])
     {
         OffsetX = IO[SCR1X] & 0x07;
         pSWrBuf = pSBuf - OffsetX;
@@ -288,9 +291,12 @@ void RefreshLine(const uint16_t Line)
     }
 /*********************************************************************/
     memset(ZBuf, 0, sizeof(ZBuf));
-    if((IO[DSPCTL] & 0x02) && Layer[1])          /* FG layer表示 */
+    
+    /* Foregound layer 表示 */
+    if((IO[DSPCTL] & 0x02) && Layer[1])
     {
-        if((IO[DSPCTL] & 0x30) == 0x20) /* ウィンドウ内部のみに表示 */
+		/* ウィンドウ内部のみに表示 */
+        if((IO[DSPCTL] & 0x30) == 0x20)
         {
             for(i = 0, pW = WBuf + 8; i < 224; i++)
             {
@@ -543,9 +549,11 @@ void RefreshLine(const uint16_t Line)
         }
     }
 /*********************************************************************/
-    if((IO[DSPCTL] & 0x04) && Layer[2])         /* Sprites */
+	/* Sprites */
+	if((IO[DSPCTL] & 0x04) && Layer[2])
     {
-        if (IO[DSPCTL] & 0x08)     /* Sprite window */
+		/* Sprite window */
+        if (IO[DSPCTL] & 0x08)
         {
             for (i = 0, pW = WBuf + 8; i < 224; i++)
             {

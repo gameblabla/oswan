@@ -41,18 +41,20 @@ typedef union
 typedef struct
 {
 	necbasicregs regs;
+	
+	uint8_t	TF, IF, DF, MF; 	/* 0 or 1 valued flags */	/* OB[19.07.99] added Mode Flag V30 */
+	
  	uint16_t	sregs[4];
-
 	uint16_t	ip;
 
-	int32_t	SignVal;
 	uint32_t	AuxVal, OverVal, ZeroVal, CarryVal, ParityVal; /* 0 or non-0 valued flags */
-	uint8_t	TF, IF, DF, MF; 	/* 0 or 1 valued flags */	/* OB[19.07.99] added Mode Flag V30 */
 	uint32_t	int_vector;
 	uint32_t	pending_irq;
 	uint32_t	nmi_state;
 	uint32_t	irq_state;
 	int32_t 	(*irq_callback)(int32_t irqline);
+	int32_t	SignVal;
+	
 } nec_Regs;
 
 /***************************************************************************/
@@ -75,7 +77,7 @@ char seg_prefix;		/* prefix segment indicator */
 #include "necea.h"
 #include "necmodrm.h"
 
-static int32_t no_interrupt;
+static uint32_t no_interrupt;
 static uint8_t parity_table[256];
 
 /***************************************************************************/
@@ -83,16 +85,15 @@ static uint8_t parity_table[256];
 void nec_reset (void *param)
 {
 	uint16_t i,j,c;
-	const BREGS reg_name[8]={ AL, CL, DL, BL, AH, CH, DH, BH };
-
-
+	BREGS reg_name[8]={ AL, CL, DL, BL, AH, CH, DH, BH };
+	
 	memset( &I, 0, sizeof(I) );
 
 	no_interrupt=0;
 	I.sregs[CS] = 0xffff;
 
 
-	for (i = 0;i < 256; i++)
+	for (i = 0; i < 256; i++)
 	{
 		for (j = i, c = 0; j > 0; j >>= 1)
 			if (j & 1) c++;
@@ -115,12 +116,10 @@ void nec_reset (void *param)
 	
 	prefix_base = 0;
 	seg_prefix = 0;
-	
 }
 
-void nec_int(const uint32_t wektor)
+void nec_int(uint32_t wektor)
 {
-  
 	uint32_t dest_seg, dest_off;
 
 	if(I.IF)
@@ -136,7 +135,7 @@ void nec_int(const uint32_t wektor)
 	}
 }
 
-void nec_interrupt(const uint32_t int_num)
+void nec_interrupt(uint32_t int_num)
 {
 	uint32_t dest_seg, dest_off;
 
@@ -772,7 +771,7 @@ static void i_invalid(void)
 /*****************************************************************************/
 
 
-int16_t nec_get_reg(const int32_t regnum)
+uint32_t nec_get_reg(uint32_t regnum)
 {
 	switch( regnum )
 	{
@@ -798,9 +797,9 @@ int16_t nec_get_reg(const int32_t regnum)
 	return 0;
 }
 
-void nec_set_irq_line(const int32_t irqline, const int32_t state);
+void nec_set_irq_line(int32_t irqline, int32_t state);
 
-void nec_set_reg(const int32_t regnum, const uint32_t val)
+void nec_set_reg(int32_t regnum, uint32_t val)
 {
 	switch( regnum )
 	{
@@ -823,7 +822,7 @@ void nec_set_reg(const int32_t regnum, const uint32_t val)
 }
 
 
-uint16_t nec_execute(const uint16_t cycles)
+int32_t nec_execute(int32_t cycles)
 {
 	nec_ICount=cycles;
 

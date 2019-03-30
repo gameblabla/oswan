@@ -9,31 +9,12 @@
 
 #include "shared.h"
 
-#ifdef ZIP_SUPPORT  
-#include "unzip.h"
-int8_t tempfilecartname_[512];
-#endif
+static unsigned long result;
+static char SaveName[512]; 
+static char StateName[512];
+static char IEepPath[512]; 
 
-int32_t result;
-int8_t SaveName[512]; 
-int8_t StateName[512];
-int8_t IEepPath[512]; 
-
-#ifdef ZIP_SUPPORT  
-int32_t check_zip(char *filename)
-{
-    uint8_t buf[2];
-    FILE *fd = NULL;
-    fd = fopen(filename, "rb");
-    if(!fd) return (0);
-    fread(buf, 2, 1, fd);
-    fclose(fd);
-    if(memcmp(buf, "PK", 2) == 0) return (1);
-    return (0);
-}
-#endif
-
-int32_t WsSetPdata(void)
+uint32_t WsSetPdata(void)
 {
     ROMBanks = 4;
 	RAMBanks = 1;
@@ -49,11 +30,12 @@ int32_t WsSetPdata(void)
     return 1;
 }
 
-int32_t WsCreate(int8_t *CartName)
+uint32_t WsCreate(char *CartName)
 {
-    int32_t Checksum, i, j;
+    uint32_t Checksum, j;
+    int32_t i;
     FILE* fp;
-    uint8_t buf[16];
+    char buf[16];
 
     for (i = 0; i < 256; i++)
     {
@@ -70,102 +52,13 @@ int32_t WsCreate(int8_t *CartName)
     }
  
 #ifdef ZIP_SUPPORT   
-	if(check_zip(CartName))
-	{
-		#define READ_SIZE 8192
-		int8_t read_buffer[READ_SIZE];
-		unzFile *zipfile = unzOpen(CartName);
-		unz_global_info global_info;
-		if ( unzGetGlobalInfo( zipfile, &global_info ) != UNZ_OK )
-		{
-			printf( "Could not read file global info\n" );
-			unzClose( zipfile );
-			return -1;
-		}
-
-        /* Get info about current file. */
-        unz_file_info file_info;
-        int8_t filename[512];
-        if ( unzGetCurrentFileInfo( zipfile, &file_info, filename, 512, NULL, 0, NULL, 0 ) != UNZ_OK )
-        {
-            printf( "Could not read file info\n" );
-            unzClose( zipfile );
-            return -1;
-        }
-        
-		/* Entry is a file, so extract it. */
-		if ( unzOpenCurrentFile( zipfile ) != UNZ_OK )
-		{
-			printf( "Could not open file\n" );
-			unzClose( zipfile );
-			return -1;
-		}
-		
-		
-		snprintf(tempfilecartname_, sizeof(tempfilecartname_), "%s.ws", CartName);
-		
-		/* Open a file to write out the data. */
-		int8_t tempfilename[512];
-		snprintf(tempfilename, sizeof(tempfilename), "%s%s%s%s", PATH_DIRECTORY, SAVE_DIRECTORY, tempfilecartname_, EXTENSION);
-		
-		FILE *out = fopen( tempfilename, "wb" );
-		if ( out == NULL )
-		{
-			printf( "could not open destination file\n" );
-			unzCloseCurrentFile( zipfile );
-			unzClose( zipfile );
-			return -1;
-		}
-		
-		int16_t error = UNZ_OK;
-		do    
-		{
-			error = unzReadCurrentFile( zipfile, read_buffer, READ_SIZE );
-			if ( error < 0 )
-			{
-				printf( "Error %d\n", error );
-				unzCloseCurrentFile( zipfile );
-				unzClose( zipfile );
-				return -1;
-			}
-			if ( error > 0 )
-			{
-				/* Write data to file. */
-				fwrite( read_buffer, error, 1, out );
-			}
-		} while ( error > 0 );
-
-        fclose( out );
-        unzCloseCurrentFile( zipfile );
-        
-        /*
-         * This could be improved, obviously.
-         * It should read from memory instead of writing to a file
-         * and then reading a from it.
-         * Sure, it is deleted right afterwards but on read-only systems,
-         * this is not even a possibility.
-         * It still works on Sega Dreamcast because it is put in RAM.
-         * It might not be able to load big roms though...
-        */
-        
-		if ((fp = fopen(tempfilename, "rb")) == NULL)
-		{
-			fprintf(stderr,"ERR_FOPEN\n");
-			return 1;
-		}
-		remove(tempfilename);
-	}
-	else
-	{
 #endif
-		if ((fp = fopen(CartName, "rb")) == NULL)
-		{
-			fprintf(stderr,"ERR_FOPEN\n");
-			return 1;
-		}
-#ifdef ZIP_SUPPORT
+	fp = fopen(CartName, "rb");
+	if (!fp)
+	{
+		fprintf(stderr,"ERR_FOPEN\n");
+		return 1;
 	}
-#endif
     
     /* ws_romsize = sizeof(fp); */
 
@@ -173,7 +66,7 @@ int32_t WsCreate(int8_t *CartName)
     if (fread(buf, 1, 10, fp) != 10)
     {
 		fprintf(stderr,"ERR_FREAD_ROMINFO\n");
-		if (fp) fclose(fp);
+		fclose(fp);
         return 1;
     }
     switch (buf[4])
@@ -260,8 +153,8 @@ int32_t WsCreate(int8_t *CartName)
 
     WsRomPatch(buf);
     
-    Checksum = (int32_t)((buf[9] << 8) + buf[8]);
-    Checksum += (int32_t)(buf[9] + buf[8]);
+    Checksum = (uint32_t)((buf[9] << 8) + buf[8]);
+    Checksum += (uint32_t)(buf[9] + buf[8]);
     for (i = ROMBanks - 1; i >= 0; i--)
     {
         fseek(fp, (ROMBanks - i) * -0x10000, 2);
@@ -307,7 +200,7 @@ int32_t WsCreate(int8_t *CartName)
     }
     if (RAMSize)
     {
-		int8_t* tmp =  strstr(CartName, "/");
+		char* tmp =  strstr(CartName, "/");
 		if (tmp == NULL)
 		{
 			snprintf(SaveName, sizeof(SaveName), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, CartName, EXTENSION);
@@ -359,13 +252,13 @@ int32_t WsCreate(int8_t *CartName)
 void WsRelease(void)
 {
     FILE* fp;
-    int32_t i;
+    uint32_t i;
 
     if (SaveName[0] != 0)
     {
         if ((fp = fopen(SaveName, "wb"))!= NULL)
         {
-            for (i  =0; i < RAMBanks; i++)
+            for (i  = 0; i < RAMBanks; i++)
             {
                 if (RAMSize<0x10000)
                 {
@@ -388,7 +281,7 @@ void WsRelease(void)
         }
         SaveName[0] = '\0';
     }
-    for (i = 0xFF; i >= 0; i--)
+    for (i = 0xFF; i; i--)
     {
         if (ROMMap[i] == MemDummy)
         {
@@ -404,7 +297,7 @@ void WsLoadEeprom(void)
 {
     FILE* fp;
 
-	snprintf(IEepPath, sizeof(IEepPath), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, "oswan.dat", EXTENSION);
+	snprintf(IEepPath, sizeof(IEepPath), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(gameName, '/')+1, EXTENSION);
 
     if ((fp = fopen(IEepPath, "rb")) != NULL)
     {
@@ -429,27 +322,28 @@ void WsSaveEeprom(void)
 {
     FILE* fp;
 
-	snprintf(IEepPath, sizeof(IEepPath), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, "oswan.dat", EXTENSION);
+	snprintf(IEepPath, sizeof(IEepPath), "%s%s%s.epm%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(gameName, '/')+1, EXTENSION);
 
     if ((fp = fopen(IEepPath, "wb")) != NULL)
     {
         fwrite(IEep, sizeof(uint16_t), 64, fp);
-		if (fp) fclose(fp);
+		fclose(fp);
     }
 }
 
 #define MacroLoadNecRegisterFromFile(F,R) \
 		result = fread(&value, sizeof(uint32_t), 1, fp); \
 	    nec_set_reg(R,value); 
-int32_t WsLoadState(const int8_t *savename, int32_t num)
+uint32_t WsLoadState(const char *savename, uint32_t num)
 {
     FILE* fp;
-    int8_t buf[256];
+    char buf[PATH_MAX];
 	uint32_t value;
-	int32_t i;
+	uint32_t i;
 	
-	snprintf(buf, sizeof(buf), "%s%s%s.%d.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
-    if ((fp = fopen(buf, "rb")) == NULL)
+	snprintf(buf, sizeof(buf), "%s%s%s.%u.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
+	fp = fopen(buf, "rb");
+    if (!fp)
     {
 		return 1;
 	}
@@ -473,7 +367,7 @@ int32_t WsLoadState(const int8_t *savename, int32_t num)
 	MacroLoadNecRegisterFromFile(fp,NEC_IRQ_STATE);
     result = fread(IRAM, sizeof(uint8_t), 0x10000, fp);
     result = fread(IO, sizeof(uint8_t), 0x100, fp);
-    for (i  =0; i < RAMBanks; i++)
+    for (i = 0; i < RAMBanks; i++)
     {
         if (RAMSize < 0x10000)
         {
@@ -502,14 +396,14 @@ int32_t WsLoadState(const int8_t *savename, int32_t num)
 	    value = nec_get_reg(R); \
 		fwrite(&value, sizeof(uint32_t), 1, fp);
 		
-int32_t WsSaveState(const int8_t *savename, int32_t num)
+uint32_t WsSaveState(const char *savename, uint32_t num)
 {
     FILE* fp;
-    int8_t buf[256];
+    char buf[PATH_MAX];
 	uint32_t value;
-	int32_t i;
+	uint32_t i;
 	
-	snprintf(buf, sizeof(buf), "%s%s%s.%d.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
+	snprintf(buf, sizeof(buf), "%s%s%s.%u.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
     if ((fp = fopen(buf, "w+")) == NULL)
     {
 		printf("FAILURE...\n");
@@ -535,7 +429,7 @@ int32_t WsSaveState(const int8_t *savename, int32_t num)
 	MacroStoreNecRegisterToFile(fp,NEC_IRQ_STATE);
     fwrite(IRAM, sizeof(uint8_t), 0x10000, fp);
     fwrite(IO, sizeof(uint8_t), 0x100, fp);
-    for (i  =0; i < RAMBanks; i++)
+    for (i = 0; i < RAMBanks; i++)
     {
         if (RAMSize < 0x10000)
         {

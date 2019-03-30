@@ -6,11 +6,11 @@ $Rev: 97 $
 #ifndef WSFILEIO_H_
 #define WSFILEIO_H_
 
-int32_t WsCreate(int8_t *CartName);
+uint32_t WsCreate(char *CartName);
 void WsRelease(void);
 void WsLoadEeprom(void);
 void WsSaveEeprom(void);
-int32_t WsLoadState(const int8_t *savename, int32_t num);
-int32_t WsSaveState(const int8_t *savename, int32_t num);
+uint32_t WsLoadState(const char *savename, uint32_t num);
+uint32_t WsSaveState(const char *savename, uint32_t num);
 
 #endif

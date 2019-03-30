@@ -2,12 +2,10 @@
 #include <string.h>
 #include <time.h>
 
-/* SDL drawing screen */
-extern void graphics_paint(void);
-
+#include "shared.h"
 #include "WSRender.h"
 #include "WS.h"
-#include "game_input.h"
+#include "input.h"
 #ifdef SOUND_EMULATION
 #include "WSApu.h"
 #endif
@@ -16,7 +14,7 @@ extern void graphics_paint(void);
 
 #define IPeriod 32          	/* HBlank/8 (256/8)					*/
 
-/*int32_t Run;*/
+/*uint32_t Run;*/
 uint8_t *Page[16];             	/* バンク割り当て 						*/
 uint8_t IRAM[0x10000];         	/* 内部RAM 64kB = Page[0]			*/
 uint8_t IO[0x100];             	/* IO								*/
@@ -25,14 +23,14 @@ uint8_t *ROMMap[0x100];        	/* C-ROMバンクマップ					*/
 uint16_t ROMBanks;    	/* C-ROMバンク数						*/
 uint8_t *RAMMap[0x100];        	/* C-RAMバンクマップ					*/
 uint8_t RAMBanks;     	/* C-RAMバンク数						*/
-int32_t RAMSize;               	 	/* C-RAM総容量						*/
+uint32_t RAMSize;               	 	/* C-RAM総容量						*/
 uint16_t IEep[64];              	/* 内蔵EEPROM						*/
 struct EEPROM sIEep;        	/* EEPROM読み書き用構造体（内蔵）		*/
 struct EEPROM sCEep;        	/* EEPROM読み書き用構造体（カートリッジ）	*/
 uint8_t CartKind;     	/* セーブメモリの種類（CK_EEP = EEPROM）	*/
 
 static int32_t ButtonState = 0x0000;    /* Button state: B.A.START.OPTION.X4.X3.X2.X1.Y4.Y3.Y2.Y1	*/
-static uint8_t HVMode;
+static uint32_t HVMode;
 static uint16_t HTimer;
 static uint16_t VTimer;
 static uint8_t RtcCount;
@@ -63,6 +61,7 @@ static uint16_t DefColor[] = {
 void ComEeprom(struct EEPROM *eeprom, const uint16_t *cmd, uint16_t *data)
 {
     int32_t i, j, op, addr;
+    
     const int32_t tblmask[16][5]=
     {
         {0x0000, 0, 0x0000, 0, 0x0000}, /* dummy */
@@ -82,17 +81,20 @@ void ComEeprom(struct EEPROM *eeprom, const uint16_t *cmd, uint16_t *data)
         {0x3000, 12, 0x0C00, 10, 0x0FFF},
         {0x6000, 13, 0x1800, 11, 0x1FFF},
     };
-    if(eeprom->data == NULL)
+    
+    if (eeprom->data == NULL)
     {
         return;
     }
-    for(i = 15, j = 0x8000; i >= 0; i--, j >>= 1)
+    
+    for (i = 15, j = 0x8000; i >= 0; i--, j >>= 1)
     {
         if(*cmd & j)
         {
             break;
         }
     }
+    
     op = (*cmd & tblmask[i][0]) >> tblmask[i][1];
     switch(op)
     {
@@ -156,17 +158,17 @@ uint8_t ReadMem(const uint32_t A)
     return Page[(A >> 16) & 0xF][A & 0xFFFF];
 }
 
-void WriteMem(const uint32_t A, const uint8_t V)
+void WriteMem(const uint32_t A, uint8_t V)
 {
     (*WriteMemFnTable[(A >> 16) & 0x0F])(A, V);
 }
 
-static void WriteRom(const uint32_t A, const uint8_t V)
+static void WriteRom(const uint32_t A, uint8_t V)
 {
     /*ErrorMsg(ERR_WRITE_ROM);*/
 }
 
-static void WriteIRam(const uint32_t A, const uint8_t V)
+static void WriteIRam(const uint32_t A, uint8_t V)
 {
     IRAM[A & 0xFFFF] = V;
     if((A & 0xFE00) == 0xFE00)
@@ -194,15 +196,15 @@ static void WriteIRam(const uint32_t A, const uint8_t V)
 #define FLASH_CMD_CONTINUE_RES2 0xF0
 #define FLASH_CMD_CONTINUE_RES3 0x00
 #define FLASH_CMD_WRITE         0xA0
-static void WriteCRam(const uint32_t A, const uint8_t V)
+static void WriteCRam(uint32_t A, uint8_t V)
 {
-    static int32_t flashCommand1 = 0;
-    static int32_t flashCommand2 = 0;
-    static int32_t flashWriteSet = 0;
-    static int32_t flashWriteOne = 0;
-    static int32_t flashWriteReset = 0;
-    static int32_t flashWriteEnable = 0;
-    int32_t offset = A & 0xFFFF;
+    static uint32_t flashCommand1 = 0;
+    static uint32_t flashCommand2 = 0;
+    static uint32_t flashWriteSet = 0;
+    static uint32_t flashWriteOne = 0;
+    static uint32_t flashWriteReset = 0;
+    static uint32_t flashWriteEnable = 0;
+    uint32_t offset = A & 0xFFFF;
 
 	/* 
     if (offset >= RAMSize)
@@ -291,9 +293,9 @@ static void WriteCRam(const uint32_t A, const uint8_t V)
     }
 }
 
-void WriteIO(const uint32_t A, uint8_t V)
+void WriteIO(uint32_t A, uint8_t V)
 {
-    int32_t i, j, k;
+    uint32_t i, j, k;
 
     if(A >= 0x100)
     {
@@ -323,6 +325,9 @@ void WriteIO(const uint32_t A, uint8_t V)
             Palette[i][j + 1] = MonoColor[(IO[k] >> 4) & 0x07];
         }
         break;
+	case 0x16:
+		/* Write V-Line here */
+	break;
     case 0x20:
     case 0x21:
     case 0x22:
@@ -381,6 +386,9 @@ void WriteIO(const uint32_t A, uint8_t V)
             V &= 0x7F;
         }
         break;
+	case 0x60:
+		/* Write Video Mode here */
+	break;
 #ifdef SOUND_EMULATION
     case 0x80:
     case 0x81:
@@ -447,7 +455,7 @@ void WriteIO(const uint32_t A, uint8_t V)
         V |= 0x80; /* ヘッドホンは常にオン */
         break;
     case 0xA0:
-        V=0x02;
+        V = 0x02;
         break;
     case 0xA2:
         if(V & 0x01)
@@ -566,7 +574,7 @@ void WriteIO(const uint32_t A, uint8_t V)
 }
 
 #define  BCD(value) ((value / 10) << 4) | (value % 10)
-uint8_t ReadIO(const uint32_t A)
+uint8_t ReadIO(uint32_t A)
 {
     switch(A)
     {
@@ -575,7 +583,7 @@ uint8_t ReadIO(const uint32_t A)
     case 0xCB:
         if (IO[RTCCMD] == 0x15)  /* Get time command */
         { 
-            uint8_t year, mon, mday, wday, hour, min, sec, j;
+            uint32_t year, mon, mday, wday, hour, min, sec, j;
             struct tm *newtime;
             time_t long_time;
 
@@ -648,7 +656,7 @@ WriteMemFn WriteMemFnTable[16]= {
 
 void WsReset (void)
 {
-    int32_t i, j;
+    uint32_t i, j;
 
     Page[0x0] = IRAM;
     sIEep.data = IEep;
@@ -749,21 +757,24 @@ void WsReset (void)
     nec_set_reg(NEC_SP, 0x2000);
 }
 
-void WsRomPatch(const uint8_t *buf)
+void WsRomPatch(char *buf)
 {
-    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x16)) 					/* SWJ-BANC16 STAR HEARTS 			*/
+	/* SWJ-BANC16 STAR HEARTS 			*/
+    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x16))
     {
         RAMBanks = 1;
         RAMSize = 0x8000;
         CartKind = 0;
     }
-    if((buf[0] == 0x01) && (buf[1] == 0x00) && (buf[2] == 0x2C || buf[2] == 0x2F)) 	/* SWJ-BAN02C,02F デジタルパートナー 	*/
+    /* SWJ-BAN02C,02F デジタルパートナー 	*/
+    if((buf[0] == 0x01) && (buf[1] == 0x00) && (buf[2] == 0x2C || buf[2] == 0x2F))
     {
         RAMBanks = 1;
         RAMSize = 0x8000;
         CartKind = 0;
     }
-    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x38)) 					/* SWJ-BANC38 NARUTO 木ノ葉忍法帖		*/
+    /* SWJ-BANC38 NARUTO 木ノ葉忍法帖		*/
+    if((buf[0] == 0x01) && (buf[1] == 0x01) && (buf[2] == 0x38))
     {
         RAMBanks = 1;
         RAMSize = 0x10000;
@@ -827,7 +838,7 @@ int32_t Interrupt(void)
 				if(IO[RSTRL] == 0)
 				{
 					SkipCnt--;
-                    if(SkipCnt < 0)
+					if (SkipCnt < 0)
 					{
 						SkipCnt = 4;
 					}
@@ -835,11 +846,11 @@ int32_t Interrupt(void)
 				if(TblSkip[FrameSkip][SkipCnt])
 				#endif
 				{
-					if(IO[RSTRL] < 144)
+					if (IO[RSTRL] < 144)
 					{
 						RefreshLine(IO[RSTRL]);
 					}
-					else if(IO[RSTRL] == 144)
+					else if (IO[RSTRL] == 144)
 					{
 						graphics_paint();
 					}
@@ -908,11 +919,11 @@ int32_t Interrupt(void)
     return IO[IRQACK];
 }
 
-int32_t WsRun(void)
+uint32_t WsRun(void)
 {
     static int32_t period = IPeriod;
     int32_t i, iack, inum;
-    uint16_t cycle;
+    int32_t cycle;
     
     for(i = 0; i < 1706; i++)
     {
@@ -935,7 +946,7 @@ int32_t WsRun(void)
     return 0;
 }
 
-void SetHVMode(const uint8_t Mode)
+void SetHVMode(uint32_t Mode)
 {
     HVMode = Mode;
 }

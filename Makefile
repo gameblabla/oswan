@@ -1,28 +1,26 @@
-CC 			= gcc
+CC 			= clang
 
-CFLAGS  	= -Ofast -fdata-sections -ffunction-sections -ansi -I./main/emu -I./main/sdl -I./main/headers
+CFLAGS  	= -O2 -g -Weverything -fno-common -fdata-sections -ffunction-sections -Imain/emu -Imain/sdl -Imain/headers -Imain/menu -Imain/sound -Imain/scalers
 CFLAGS 	   += ${DEFINES}
-CFLAGS 	   += $(shell sdl-config --cflags)
-DEFINES 	= -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION -DPOSIX -DNOROMLOADER -DNOSCREENSHOTS
-LDFLAGS 	= $(shell sdl-config --libs) -Wl,--as-needed -s -lportaudio
+CFLAGS 	   += $(shell sdl-config --cflags) -std=gnu99
+DEFINES 	= -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION -DPOSIX
+LDFLAGS 	= $(shell sdl-config --libs) -Wl,--as-needed -Wl,--gc-sections
 OUT  		= oswan
 
-SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c
+SDL 		= main/sdl/main.c main/sdl/input.c main/sound/sound_SDL.c
 CPU 		= main/emu/cpu/nec.c
 CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
-DRAWING		= main/sdl/drawing.c main/sdl/gui_drawing.c 
-SOURCES 	= ${SDL} ${CPU} ${CORE} ${DRAWING}
+DRAWING		= main/sdl/drawing.c main/scalers/scaler.c
+MENU 		= main/menu/menu.c main/menu/browser.c main/menu/font_drawing.c
+
+SOURCES 	= ${SDL} ${CPU} ${CORE} ${DRAWING} ${MENU}
 
 # Comment the 3 lines below to disable zip support
-CFLAGS 	   += -DZIP_SUPPORT -I./minizip
-LDFLAGS	   += -lz
-THIRD_PARTY+= minizip/unzip.o minizip/ioapi.o
+#CFLAGS 	   += -DZIP_SUPPORT -I./minizip
+#LDFLAGS	   += 
+#THIRD_PARTY+= minizip/unzip.o minizip/ioapi.o minizip/fileio.o minizip/miniz.o
 
 CFLAGS 	   += -DJOYSTICK
-
-# Comment the 2 lines below to disable Scaling support
-#CFLAGS 	   += -DSCALING
-#THIRD_PARTY+= main/sdl/gfx/SDL_rotozoom.c
 
 SOURCES    += ${THIRD_PARTY}
 

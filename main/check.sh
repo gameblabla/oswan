@@ -1,1 +1,0 @@
-cppcheck --enable=all --inconclusive . 2> err.txt

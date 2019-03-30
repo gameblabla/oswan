@@ -1,42 +1,34 @@
+#ifndef DRAWING_H
+#define DRAWING_H
+
 #include "shared.h"
 
-void screen_draw(void);
-void Get_resolution(void);
-void Set_resolution(uint16_t w, uint16_t h);
-void SetVideo(uint8_t mode);
-void Set_DrawRegion(void);
-void take_screenshot(void);
+extern void screen_draw(void);
+extern void Get_resolution(void);
+extern void Set_resolution(uint16_t w, uint16_t h);
+extern void SetVideo(uint8_t mode);
+extern void Clear_Screen(void);
+extern void Clear_Screen_Norefresh(void);
+extern void Draw_Rect_Menu(uint32_t y, uint32_t h);
+extern void Cleanup_Screen(void);
+extern void Update_Screen(void);
 
-extern uint8_t FPS;
-extern uint8_t HVMode;
+extern SDL_Surface *actualScreen;
 
-struct wheretodraw
-{
-	uint16_t w;
-	uint16_t h;
-	uint16_t offset_x;
-	uint16_t offset_y;
-} screen_to_draw_region;
+extern uint32_t HVMode;
 
-#if !defined(SCALING) && !defined(_TINSPIRE)
-	#define flip_screen SDL_Flip
-#elif defined(_TINSPIRE)
-	void flip_screen(SDL_Surface* screen);
-#else
-	void flip_screen(SDL_Surface* screen);
-	SDL_Surface *real_screen;
-#endif
-
-#if !defined(_TINSPIRE)
-SDL_Rect screen_position;
-#endif
+#define Surface_to_Draw actualScreen->pixels
 
 struct scaling
 {
-	uint16_t w_display;
-	uint16_t h_display;
+	uint32_t w_display;
+	uint32_t h_display;
 	float w_scale;
 	float h_scale;
 	float w_scale_size;
 	float h_scale_size;
-} screen_scale;
+};
+
+extern struct scaling screen_scale;
+
+#endif

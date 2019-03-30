@@ -4,84 +4,31 @@
 
 #include "WSHard.h"
 #include "WSApu.h"
-
-#define BUFSIZEN    0x10000
-#define BPSWAV      12000 /* WSのHblankが12KHz */
-
-/*4096*/
-/*2048*/
-#define SND_BNKSIZE 2048
-#define MULT 3
-
-#define SND_RNGSIZE (10 * SND_BNKSIZE)
-#define WAV_VOLUME 30
+#include "sound.h"
 
 SOUND Ch[4];
 SWEEP Swp;
 NOISE Noise; 
+
+int16_t sndbuffer[2][SND_RNGSIZE]; /* Sound Ring Buffer */
+int32_t rBuf, wBuf;
+
 int8_t VoiceOn;
 int16_t Sound[7] = {1, 1, 1, 1, 1, 1, 1};
 
-static int32_t convert_multiplier = MULT;
+static uint32_t convert_multiplier = MULT;
 
 static uint8_t PData[4][32];
 static uint8_t PDataN[8][BUFSIZEN];
-static uint32_t RandData[BUFSIZEN];
-static int16_t sndbuffer[SND_RNGSIZE][2]; /* Sound Ring Buffer */
-
-static int32_t rBuf, wBuf;
+static uint16_t RandData[BUFSIZEN];
 
 extern uint8_t *Page[16];
 extern uint8_t IO[0x100];
 
-SDL_mutex *sound_mutex;
-SDL_cond *sound_cv;
-
-static uint32_t read_pos;
-
 int32_t apuBufLen(void)
 {
-	if (wBuf >= rBuf) 
-	{
-		read_pos = 0;
-		return (wBuf - rBuf);
-	}
-	return SND_RNGSIZE + wBuf - rBuf;
-}
-
-
-void mixaudioCallback(void *userdata, uint8_t *stream, int32_t len)
-{
-	int32_t i = len;
-	uint16_t *buffer = (uint16_t *) stream;
-	
-    if(len <= 0 || !buffer)
-	{
-		return;
-	}
-	   
-	SDL_LockMutex(sound_mutex);
-	
-	if (apuBufLen() < len) 
-	{
-		memset(stream,0,len);
-	}
-	else
-	{
-		while(i > 3) 
-		{
-			*buffer++ = sndbuffer[rBuf][0];
-			*buffer++ = sndbuffer[rBuf][1];
-			if (++rBuf >= SND_RNGSIZE) 
-			{
-				rBuf = 0;
-			}
-			i -= 4;
-		}
-	}
-
-	SDL_UnlockMutex(sound_mutex);
-	SDL_CondSignal(sound_cv);
+	if (wBuf >= rBuf) return wBuf - rBuf;
+	return SND_RNGSIZE + (wBuf - rBuf);
 }
 
 void apuWaveCreate(void)
@@ -92,12 +39,12 @@ void apuWaveCreate(void)
 
 void apuWaveRelease(void)
 {
-	SDL_PauseAudio(1);
+	Pause_Sound();
 }
 
 void apuInit(void)
 {
-    int32_t i, j;
+    uint32_t i, j;
     
     convert_multiplier = MULT;
 
@@ -121,24 +68,21 @@ void apuInit(void)
         RandData[i] = apuMrand(15);
     }
     apuWaveCreate();
-    
-	sound_mutex = SDL_CreateMutex();
-	sound_cv = SDL_CreateCond();
 }
 
 void apuEnd(void)
 {
     apuWaveRelease();
-	SDL_CondSignal(sound_cv);
+	Sound_APUClose();
 }
 
-uint32_t apuMrand(uint32_t Degree)
+uint16_t apuMrand(uint32_t Degree)
 {
 	#define BIT(n) (1<<n)
     typedef struct
     {
         uint32_t N;
-        int32_t InputBit;
+        uint16_t InputBit;
         int32_t Mask;
     } POLYNOMIAL;
 
@@ -161,7 +105,7 @@ uint32_t apuMrand(uint32_t Degree)
         { 0,      0,      0},
     };
     static POLYNOMIAL *pTbl = TblMask;
-    static int32_t ShiftReg = BIT(2)-1;
+    static uint16_t ShiftReg = BIT(2)-1;
     int32_t XorReg = 0;
     int32_t Masked;
 
@@ -274,7 +218,7 @@ void apuSweep(void)
 
 uint16_t apuShiftReg(void)
 {
-    static int32_t nPos = 0;
+    static uint32_t nPos = 0;
     /* Noise counter */
     if (++nPos >= BUFSIZEN)
     {
@@ -296,12 +240,11 @@ void apuWaveSet(void)
 	static uint16_t point[4] = {0, 0, 0, 0};
     static uint16_t preindex[4] = {0, 0, 0, 0};
     uint16_t value = 0, lVol[4] = {0, 0, 0, 0}, rVol[4] = {0, 0, 0, 0};
-    uint16_t LL, RR, vVol;
-    uint8_t channel;
+    int16_t LL, RR, vVol;
     uint16_t index;
-    uint16_t i;
+    uint32_t channel;
 
-    SDL_LockMutex(sound_mutex);
+    Sound_APU_Start();
     
     apuSweep();
     
@@ -357,6 +300,14 @@ void apuWaveSet(void)
     LL = (lVol[0] + lVol[1] + lVol[2] + lVol[3] + vVol) * WAV_VOLUME;
     RR = (rVol[0] + rVol[1] + rVol[2] + rVol[3] + vVol) * WAV_VOLUME;
 
+	#ifdef NATIVE_AUDIO
+	sndbuffer[0][wBuf] = LL;
+	sndbuffer[1][wBuf] = RR;
+	if (++wBuf >= SND_RNGSIZE)
+	{
+		wBuf = 0;
+	}
+	#else
 	if (convert_multiplier == MULT) 
 	{
 		convert_multiplier = (MULT+1);
@@ -366,20 +317,17 @@ void apuWaveSet(void)
 		convert_multiplier = MULT;
 	}
 
-	for (i=0;i<convert_multiplier;i++)	/* 48000/12000 */
+	for (uint32_t i=0;i<convert_multiplier;i++)	/* 48000/12000 */
 	{ 
-		sndbuffer[wBuf][0] = LL;
-		sndbuffer[wBuf][1] = RR;
+		sndbuffer[0][wBuf] = LL;
+		sndbuffer[1][wBuf] = RR;
 		if (++wBuf >= SND_RNGSIZE)
 		{
 			wBuf = 0;
 		}
 	}
-    
-#ifdef SOUND_ON
-	SDL_UnlockMutex(sound_mutex);
-	SDL_CondSignal(sound_cv);
-#endif
-    
+	#endif
+	
+	Sound_APU_End();
 }
 

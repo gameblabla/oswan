@@ -12,7 +12,7 @@ extern uint8_t *SprETMap;
 extern uint8_t SprTMap[512];
 extern uint16_t Palette[16][16];
 extern uint16_t MonoColor[8];
-extern uint16_t FrameBuffer[320*240];
+extern uint16_t FrameBuffer[320*144];
 extern const uint8_t Layer[3];
 
 void SetPalette(const uint32_t addr);

@@ -1,49 +1,36 @@
-CHAINPREFIX=/opt/rs97-toolchain
-CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/mipsel-linux-
-CC = $(CROSS_COMPILE)gcc
-CXX = $(CROSS_COMPILE)g++
-STRIP = $(CROSS_COMPILE)strip
-SYSROOT     := $(CHAINPREFIX)/usr/mipsel-buildroot-linux-musl/sysroot
-SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
-SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
+CC 			= /opt/rs97-toolchain/bin/mipsel-linux-gcc
 
-#-msym32 -mlong-calls
-#-fprofile-generate -fprofile-dir=/mnt/int_sd/profile
-#-fprofile-use -msym32 -mlong-calls
-CFLAGS 		= -Ofast -fdata-sections -ffunction-sections -fno-PIC -mips32 -mno-mips16 -mno-interlink-mips16 -mno-abicalls
-CFLAGS		+= $(SDL_CFLAGS) 
-#CFLAGS		+= -fprofile-generate=/mnt/int_sd/profile
-#CFLAGS		+= -fprofile-use
-CFLAGS		+= -I./main/emu -I./main/sdl -I./main/headers ${DEFINES} 
-DEFINES 	= -DRS97
-LDFLAGS 	= -no-pie -flto -lSDL
-LDFLAGS	+= -Wl,--as-needed -Wl,--gc-sections -s
-OUT	 		= oswan.dge
+INCLUDES	= -Imain/emu -Imain/sdl -Imain/headers -Imain/menu -Imain/sound -Imain/scalers
 
-SDL 		= main/sdl/main.c main/sdl/menu.c main/sdl/input.c main/sdl/game_input.c
+CFLAGS  	= -Ofast -fdata-sections -ffunction-sections -mno-check-zero-division -mframe-header-opt -fsingle-precision-constant -fno-common -mips32 -fno-PIC -mno-abicalls -flto -fwhole-program
+CFLAGS	   += -fprofile-use
+CFLAGS 	   += -DHOME_SUPPORT -DSOUND_ON -DSOUND_EMULATION -DPOSIX -DFRAMESKIP -DRS97
+CFLAGS 	   += ${INCLUDES}
+CFLAGS 	   += -std=gnu99
+
+LDFLAGS 	= -nodefaultlibs -lc -lgcc -lSDL -Wl,--as-needed -Wl,--gc-sections -flto -no-pie -s
+OUT  		= oswan
+
+SDL 		= main/sdl/main.c main/sdl/input.c main/sound/sound_SDL.c
 CPU 		= main/emu/cpu/nec.c
-CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c
-DRAWING 	= main/sdl/gui_drawing.c main/sdl/drawing.c
- 
-# Sound support
-CORE 	   += main/emu/WSApu.c 
-DEFINES    += -DSOUND_ON -DSOUND_EMULATION -DFRAMESKIP -DNOROMLOADER
+CORE 		= main/emu/WS.c main/emu/WSFileio.c main/emu/WSRender.c main/emu/WSApu.c 
+DRAWING		= main/sdl/drawing.c main/scalers/scaler.c
+MENU 		= main/menu/menu.c main/menu/browser.c main/menu/font_drawing.c
 
-# Enable this to support zip files
-# Here, Support for zips is enabled
-#CFLAGS 	   +=-DZIP_SUPPORT -I./minizip
-#LDFLAGS	   +=-lz
-#THIRD_PARTY = minizip/unzip.o minizip/ioapi.o
+SOURCES 	= ${SDL} ${CPU} ${CORE} ${DRAWING} ${MENU}
 
-SOURCES 	= ${SDL} ${CPU} ${CORE} ${DRAWING} 
-SOURCES	   += ${THIRD_PARTY}
+# Comment the 3 lines below to disable zip support
+#CFLAGS 	   += -DZIP_SUPPORT -I./minizip
+#LDFLAGS	   += 
+#THIRD_PARTY+= minizip/unzip.o minizip/ioapi.o minizip/fileio.o minizip/miniz.o
+
+SOURCES    += ${THIRD_PARTY}
 
 OBJS 		= ${SOURCES:.c=.o}
 
-all		: ${OUT}
-
 ${OUT}	: ${OBJS}
 		${CC} -o ${OUT} ${SOURCES} ${CFLAGS} ${LDFLAGS}
-	
+		
 clean	:
-		rm ${OBJS} ${OUT} ./oswan-rs97/${OUT} ./${ZIPFILE}
+		rm ${OBJS}
+		rm ${OUT}

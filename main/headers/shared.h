@@ -7,11 +7,6 @@
 #include <SDL/SDL.h>
 #endif
 
-#ifdef GECKO
-#include <ogcsys.h>
-#include <gccore.h>
-#endif
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -20,10 +15,14 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
+#ifndef PATH_MAX
+#define PATH_MAX 2048
+#endif
+
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
-#ifdef GCW
+#ifdef GCW0
 	#ifndef HOME_SUPPORT
 	#define HOME_SUPPORT
 	#endif
@@ -51,6 +50,9 @@
 	#ifndef POSIX
 	#define POSIX
 	#endif
+	/*#ifndef NO_WAIT
+	#define NO_WAIT
+	#endif*/
 #endif
 
 #ifdef DINGOO
@@ -63,11 +65,9 @@
 	#ifndef NO_WAIT
 	#define NO_WAIT
 	#endif
-	
-	#ifndef NOSCREENSHOTS
-	#define NOSCREENSHOTS
+	#ifndef HOME_SUPPORT
+	#define HOME_SUPPORT
 	#endif
-	
 	#define SDL_Surface int32_t
 #endif
 
@@ -81,19 +81,13 @@
 #endif
 
 #ifdef _TINSPIRE
-	#ifndef HOME_SUPPORT
-	#define HOME_SUPPORT
-	#endif
-#endif
-
-#ifdef _TINSPIRE
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
 	#define REAL_SCREEN_WIDTH 320
 	#define REAL_SCREEN_HEIGHT 240
 #elif defined(GCW)
 	#define BITDEPTH_OSWAN 16
-	#define FLAG_VIDEO SDL_SWSURFACE
+	#define FLAG_VIDEO SDL_HWSURFACE
 	#define REAL_SCREEN_WIDTH 320
 	#define REAL_SCREEN_HEIGHT 240
 #elif defined(BITTBOY)
@@ -141,134 +135,6 @@
 	#define EXTENSION ""
 #endif
 
-#ifdef _TINSPIRE
-	#define PAD_UP		KEY_NSPIRE_UP
-	#define PAD_LEFT	KEY_NSPIRE_LEFT
-	#define PAD_RIGHT	KEY_NSPIRE_RIGHT
-	#define PAD_DOWN	KEY_NSPIRE_DOWN
-
-	#define PAD_XUP		KEY_NSPIRE_UP
-	#define PAD_XLEFT	KEY_NSPIRE_LEFT
-	#define PAD_XRIGHT	KEY_NSPIRE_RIGHT
-	#define PAD_XDOWN	KEY_NSPIRE_DOWN
-	
-	#define PAD_YUP		KEY_NSPIRE_8
-	#define PAD_YLEFT	KEY_NSPIRE_4
-	#define PAD_YRIGHT	KEY_NSPIRE_6
-	#define PAD_YDOWN	KEY_NSPIRE_5
-	
-	#define PAD_A		KEY_NSPIRE_CTRL
-	#define PAD_B		KEY_NSPIRE_SHIFT
-	
-	#define PAD_X		KEY_NSPIRE_VAR
-	#define PAD_Y		KEY_NSPIRE_DEL
-	
-	#define PAD_L		KEY_NSPIRE_L
-	#define PAD_R		KEY_NSPIRE_R
-
-	#define PAD_START		KEY_NSPIRE_TAB
-	#define PAD_SELECT		KEY_NSPIRE_MENU
-	
-	#define PAD_SLIDER		KEY_NSPIRE_ENTER
-	
-	#define PAD_QUIT		KEY_NSPIRE_ESC
-
-#elif defined(RS97) || defined(GCW) || defined(DINGOO) || defined(BITTBOY)
-
-	#define PAD_XUP		SDLK_UP
-	#define PAD_XLEFT	SDLK_LEFT
-	#define PAD_XRIGHT	SDLK_RIGHT
-	#define PAD_XDOWN	SDLK_DOWN
-
-	#define PAD_UP		SDLK_UP
-	#define PAD_LEFT	SDLK_LEFT
-	#define PAD_RIGHT	SDLK_RIGHT
-	#define PAD_DOWN	SDLK_DOWN
-	
-	#define PAD_A		SDLK_LCTRL
-	#define PAD_B		SDLK_LALT
-	
-	#define PAD_X		SDLK_LSHIFT
-	#define PAD_Y		SDLK_SPACE
-	
-	#define PAD_L		SDLK_TAB
-	#define PAD_R		SDLK_BACKSPACE
-	
-	#define PAD_START		SDLK_RETURN
-	#define PAD_SELECT		SDLK_ESCAPE
-	
-	#define PAD_SLIDER		SDLK_HOME
-	
-	#define PAD_QUIT		SDLK_ESCAPE
-	
-	
-#elif defined(GECKO)
-
-	#define PAD_XUP		SDLK_UP
-	#define PAD_XLEFT	SDLK_LEFT
-	#define PAD_XRIGHT	SDLK_RIGHT
-	#define PAD_XDOWN	SDLK_DOWN
-	
-	#define PAD_YUP		SDLK_t
-	#define PAD_YLEFT	SDLK_y
-	#define PAD_YRIGHT	SDLK_u
-	#define PAD_YDOWN	SDLK_i
-	
-	#define PAD_UP		SDLK_UP
-	#define PAD_LEFT	SDLK_LEFT
-	#define PAD_RIGHT	SDLK_RIGHT
-	#define PAD_DOWN	SDLK_DOWN
-	
-	#define PAD_A		SDLK_LCTRL
-	#define PAD_B		SDLK_LALT
-	
-	#define PAD_X		SDLK_LSHIFT
-	#define PAD_Y		SDLK_SPACE
-	
-	#define PAD_L		SDLK_s
-	#define PAD_R		SDLK_l
-	
-	#define PAD_START		SDLK_RETURN
-	#define PAD_SELECT		SDLK_BACKSPACE
-	
-	#define PAD_SLIDER		0
-	
-	#define PAD_QUIT		0
-
-#else
-
-	#define PAD_XUP		SDLK_UP
-	#define PAD_XLEFT	SDLK_LEFT
-	#define PAD_XRIGHT	SDLK_RIGHT
-	#define PAD_XDOWN	SDLK_DOWN
-	
-	#define PAD_YUP		SDLK_t
-	#define PAD_YLEFT	SDLK_y
-	#define PAD_YRIGHT	SDLK_u
-	#define PAD_YDOWN	SDLK_i
-	
-	#define PAD_UP		SDLK_UP
-	#define PAD_LEFT	SDLK_LEFT
-	#define PAD_RIGHT	SDLK_RIGHT
-	#define PAD_DOWN	SDLK_DOWN
-	
-	#define PAD_A		SDLK_LCTRL
-	#define PAD_B		SDLK_LALT
-	
-	#define PAD_X		SDLK_LSHIFT
-	#define PAD_Y		SDLK_SPACE
-	
-	#define PAD_L		SDLK_s
-	#define PAD_R		SDLK_l
-	
-	#define PAD_START		SDLK_RETURN
-	#define PAD_SELECT		SDLK_BACKSPACE
-	
-	#define PAD_SLIDER		0
-	
-	#define PAD_QUIT		SDLK_ESCAPE
-#endif
-
 #define MAX__PATH 1024
 #define FILE_LIST_ROWS 19
 
@@ -284,10 +150,6 @@
 #define O_BINARY 0
 #endif
 
-#define true 1
-#define false 0
-
-#define PIX_TO_RGB(fmt, r, g, b) (((r*8>>fmt->Rloss)<<fmt->Rshift)| ((g*6>>fmt->Gloss)<<fmt->Gshift)|((b*8>>fmt->Bloss)<<fmt->Bshift))
 
 /* Oswan dependencies */
 #include "../emu/WS.h"
@@ -297,45 +159,11 @@
 
 #define cartridge_IsLoaded() (strlen(gameName) != 0)
 
-typedef struct {
-	uint16_t sndLevel;
-	uint16_t m_ScreenRatio; 	/* 0 = 1x size, 1 = full screen, 2 = Keep Aspect */
-	uint16_t OD_Joy[12]; 		/* each key mapping	*/
-	uint16_t m_DisplayFPS;
-	int8_t current_dir_rom[MAX__PATH];
-	uint16_t input_layout;
-	uint16_t reserved1;
-	uint16_t reserved2;
-	uint16_t reserved3;
-	uint16_t reserved4;
-} gamecfg;
+/* SDL drawing screen */
+extern void graphics_paint(void);
 
-extern SDL_Surface* actualScreen;	/* Main program screen */
-#if !defined(NOSCREENSHOTS)
-extern SDL_Surface* screenshots;	
-#endif	
-
-#if !defined(_TINSPIRE)
-extern SDL_Event event;
-#endif
-
-extern gamecfg GameConf;
 extern uint32_t m_Flag;
-
-extern int8_t gameName[512];
-extern int8_t current_conf_app[MAX__PATH];
-
-extern void system_loadcfg(const int8_t *cfg_name);
-extern void system_savecfg(const int8_t *cfg_name);
-
-extern void mainemuinit();
-
-/* menu */
-extern void screen_showtopmenu(void);
-extern void print_string_video(int16_t x, const int16_t y, const int8_t *s);
-
-extern void Buttons(void);
-extern int16_t button_state[18];
-extern uint8_t button_time[18];
+extern char gameName[512];
+extern uint32_t game_alreadyloaded;
 
 #endif

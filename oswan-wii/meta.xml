@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<app version="1">
-  <name>Gameblabla's Oswan</name>
-  <coder>gameblabla, bird_may_nike</coder>
-  <version>22/11/2015 v1-rc</version>
-  <release_date>20151108204317</release_date>
-  <short_description>Wonderswan emulator</short_description>
-  <long_description>Gameblabla's Oswan is a fork of Oswan with improved accuracy.</long_description>
-</app>
