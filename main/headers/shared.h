@@ -19,8 +19,8 @@
 #define PATH_MAX 2048
 #endif
 
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
+#define MENU_SCREEN_WIDTH 320
+#define MENU_SCREEN_HEIGHT 240
 
 #ifdef GCW0
 	#ifndef HOME_SUPPORT
@@ -44,6 +44,18 @@
 #endif
 
 #ifdef RS97
+	#ifndef HOME_SUPPORT
+	#define HOME_SUPPORT
+	#endif
+	#ifndef POSIX
+	#define POSIX
+	#endif
+	/*#ifndef NO_WAIT
+	#define NO_WAIT
+	#endif*/
+#endif
+
+#ifdef RS90
 	#ifndef HOME_SUPPORT
 	#define HOME_SUPPORT
 	#endif
@@ -100,6 +112,11 @@
 	#define FLAG_VIDEO SDL_HWSURFACE
 	#define REAL_SCREEN_WIDTH 320
 	#define REAL_SCREEN_HEIGHT 240
+#elif defined(RS90)
+	#define BITDEPTH_OSWAN 16
+	#define FLAG_VIDEO SDL_HWSURFACE
+	#define REAL_SCREEN_WIDTH 240
+	#define REAL_SCREEN_HEIGHT 160
 #elif defined(DREAMCAST)
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
@@ -127,7 +144,7 @@
 #else
 	#ifdef HOME_SUPPORT
 		#define PATH_DIRECTORY getenv("HOME")
-		#define SAVE_DIRECTORY "/.oswan/"
+		#define SAVE_DIRECTORY "/.oswanemu/"
 	#else
 		#define PATH_DIRECTORY "./"
 		#define SAVE_DIRECTORY ""

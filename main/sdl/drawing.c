@@ -2,7 +2,7 @@
 #include "menu.h"
 #include "scaler.h"
 
-SDL_Surface *actualScreen;
+SDL_Surface *actualScreen, *menuscreen;
 struct scaling screen_scale;
 
 void Get_resolution(void)
@@ -12,8 +12,8 @@ void Get_resolution(void)
 	screen_scale.w_display = info->current_w;
 	screen_scale.h_display = info->current_h;
 #else
-	screen_scale.w_display = 320;
-	screen_scale.h_display = 240;
+	screen_scale.w_display = REAL_SCREEN_WIDTH;
+	screen_scale.h_display = REAL_SCREEN_HEIGHT;
 #endif
 }
 
@@ -26,13 +26,13 @@ void Set_resolution(uint16_t w, uint16_t h)
 void SetVideo(uint8_t mode)
 {
 	int32_t flags = FLAG_VIDEO;
-	uint16_t w = 320, h = 240;
+	uint16_t w = REAL_SCREEN_WIDTH, h = REAL_SCREEN_HEIGHT;
 	
-	if (mode == 1) 
+	/*if (mode == 1) 
 	{
 		w = 224;
 		h = 144;
-	}
+	}*/
 	
 	if (!SDL_WasInit(SDL_INIT_VIDEO)) 
 	{	
@@ -45,10 +45,13 @@ void SetVideo(uint8_t mode)
 	Set_resolution(w, h);
 	
 	actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
+	menuscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, MENU_SCREEN_WIDTH, MENU_SCREEN_HEIGHT, BITDEPTH_OSWAN, 0,0,0,0);
 }
 
 void Clear_Screen(void)
 {
+	SDL_FillRect(menuscreen, NULL, 0);
+	
 	SDL_FillRect(actualScreen, NULL, 0);
 	Update_Screen();
 #if defined(SDL_TRIPLEBUF) || defined(SDL_DOUBLEBUF)
@@ -59,9 +62,16 @@ void Clear_Screen(void)
 #endif
 }
 
+void Clear_Menu(void)
+{
+	SDL_FillRect(menuscreen, NULL, 0);
+}
+
+
 void Clear_Screen_Norefresh(void)
 {
 	//memset(Surface_to_Draw, 0, (screen_scale.w_display*screen_scale.h_display)*2);
+	SDL_FillRect(menuscreen, NULL, 0);
 	SDL_FillRect(actualScreen, NULL, 0);
 }
 
@@ -71,17 +81,21 @@ void Draw_Rect_Menu(uint32_t y, uint32_t h)
 	SDL_Rect pos;
 	pos.x = 0;
 	pos.y = y;
-	pos.w = screen_scale.w_display;
+	pos.w = menuscreen->w;
 	pos.h = h;
-	SDL_FillRect(actualScreen, &pos, RGB565(4,3,95));
+	SDL_FillRect(menuscreen, &pos, RGB565(4,3,95));
 }
 
 void Update_Screen()
 {
+	if (m_Flag == GF_MAINUI)
+	{
+		SDL_BlitSurface(menuscreen, NULL, actualScreen, NULL);
+	}
 	SDL_Flip(actualScreen);
 }
 
-/* It's worth noting that the virtual screen width is 320 in pixels, not 224. (Wonderswan's screen width)
+/* It's worth noting that the virtual screen width is SCREEN_REAL_WIDTH in pixels, not 224. (Wonderswan's screen width)
  * Thus, it must be taken in account accordingly. */
 void screen_draw(void)
 {
@@ -112,7 +126,8 @@ void screen_draw(void)
 		break;
 		/* Keep Aspect */
 		case 2:
-			bitmap_scale(0,0,224,144,screen_scale.w_display,206,320,0,FrameBuffer,actualScreen->pixels + (34 * screen_scale.w_display));
+			bitmap_scale(0,0,224,144,screen_scale.w_display,screen_scale.h_display,320,0,FrameBuffer,actualScreen->pixels);
+			//bitmap_scale(0,0,224,144,screen_scale.w_display,206,SCREEN_REAL_WIDTH,0,FrameBuffer,actualScreen->pixels + (34 * screen_scale.w_display));
 		break;
 	}
 
@@ -124,6 +139,7 @@ void screen_draw(void)
 void Cleanup_Screen()
 {
 	if (actualScreen != NULL) SDL_FreeSurface(actualScreen);
+	if (menuscreen != NULL) SDL_FreeSurface(menuscreen);
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);	
 	SDL_Quit();
 }

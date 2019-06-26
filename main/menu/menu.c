@@ -15,9 +15,8 @@ uint32_t profile_config = 0;
 struct hardcoded_keys keys_config[9];
 struct Menu__ menu_oswan;
 
-const char Main_Menu_Text[8][MAX_TEXT_SIZE] =
+const char Main_Menu_Text[7][MAX_TEXT_SIZE] =
 {
-	"Load ROM",
 	"Continue",
 	"Load State :",
 	"Save State :",
@@ -67,10 +66,13 @@ void load_config(void)
 	char home_path[PATH_MAX], cfg_path[PATH_MAX];
 	FILE* fp;
 	
-	snprintf(home_path, sizeof(home_path), "%s/.oswan", getenv("HOME"));
+	snprintf(home_path, sizeof(home_path), "%s/.oswanemu", getenv("HOME"));
 	snprintf(cfg_path, sizeof(cfg_path), "%s/config.bin", home_path);
 	
-	mkdir(home_path, 0655);
+	if (access( home_path, F_OK ) == -1)
+	{
+		mkdir(home_path, 0755);
+	}
 	
 	fp = fopen(cfg_path, "rb");
 	if (fp)
@@ -173,11 +175,11 @@ static void Set_Menu(uint32_t submenu)
 	else if (submenu == EMULATOR_MAIN_MENU)
 	{
 		menu_oswan.Choose_Menu_value = 0;
-		menu_oswan.maximum_menu = 7;
+		menu_oswan.maximum_menu = 6;
 		menu_oswan.state_number = 0;
 		if (!menu_oswan.scaling) menu_oswan.scaling = 0;
 		menu_oswan.menu_state = 0;
-		Draw_Rect_Menu(Y_MAIN_MENU, 16);
+		Draw_Rect_Menu(Y_MAIN_MENU - 22, 16);
 	}
 	else if (submenu == SETTINGS_KEY_SCREEN)
 	{
@@ -192,18 +194,18 @@ static void Set_Menu(uint32_t submenu)
 
 void AddItem(const char* text, uint32_t entry)
 {
-	uint32_t y = 48 + (entry * 24);
-	uint32_t x = 16;
+	uint32_t y = 24 + (entry * 24);
+	uint32_t x = 8;
 	
-	print_string(text, TextWhite, 0, x, y, Surface_to_Draw);
+	print_string(text, TextWhite, 0, x, y, Surface_to_Draw_menu);
 }
 
 void AddItem_Alt(const char* text, uint32_t entry)
 {
-	uint32_t y = 48 + (entry * 16);
-	uint32_t x = 16;
+	uint32_t y = 0 + (entry * 15);
+	uint32_t x = 8;
 	
-	print_string(text, TextWhite, 0, x, y, Surface_to_Draw);
+	print_string(text, TextWhite, 0, x, y, Surface_to_Draw_menu);
 }
 
 void print_text_center(const char* text, uint32_t y)
@@ -211,7 +213,7 @@ void print_text_center(const char* text, uint32_t y)
 	uint32_t sizeofarray = strnlen(text, MAX_TEXT_SIZE);
 	uint32_t x = (screen_scale.w_display - (sizeofarray * 8)) / 2;
 	
-	print_string(text, TextWhite, 0, x, y, Surface_to_Draw);
+	print_string(text, TextWhite, 0, x, y, Surface_to_Draw_menu);
 }
 
 static uint32_t sdl_controls_update_input(SDLKey k, int32_t p)
@@ -224,81 +226,53 @@ static uint32_t sdl_controls_update_input(SDLKey k, int32_t p)
 			case SDLK_UP:
 				if (menu_oswan.Choose_Menu_value == 0) menu_oswan.Choose_Menu_value = menu_oswan.maximum_menu-1;
 				else menu_oswan.Choose_Menu_value--;
-				Clear_Screen_Norefresh();
-				Draw_Rect_Menu(Y_MAIN_MENU, 16);
 			break;
 			case SDLK_DOWN:
 				menu_oswan.Choose_Menu_value++;
 				if (menu_oswan.Choose_Menu_value > menu_oswan.maximum_menu-1) menu_oswan.Choose_Menu_value = 0;
-				Clear_Screen_Norefresh();
-				Draw_Rect_Menu(Y_MAIN_MENU, 16);
 			break;
 			case SDLK_LEFT:
-				if (menu_oswan.Choose_Menu_value == 2 || menu_oswan.Choose_Menu_value == 3)
+				if (menu_oswan.Choose_Menu_value == 1 || menu_oswan.Choose_Menu_value == 2)
 				{
 					if (menu_oswan.state_number == 0) menu_oswan.state_number = 9;
 					else menu_oswan.state_number--;
 				}
-				else if (menu_oswan.Choose_Menu_value == 4)
+				else if (menu_oswan.Choose_Menu_value == 3)
 				{
 					if (menu_oswan.scaling == 0) menu_oswan.scaling = 2;
 					else menu_oswan.scaling--;
 				}
-				Clear_Screen_Norefresh();
-				Draw_Rect_Menu(Y_MAIN_MENU, 16);
 			break;
 			case SDLK_RIGHT:
-				if (menu_oswan.Choose_Menu_value == 2 || menu_oswan.Choose_Menu_value == 3)
+				if (menu_oswan.Choose_Menu_value == 1 || menu_oswan.Choose_Menu_value == 2)
 				{
 					menu_oswan.state_number++;
 					if (menu_oswan.state_number > 9) menu_oswan.state_number = 0;
 				}
-				else if (menu_oswan.Choose_Menu_value == 4)
+				else if (menu_oswan.Choose_Menu_value == 3)
 				{
 					menu_oswan.scaling++;
 					if (menu_oswan.scaling > 2) menu_oswan.scaling = 0;
 				}
-				Clear_Screen_Norefresh();
-				Draw_Rect_Menu(Y_MAIN_MENU, 16);
 			break;
 			case SDLK_LCTRL:
 			case SDLK_RETURN:
-				if (menu_oswan.Choose_Menu_value == 5) Set_Menu(CONTROLS_MENU);
-				else if (menu_oswan.Choose_Menu_value == 6)
+				if (menu_oswan.Choose_Menu_value == 4) Set_Menu(CONTROLS_MENU);
+				else if (menu_oswan.Choose_Menu_value == 5)
 				{
 					done_menu = 1;
 					m_Flag = GF_GAMEQUIT;
 				}
 				else if (menu_oswan.Choose_Menu_value == 0)
 				{
-					uint32_t Rom_Selected = FileBrowser();
-					/* If Path is not NULL then execute the file right away */
-					if (Rom_Selected)
-					{
-						done_menu = 1;
-						/* Save EEPROM for current game before moving on to the next game to load.
-						 * game_alreadyloaded is to make sure that we loaded a ROM before to avoid
-						 * a Segmentation fault due to undefined gameName. */
-						if (game_alreadyloaded == 1) WsSaveEeprom();
-						snprintf(gameName, sizeof(gameName) ,"%s", file_to_start);
-						m_Flag = GF_GAMEINIT;
-					}
-					else
-					{
-						Clear_Screen_Norefresh();
-						Draw_Rect_Menu(Y_MENU_CONTROLS, 15);	
-					}
-				}
-				else if (menu_oswan.Choose_Menu_value == 1)
-				{
 					done_menu = 1;
 					m_Flag = GF_GAMERUNNING;
 				}
-				else if (menu_oswan.Choose_Menu_value == 2)
+				else if (menu_oswan.Choose_Menu_value == 1)
 				{
 					Load_State();
 				}
-				else if (menu_oswan.Choose_Menu_value == 3)
+				else if (menu_oswan.Choose_Menu_value == 2)
 				{
 					Save_State();
 				}
@@ -311,26 +285,18 @@ static uint32_t sdl_controls_update_input(SDLKey k, int32_t p)
 			case SDLK_UP:
 				if (menu_oswan.Choose_Menu_value == 0) menu_oswan.Choose_Menu_value = menu_oswan.maximum_menu-1;
 				else menu_oswan.Choose_Menu_value--;
-				Clear_Screen_Norefresh();
-				Draw_Rect_Menu(Y_MENU_CONTROLS, 15);
 			break;
 			case SDLK_DOWN:
 				menu_oswan.Choose_Menu_value++;
 				if (menu_oswan.Choose_Menu_value > menu_oswan.maximum_menu-1) menu_oswan.Choose_Menu_value = 0;
-				Clear_Screen_Norefresh();
-				Draw_Rect_Menu(Y_MENU_CONTROLS, 15);
 			break;
 			case SDLK_TAB:
 			case SDLK_LEFT:
 				if (profile_config > 0) profile_config--;
-				Clear_Screen_Norefresh();
-				Draw_Rect_Menu(Y_MENU_CONTROLS, 15);
 			break;
 			case SDLK_BACKSPACE:
 			case SDLK_RIGHT:
 				if (profile_config < 8) profile_config++;
-				Clear_Screen_Norefresh();
-				Draw_Rect_Menu(Y_MENU_CONTROLS, 15);
 			break;
 			case SDLK_LCTRL:
 			case SDLK_RETURN:
@@ -376,28 +342,27 @@ void Menu()
 	
 	while(!done_menu)
 	{
+		Clear_Menu();
 		Controls_Menu();
 
 		switch(menu_oswan.menu_state)
 		{
 			case 0:
-			print_text_center("Gameblabla's Oswan", 16);
-			if (game_alreadyloaded == 1)
-			{
-				print_string("Game loaded :", TextWhite, 0, 0, 214, Surface_to_Draw);
-				print_string(strrchr(gameName, '/')+1, TextWhite, 0, 0, 224, Surface_to_Draw);
-			}
+			
+			Draw_Rect_Menu(Y_MAIN_MENU - 22, 16);
+			
+			print_text_center("Gameblabla's Oswan", 6);
 			
 			for (i=0;i<menu_oswan.maximum_menu;i++)
 			{
 				/* Load/Save States */
-				if (i == 2 || i == 3)
+				if (i == 1 || i == 2)
 				{
 					snprintf(text, sizeof(text), "%s %u", Main_Menu_Text[i], menu_oswan.state_number);
 					AddItem(text, i);
 				}
 				/* Scaling */
-				else if (i == 4)
+				else if (i == 3)
 				{
 					snprintf(text, sizeof(text), "%s %s", Main_Menu_Text[i], Scaling_Text[menu_oswan.scaling]);
 					AddItem(text, i);
@@ -409,15 +374,22 @@ void Menu()
 			}
 			break;
 			case 1:
-				print_text_center("Input Mapping", 8);
-				snprintf(text, sizeof(text), "Profile %u", profile_config+1);
-				print_text_center(text, 26);
-				
-				for (i=0;i<menu_oswan.maximum_menu;i++)
+				if (menu_oswan.Choose_Menu_value == 11)
 				{
-					snprintf(text, sizeof(text), "%s : %u", Controls_Text_Nocenter[i], keys_config[profile_config].buttons[i]);
-					AddItem_Alt(text, i);
+					Draw_Rect_Menu(0, 12);
+					snprintf(text, sizeof(text), "%s : %u", Controls_Text_Nocenter[11], keys_config[profile_config].buttons[11]);
+					AddItem_Alt(text, 0);
 				}
+				else
+				{
+					Draw_Rect_Menu((menu_oswan.Choose_Menu_value * 15), 12);
+					for (i=0;i<menu_oswan.maximum_menu;i++)
+					{
+						snprintf(text, sizeof(text), "%s : %u", Controls_Text_Nocenter[i], keys_config[profile_config].buttons[i]);
+						AddItem_Alt(text, i);
+					}
+				}
+				
 			break;
 			case 2:
 				snprintf(text, sizeof(text), "Press a key for %s", Controls_Text[menu_oswan.Choose_Menu_value]);

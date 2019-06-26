@@ -54,7 +54,7 @@ void Init_Sound()
 	SDL_AudioSpec fmt, retFmt;
 	
 	/*	Set up SDL sound */
-	fmt.freq = 44100;   
+	fmt.freq = 44800;   
 	fmt.samples = 1024;
 	fmt.format = AUDIO_S16SYS;
 	fmt.channels = 2;

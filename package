@@ -1,11 +1,10 @@
 #!/bin/sh
 
-mkdir -p ipkg/home/retrofw/emus/oswan
-mkdir -p ipkg/home/retrofw/apps/gmenu2x/sections/emulators
-cp ./oswan ipkg/home/retrofw/emus/oswan/oswan
-cp ./opk/icon.png ipkg/home/retrofw/emus/oswan/oswan.png
-
-cd ipkg
+mkdir -p opk
+cp ./oswan opk/oswan
+cp ./icon.png opk/icon.png
+cp ./COPYING opk/COPYING
+cp ./COPYING opk/MINIZIP-COPYING
 
 # https://unix.stackexchange.com/questions/219268/how-to-add-new-lines-when-using-echo
 print()
@@ -18,29 +17,17 @@ esac
 
 # Create GmenuNx entry file plus other things
 
-print 'Package: Oswan
-Version: 20190331
-Description: Wonderswan emulator
-Section: emus
-Priority: optional
-Maintainer: gameblabla
-Architecture: mipsel
-Homepage: https://github.com/gameblabla/oswan
-Depends:
-Source: https://github.com/gameblabla/oswan' > control
+print '[Desktop Entry]
+Type=Application
+Name=Oswan
+Comment=WS/WSC emulator
+Exec=oswan %f
+Icon=icon
+Terminal=false
+Type=Application
+Categories=emulators;
+X-OD-NeedsDownscaling=false' > opk/default.rs90.desktop
 
-print '2.0' > debian-binary
+mksquashfs ./opk oswan_rs90.opk -all-root -noappend -no-exports -no-xattrs
 
-print 'title=Oswan
-description=Wonderswan Emulator
-exec=/home/retrofw/emus/oswan/oswan
-clock=600
-selectordir=/home/retrofw/roms
-selectorfilter=.ws,.wsc,.bin' > home/retrofw/apps/gmenu2x/sections/emulators/oswan
-
-tar -czvf control.tar.gz control --owner=0 --group=0
-tar -czvf data.tar.gz home --owner=0 --group=0
-ar rv ../oswan.ipk control.tar.gz data.tar.gz debian-binary
-
-cd ..
-rm -r ipkg
+rm -r opk
