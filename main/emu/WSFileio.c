@@ -235,8 +235,8 @@ uint32_t WsCreate(char *CartName)
         }
         else
         {
-			fp = fopen(SaveName, "w");
-			fclose(fp);
+			fp = fopen(SaveName, "wb");
+			if (fp) fclose(fp);
 		}
     }
     else
@@ -345,6 +345,7 @@ uint32_t WsLoadState(const char *savename, uint32_t num)
 	fp = fopen(buf, "rb");
     if (!fp)
     {
+		printf("Cannot load save state\n");
 		return 1;
 	}
 	MacroLoadNecRegisterFromFile(fp,NEC_IP);
@@ -406,7 +407,7 @@ uint32_t WsSaveState(const char *savename, uint32_t num)
 	snprintf(buf, sizeof(buf), "%s%s%s.%u.sta%s", PATH_DIRECTORY, SAVE_DIRECTORY, strrchr(savename,'/')+1, num, EXTENSION);
     if ((fp = fopen(buf, "w+")) == NULL)
     {
-		printf("FAILURE...\n");
+		printf("Failed to save\n");
 		return 1;
 	}
 	MacroStoreNecRegisterToFile(fp,NEC_IP);

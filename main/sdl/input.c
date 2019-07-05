@@ -25,6 +25,7 @@ void exit_button(void)
 	if ( ((keys[SDLK_ESCAPE] == SDL_PRESSED) && (keys[SDLK_RETURN] == SDL_PRESSED)) || (keys[SDLK_END] == SDL_PRESSED) ) 
 	{ 
 		m_Flag = GF_MAINUI;
+		SetVideo(1);
 	}
 }
 

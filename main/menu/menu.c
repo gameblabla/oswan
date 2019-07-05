@@ -400,6 +400,8 @@ void Menu()
 		Update_Screen();
 	}
 	
+	SetVideo(menu_oswan.scaling);
+	
 	/* Clear the screen before going back to Game or exiting the emulator */
 	Clear_Screen();
 }
