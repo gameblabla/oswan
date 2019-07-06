@@ -50,7 +50,7 @@ static void SDL_callback(void *userdata, uint8_t *stream, int32_t len)
 void Init_Sound()
 {
 #ifdef SOUND_ON
-	SDL_Init(SDL_INIT_AUDIO);
+	SDL_InitSubSystem(SDL_INIT_AUDIO);
 	SDL_AudioSpec fmt, retFmt;
 	
 	/*	Set up SDL sound */

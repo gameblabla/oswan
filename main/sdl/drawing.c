@@ -28,7 +28,7 @@ void SetVideo(uint8_t mode)
 	int32_t flags = FLAG_VIDEO;
 	uint16_t wi = REAL_SCREEN_WIDTH, he = REAL_SCREEN_HEIGHT;
 	
-	if (mode == 0) 
+	/*if (mode == 0) 
 	{
 		wi = 224;
 		he = 144;
@@ -37,19 +37,14 @@ void SetVideo(uint8_t mode)
 	{
 		wi = REAL_SCREEN_WIDTH;
 		he = REAL_SCREEN_HEIGHT;
-	}
-	
-	if (!SDL_WasInit(SDL_INIT_VIDEO)) 
-	{	
-		SDL_Init(SDL_INIT_VIDEO);
-		SDL_ShowCursor(SDL_DISABLE);
-	}
-	
-	if (actualScreen) SDL_FreeSurface(actualScreen);
+	}*/
+	wi = REAL_SCREEN_WIDTH;
+	he = REAL_SCREEN_HEIGHT;
 	
 	Set_resolution(wi, he);
 	
 	actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
+	if (!menuscreen)
 	menuscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, MENU_SCREEN_WIDTH, MENU_SCREEN_HEIGHT, BITDEPTH_OSWAN, 0,0,0,0);
 }
 

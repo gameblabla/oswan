@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
+#include <SDL/SDL.h>
 #include "shared.h"
 #include "drawing.h"
 #include "input.h"
@@ -54,6 +55,9 @@ void graphics_paint(void)
 
 static void initSDL(void) 
 {
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	SDL_ShowCursor(SDL_DISABLE);
+	
 	/* Get current resolution, does nothing on Windowed or bare metal platroms */
 	Get_resolution();
 	SetVideo(0);
@@ -81,14 +85,13 @@ int main(int argc, char *argv[])
 	load_config();
 
     /*	load rom file via args if a rom path is supplied	*/
-	strcpy(gameName,"");
+	snprintf(gameName, sizeof(gameName) ,"%");
 	
 	if(argc > 1) 
 	{
 #ifdef NATIVE_RESOLUTION
 		SetVideo(1);
 #endif
-		Update_Screen();
 		snprintf(gameName, sizeof(gameName) ,"%s", argv[1]);
 		m_Flag = GF_GAMEINIT;
 		game_alreadyloaded = 1;

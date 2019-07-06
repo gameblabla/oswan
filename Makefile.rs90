@@ -1,11 +1,11 @@
 CC 			= /opt/rs90-toolchain/bin/mipsel-linux-gcc
-PROFILE 	= 0
+PROFILE 	= APPLY
 
 INCLUDES	= -Imain/emu -Imain/sdl -Imain/headers -Imain/menu -Imain/sound -Imain/scalers
 
 CFLAGS  	= -Ofast -fdata-sections -ffunction-sections -mno-check-zero-division -mframe-header-opt -fsingle-precision-constant -fno-common -mips32 -fno-PIC -mno-abicalls -flto -fwhole-program
 ifeq ($(PROFILE), YES)
-CFLAGS 		+= -fprofile-generate=/media/data/mmcblk0p1/profile
+CFLAGS 		+= -fprofile-generate=/media/data/local/profile
 else ifeq ($(PROFILE), APPLY)
 CFLAGS		+= -fprofile-use
 endif
