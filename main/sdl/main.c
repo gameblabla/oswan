@@ -58,8 +58,6 @@ static void initSDL(void)
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	SDL_ShowCursor(SDL_DISABLE);
 	
-	/* Get current resolution, does nothing on Windowed or bare metal platroms */
-	Get_resolution();
 	SetVideo(0);
 	Init_Sound();
 }

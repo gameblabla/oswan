@@ -30,7 +30,7 @@ struct EEPROM sCEep;        	/* EEPROM読み書き用構造体（カートリッ
 uint8_t CartKind;     	/* セーブメモリの種類（CK_EEP = EEPROM）	*/
 
 static int32_t ButtonState = 0x0000;    /* Button state: B.A.START.OPTION.X4.X3.X2.X1.Y4.Y3.Y2.Y1	*/
-static uint32_t HVMode;
+uint8_t HVMode;
 static uint16_t HTimer;
 static uint16_t VTimer;
 static uint8_t RtcCount;
@@ -798,7 +798,7 @@ int32_t Interrupt(void)
             {
                 uint32_t VCounter;
 
-                ButtonState = WsInputGetState(HVMode);
+                ButtonState = WsInputGetState();
                 if((ButtonState ^ Joyz) & Joyz)
                 {
                     if(IO[IRQENA] & KEY_IFLAG)
@@ -925,7 +925,13 @@ uint32_t WsRun(void)
     int32_t i, iack, inum;
     int32_t cycle;
     
-    for(i = 0; i < 1706; i++)
+    #ifdef NATIVE_SOUND
+    #define CYCLES 1720
+    #else
+    #define CYCLES 1706
+    #endif
+    
+    for(i = 0; i < CYCLES; i++)
     {
         cycle = nec_execute(period);
         period += IPeriod - cycle;
@@ -944,11 +950,6 @@ uint32_t WsRun(void)
         }
     }
     return 0;
-}
-
-void SetHVMode(uint32_t Mode)
-{
-    HVMode = Mode;
 }
 
 void WsInit(void) {

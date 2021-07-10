@@ -12,7 +12,7 @@
 static uint32_t done_menu = 0;
 uint32_t profile_config = 0;
 
-struct hardcoded_keys keys_config[9];
+struct hardcoded_keys keys_config[2];
 struct Menu__ menu_oswan;
 
 const char Main_Menu_Text[7][MAX_TEXT_SIZE] =
@@ -58,6 +58,71 @@ const char Controls_Text_Nocenter[12][MAX_TEXT_SIZE] =
 	{"B         "}
 }; 
 
+static const char* Return_Text_Button(uint32_t button)
+{
+	switch(button)
+	{
+		/* UP button */
+		case SDLK_UP:
+			return "D-UP";
+		break;
+		/* DOWN button */
+		case SDLK_DOWN:
+			return "D-DOWN";
+		break;
+		/* LEFT button */
+		case SDLK_LEFT:
+			return "D-LEFT";
+		break;
+		/* RIGHT button */
+		case SDLK_RIGHT:
+			return "D-RIGHT";
+		break;
+		/* A button */
+		case SDLK_LCTRL:
+			return "A";
+		break;
+		/* B button */
+		case SDLK_LALT:
+			return "B";
+		break;
+		/* X button */
+		case SDLK_LSHIFT:
+			return "X";
+		break;
+		/* Y button */
+		case SDLK_SPACE:
+			return "Y";
+		break;
+		/* L button */
+		case SDLK_TAB:
+			return "L";
+		break;
+		/* R button */
+		case SDLK_BACKSPACE:
+			return "R";
+		break;
+		case SDLK_PAGEUP:
+			return "L2";
+		break;
+		case SDLK_PAGEDOWN:
+			return "R2";
+		break;
+		case SDLK_RETURN:
+			return "Start";
+		break;
+		case SDLK_ESCAPE:
+			return "Select";
+		break;
+		default:
+			return "Unknown";
+		break;
+		case 0:
+			return "...";
+		break;
+	}	
+}
+
 /* Configuration files */
 
 void load_config(void)
@@ -84,9 +149,9 @@ void load_config(void)
 	else
 	{
 		/* Set default settings */
-		for (i=1;i<9;i++)
+		for (i=0;i<2;i++)
 		{
-			for (a=0;a<14;a++)
+			for (a=0;a<12;a++)
 			{
 				keys_config[i].buttons[a] = 0;
 			}
@@ -94,18 +159,34 @@ void load_config(void)
 		
 		/* Default profile */
 		/* Should work for landscape. They can always configure it themselves should they need portrait mode. */
-		keys_config[0].buttons[0] = 273;
-		keys_config[0].buttons[1] = 275;
-		keys_config[0].buttons[2] = 274;
-		keys_config[0].buttons[3] = 276;
+		keys_config[0].buttons[0] = 0;
+		keys_config[0].buttons[1] = 0;
+		keys_config[0].buttons[2] = 0;
+		keys_config[0].buttons[3] = 0;
 		keys_config[0].buttons[4] = 273;
 		keys_config[0].buttons[5] = 275;
 		keys_config[0].buttons[6] = 274;
 		keys_config[0].buttons[7] = 276;
-		keys_config[0].buttons[8] = 8;
+		keys_config[0].buttons[8] = 27;
 		keys_config[0].buttons[9] = 13;
 		keys_config[0].buttons[10] = 306;
 		keys_config[0].buttons[11] = 308;
+		
+		keys_config[1].buttons[0] = 276;
+		keys_config[1].buttons[1] = 273;
+		keys_config[1].buttons[2] = 275;
+		keys_config[1].buttons[3] = 274;
+		
+		keys_config[1].buttons[4] = 306;
+		keys_config[1].buttons[5] = 308;
+		keys_config[1].buttons[6] = 304;
+		keys_config[1].buttons[7] = 32;
+		
+		keys_config[1].buttons[8] = 27;
+		keys_config[1].buttons[9] = 13;
+				
+		keys_config[1].buttons[10] = 0;
+		keys_config[1].buttons[11] = 0;
 	}
 }
 
@@ -211,7 +292,7 @@ void AddItem_Alt(const char* text, uint32_t entry)
 void print_text_center(const char* text, uint32_t y)
 {
 	uint32_t sizeofarray = strnlen(text, MAX_TEXT_SIZE);
-	uint32_t x = (screen_scale.w_display - (sizeofarray * 8)) / 2;
+	uint32_t x = (actualScreen->w - (sizeofarray * 8)) / 2;
 	
 	print_string(text, TextWhite, 0, x, y, Surface_to_Draw_menu);
 }
@@ -292,11 +373,11 @@ static uint32_t sdl_controls_update_input(SDLKey k, int32_t p)
 			break;
 			case SDLK_TAB:
 			case SDLK_LEFT:
-				if (profile_config > 0) profile_config--;
+				profile_config = 0;
 			break;
 			case SDLK_BACKSPACE:
 			case SDLK_RIGHT:
-				if (profile_config < 8) profile_config++;
+				profile_config = 1;
 			break;
 			case SDLK_LCTRL:
 			case SDLK_RETURN:
@@ -374,18 +455,20 @@ void Menu()
 			}
 			break;
 			case 1:
+				#ifdef RS90
 				if (menu_oswan.Choose_Menu_value == 11)
 				{
 					Draw_Rect_Menu(0, 12);
-					snprintf(text, sizeof(text), "%s : %u", Controls_Text_Nocenter[11], keys_config[profile_config].buttons[11]);
+					snprintf(text, sizeof(text), "%s : %s", Controls_Text_Nocenter[11], Return_Text_Button(keys_config[profile_config].buttons[11]));
 					AddItem_Alt(text, 0);
 				}
 				else
+				#endif
 				{
 					Draw_Rect_Menu((menu_oswan.Choose_Menu_value * 15), 12);
 					for (i=0;i<menu_oswan.maximum_menu;i++)
 					{
-						snprintf(text, sizeof(text), "%s : %u", Controls_Text_Nocenter[i], keys_config[profile_config].buttons[i]);
+						snprintf(text, sizeof(text), "%s : %s", Controls_Text_Nocenter[i], Return_Text_Button(keys_config[profile_config].buttons[i]));
 						AddItem_Alt(text, i);
 					}
 				}

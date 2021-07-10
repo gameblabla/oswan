@@ -43,6 +43,18 @@
 	#endif
 #endif
 
+#ifdef RG99
+	#ifndef HOME_SUPPORT
+	#define HOME_SUPPORT
+	#endif
+	#ifndef POSIX
+	#define POSIX
+	#endif
+	/*#ifndef NO_WAIT
+	#define NO_WAIT
+	#endif*/
+#endif
+
 #ifdef RS97
 	#ifndef HOME_SUPPORT
 	#define HOME_SUPPORT
@@ -92,6 +104,10 @@
 	#endif
 #endif
 
+#ifndef SDL_TRIPLEBUF
+#define SDL_TRIPLEBUF SDL_DOUBLEBUF
+#endif
+
 #ifdef _TINSPIRE
 	#define BITDEPTH_OSWAN 16
 	#define FLAG_VIDEO SDL_SWSURFACE
@@ -112,9 +128,14 @@
 	#define FLAG_VIDEO SDL_HWSURFACE
 	#define REAL_SCREEN_WIDTH 320
 	#define REAL_SCREEN_HEIGHT 240
+#elif defined(RG99)
+	#define BITDEPTH_OSWAN 16
+	#define FLAG_VIDEO SDL_HWSURFACE | SDL_TRIPLEBUF
+	#define REAL_SCREEN_WIDTH 320
+	#define REAL_SCREEN_HEIGHT 240
 #elif defined(RS90)
 	#define BITDEPTH_OSWAN 16
-	#define FLAG_VIDEO SDL_SWSURFACE
+	#define FLAG_VIDEO SDL_HWSURFACE | SDL_TRIPLEBUF
 	#define REAL_SCREEN_WIDTH 240
 	#define REAL_SCREEN_HEIGHT 160
 #elif defined(DREAMCAST)
@@ -124,7 +145,7 @@
 	#define REAL_SCREEN_HEIGHT 240
 #else
 	#define BITDEPTH_OSWAN 16
-	#define FLAG_VIDEO SDL_SWSURFACE
+	#define FLAG_VIDEO SDL_HWSURFACE | SDL_TRIPLEBUF
 	#define REAL_SCREEN_WIDTH 320
 	#define REAL_SCREEN_HEIGHT 240
 #endif

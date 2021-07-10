@@ -53,20 +53,22 @@ void Init_Sound()
 	SDL_InitSubSystem(SDL_INIT_AUDIO);
 	SDL_AudioSpec fmt, retFmt;
 	
-	/*	Set up SDL sound */
-	fmt.freq = 44800;   
-	fmt.samples = 1024;
+	#ifdef NATIVE_AUDIO
+	fmt.freq = 12000;
+	#else
+	fmt.freq = 44800;
+	#endif
+	fmt.samples = SND_BNKSIZE;
 	fmt.format = AUDIO_S16SYS;
 	fmt.channels = 2;
 	fmt.callback = SDL_callback;
 	fmt.userdata = NULL;
 
-    /* Open the audio device and start playing sound! */
     if ( SDL_OpenAudio(&fmt, &retFmt) < 0 )
 	{
         fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
         printf("Exiting Oswan...\n");
-        exit(1);
+        //exit(1);
     }
     
 	sound_mutex = SDL_CreateMutex();

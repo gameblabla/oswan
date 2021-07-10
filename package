@@ -26,8 +26,8 @@ Icon=icon
 Terminal=false
 Type=Application
 Categories=emulators;
-X-OD-NeedsDownscaling=false' > opk/default.rs90.desktop
+X-OD-NeedsDownscaling=false' > opk/default."$1".desktop
 
-mksquashfs ./opk oswan_rs90.opk -all-root -noappend -no-exports -no-xattrs
+mksquashfs ./opk oswan_"$1".opk -all-root -noappend -no-exports -no-xattrs
 
 rm -r opk

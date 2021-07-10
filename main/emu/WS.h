@@ -22,6 +22,7 @@ extern uint32_t RAMSize;             			/* C-RAM総容量 		*/
 extern uint16_t IEep[64];
 extern struct EEPROM sIEep;
 extern struct EEPROM sCEep;
+extern uint8_t HVMode;
 
 #define CK_EEP 1
 extern uint8_t CartKind;

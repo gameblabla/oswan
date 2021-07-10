@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-uint32_t WsInputGetState(uint32_t mode);
+uint32_t WsInputGetState(void);
 void exit_button(void);
 
 #endif

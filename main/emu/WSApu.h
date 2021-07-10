@@ -3,16 +3,17 @@
 
 #include <stdint.h>
 
-#define BUFSIZEN    0x10000
 #define BPSWAV      12000 /* WSのHblankが12KHz */
 
 #ifdef NATIVE_AUDIO
+#define BUFSIZEN    0x10000
 #define SND_BNKSIZE 512
-#else
-#define SND_BNKSIZE 1024
-#endif
-
 #define SND_RNGSIZE (32 * SND_BNKSIZE) /* Was 10 * SND_BNKSIZE */
+#else
+#define BUFSIZEN    0x10000
+#define SND_BNKSIZE 1024
+#define SND_RNGSIZE (32 * SND_BNKSIZE) /* Was 10 * SND_BNKSIZE */
+#endif
 
 #define MULT 3
 #define WAV_VOLUME 30

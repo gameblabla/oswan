@@ -2,50 +2,19 @@
 #include "menu.h"
 #include "scaler.h"
 
-SDL_Surface *actualScreen, *menuscreen;
+SDL_Surface *actualScreen, *menuscreen, *ws_backbuffer;
 struct scaling screen_scale;
-
-void Get_resolution(void)
-{
-#ifdef SCALING
-	const SDL_VideoInfo* info = SDL_GetVideoInfo();
-	screen_scale.w_display = info->current_w;
-	screen_scale.h_display = info->current_h;
-#else
-	screen_scale.w_display = REAL_SCREEN_WIDTH;
-	screen_scale.h_display = REAL_SCREEN_HEIGHT;
-#endif
-}
-
-void Set_resolution(uint16_t w, uint16_t h)
-{
-	screen_scale.w_display = w;
-	screen_scale.h_display = h;
-}
 
 void SetVideo(uint8_t mode)
 {
 	int32_t flags = FLAG_VIDEO;
-	uint16_t wi = REAL_SCREEN_WIDTH, he = REAL_SCREEN_HEIGHT;
 	
-	/*if (mode == 0) 
-	{
-		wi = 224;
-		he = 144;
-	}
-	else
-	{
-		wi = REAL_SCREEN_WIDTH;
-		he = REAL_SCREEN_HEIGHT;
-	}*/
-	wi = REAL_SCREEN_WIDTH;
-	he = REAL_SCREEN_HEIGHT;
+	actualScreen = SDL_SetVideoMode(REAL_SCREEN_WIDTH, REAL_SCREEN_HEIGHT, BITDEPTH_OSWAN, FLAG_VIDEO);
+	if (!menuscreen) menuscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, MENU_SCREEN_WIDTH, MENU_SCREEN_HEIGHT, BITDEPTH_OSWAN, 0,0,0,0);
 	
-	Set_resolution(wi, he);
+	if (!ws_backbuffer) ws_backbuffer = SDL_CreateRGBSurface(SDL_SWSURFACE, 240, 144, BITDEPTH_OSWAN, 0,0,0,0);
 	
-	actualScreen = SDL_SetVideoMode(screen_scale.w_display, screen_scale.h_display, BITDEPTH_OSWAN, flags);
-	if (!menuscreen)
-	menuscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, MENU_SCREEN_WIDTH, MENU_SCREEN_HEIGHT, BITDEPTH_OSWAN, 0,0,0,0);
+	FrameBuffer = ws_backbuffer->pixels;
 }
 
 void Clear_Screen(void)
@@ -70,14 +39,14 @@ void Clear_Menu(void)
 
 void Clear_Screen_Norefresh(void)
 {
-	//memset(Surface_to_Draw, 0, (screen_scale.w_display*screen_scale.h_display)*2);
+	//memset(Surface_to_Draw, 0, (actualScreen->w*actualScreen->h)*2);
 	SDL_FillRect(menuscreen, NULL, 0);
 	SDL_FillRect(actualScreen, NULL, 0);
 }
 
 void Draw_Rect_Menu(uint32_t y, uint32_t h)
 {
-	//memset(Surface_to_Draw + ((screen_scale.w_display*2)*(y)), RGB565(4,3,95), (screen_scale.w_display*h)*2);
+	//memset(Surface_to_Draw + ((actualScreen->w*2)*(y)), RGB565(4,3,95), (actualScreen->w*h)*2);
 	SDL_Rect pos;
 	pos.x = 0;
 	pos.y = y;
@@ -95,43 +64,85 @@ void Update_Screen()
 	SDL_Flip(actualScreen);
 }
 
+
 /* It's worth noting that the virtual screen width is SCREEN_REAL_WIDTH in pixels, not 224. (Wonderswan's screen width)
  * Thus, it must be taken in account accordingly. */
 void screen_draw(void)
 {
-	uint32_t xfp, yfp;
+	SDL_Rect rct, rct2;
+	uint16_t *src = (uint16_t *) FrameBuffer+8;	// +8 offset , width = 240
+	uint16_t *dst = (uint16_t *) actualScreen->pixels;
+	uint32_t x, y;
 	
-	SDL_LockSurface(actualScreen);
-	
-	switch(menu_oswan.scaling)
+	#ifndef RS90
+	if (HVMode == 0)
+	#endif
 	{
-		/* Thanks Pingflood. Unscaled crap */
-		case 0:
-			xfp = (actualScreen->w - 224) / 2;
-			yfp = (actualScreen->h - 144) / 2;
-
-			uint16_t *d = (uint16_t*)actualScreen->pixels + xfp + yfp * actualScreen->pitch / 2 ;
-			uint16_t *s = (uint16_t*)FrameBuffer;
-			for (uint32_t y = 0; y < 144; y++)
-			{
-				/* Only copy the first 224 pixels, pixels after are not supposed to be shown */
-				memmove(d, s, 224 * sizeof(uint16_t));
-				s += 320;
-				d += actualScreen->w;
-			}
-		break;
-		/* Fullscreen */
-		case 1:
-			bitmap_scale(0,0,224,144,screen_scale.w_display,screen_scale.h_display,320,0,FrameBuffer,actualScreen->pixels);
-		break;
-		/* Keep Aspect */
-		case 2:
-			bitmap_scale(0,0,224,144,screen_scale.w_display,screen_scale.h_display,320,0,FrameBuffer,actualScreen->pixels);
-			//bitmap_scale(0,0,224,144,screen_scale.w_display,206,SCREEN_REAL_WIDTH,0,FrameBuffer,actualScreen->pixels + (34 * screen_scale.w_display));
-		break;
+		switch(menu_oswan.scaling)
+		{
+			//Thanks Pingflood. Unscaled crap
+			case 0:
+				rct.x = 8;
+				rct.y = 0;
+				rct.w = 224;
+				rct.h = 144;
+				rct2.x = (actualScreen->w - 224) / 2;
+				rct2.y = (actualScreen->h - 144) / 2;
+				SDL_BlitSurface(ws_backbuffer, &rct, actualScreen, &rct2);
+			break;
+			#ifdef RS90
+			case 1:
+			case 2:
+				bitmap_scale(0,0,224,144,actualScreen->w,actualScreen->h,240,0,src,dst);
+			break;
+			#else
+			// Fullscreen
+			case 1:
+				upscale_224x144_to_320xXXX(actualScreen->pixels, FrameBuffer+8, 240);
+			break;
+			// Keep Aspect
+			case 2:
+				upscale_224x144_to_320xXXX(actualScreen->pixels + (18 * actualScreen->w)*2, FrameBuffer+8, 204);
+			break;
+			#endif
+		}
 	}
-
-	SDL_UnlockSurface(actualScreen);
+	#ifndef RS90
+	// Vertical
+	else
+	{
+		switch(menu_oswan.scaling)
+		{
+			//Thanks Pingflood. Unscaled crap
+			case 0:
+				dst += (320*(224-1));	// draw from Left-Down
+				dst += 90 + (240 * 4) * 2;
+				for ( x = 0; x < 144/2; x++) {
+					for( y = 0; y < 224; y++) {
+						*(uint32_t*)dst = *src|(*(src+240)<<16);
+						src++; dst -= 320;
+					}
+					src += (240-224)+240; dst += (320*224)+2;
+				}
+			break;
+			case 1:
+				dst += (320*(240-1));
+				upscale_144x224_to_320x240_rotate(dst, src);
+			break;
+			case 2: // RotateWide	224x144 > 288x224	
+				dst += (320*(224-1));
+				dst += (320 + ( 640 * 4)) + 16;
+				for ( x = 0; x < 144; x++) {
+					for( y = 0; y < 224; y++) {
+						*(uint32_t*)dst = *src|(*src<<16);
+						src++; dst -= 320;
+					}
+					src += (240-224); dst += (320*224)+2;
+				}
+			break;
+		}
+	}
+	#endif
 	
 	Update_Screen();
 }

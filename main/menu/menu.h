@@ -33,7 +33,7 @@ struct hardcoded_keys
 };
 
 extern uint32_t profile_config;
-extern struct hardcoded_keys keys_config[9];
+extern struct hardcoded_keys keys_config[2];
 extern struct Menu__ menu_oswan;
 
 extern void Menu(void);

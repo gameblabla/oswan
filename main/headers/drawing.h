@@ -16,8 +16,6 @@ extern void Clear_Menu(void);
 
 extern SDL_Surface *actualScreen, *menuscreen;
 
-extern uint32_t HVMode;
-
 #define Surface_to_Draw actualScreen->pixels
 #define Surface_to_Draw_menu menuscreen->pixels
 
@@ -28,10 +26,6 @@ struct scaling
 {
 	uint32_t w_display;
 	uint32_t h_display;
-	float w_scale;
-	float h_scale;
-	float w_scale_size;
-	float h_scale_size;
 };
 
 extern struct scaling screen_scale;

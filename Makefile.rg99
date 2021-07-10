@@ -12,20 +12,21 @@ OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJ_CP		= $(notdir $(patsubst %.cpp, %.o, $(SRC_CP)))
 OBJS		= $(OBJ_C) $(OBJ_CP)
 
-CFLAGS	   += -DRS90 -DSOUND_ON -DSOUND_EMULATION -DFRAMESKIP -Ofast -mips32 -fdata-sections -ffunction-sections -mno-check-zero-division -flto -mplt -mno-shared
+CFLAGS	   += -DSOUND_ON -DSOUND_EMULATION -DFRAMESKIP -DRG99
+CFLAGS	   += -Ofast -mips32 -fdata-sections -ffunction-sections -mno-check-zero-division -flto -mplt -mno-shared -fno-PIC
 CFLAGS	   += -mno-fp-exceptions -mno-check-zero-division -mframe-header-opt -fsingle-precision-constant
-CFLAGS	   += -fno-stack-protector -fomit-frame-pointer -falign-functions=1 -falign-jumps=1 -falign-loops=1
+CFLAGS	   += -fno-stack-protector -fomit-frame-pointer -freorder-functions -freorder-blocks
 
 ifeq ($(PROFILE), YES)
-CFLAGS 		+= -fprofile-generate=/media/data/local/home
+CFLAGS 		+= -fprofile-generate="/media/mmcblk0p1/oswan_gcda"
 LDFLAGS		+= -lgcov
 else ifeq ($(PROFILE), APPLY)
-CFLAGS		+= -fprofile-use
+CFLAGS		+= -fprofile-use="./"
 endif
 CFLAGS		+= -std=gnu99
 CFLAGS		+= -Imain/emu -Imain/sdl -Imain/headers -Imain/menu -Imain/sound -Imain/scalers
 
-LDFLAGS       = -lc -lgcc -lSDL -lasound -lz -lm -Wl,--as-needed -Wl,--gc-sections -flto -s
+LDFLAGS       = -nodefaultlibs -lc -lgcc -lSDL -lasound -lz -lm -Wl,-O1,--sort-common,--as-needed,--gc-sections -s -flto -no-pie -flto -s
 
 # Rules to make executable
 $(PRGNAME): $(OBJS)  

@@ -26,7 +26,7 @@ uint32_t WsSetPdata(void)
         return 0;
     }
     WsReset();
-    SetHVMode(0);
+    HVMode = 0;
     return 1;
 }
 
@@ -69,6 +69,7 @@ uint32_t WsCreate(char *CartName)
 		fclose(fp);
         return 1;
     }
+
     switch (buf[4])
     {
     case 1:
@@ -244,7 +245,7 @@ uint32_t WsCreate(char *CartName)
         SaveName[0] = 0;
     }
     WsReset();
-	SetHVMode(buf[6] & 1);
+	HVMode = buf[6] & 1;
     
 	return 1;
 }
