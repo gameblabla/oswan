@@ -16,6 +16,8 @@ Currently the source code is being revamped and is SDL-only for now.
 CREDITS
 ===========
 
+eggs, for his scaling code and Trim-Ui changes. Thanks !
+
 Mednafen, which i used for comparison. I took some of their code as well, thanks ! (GPLv2 or later)
 
 NomadSwan, the cpu core.
