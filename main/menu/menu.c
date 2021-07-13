@@ -143,7 +143,7 @@ void load_config(void)
 	if (fp)
 	{
 		fread(&menu_oswan, sizeof(uint8_t), sizeof(menu_oswan), fp);
-		fread(&keys_config, sizeof(uint8_t), (14*4)*sizeof(uint32_t), fp);
+		fread(&keys_config, sizeof(uint8_t), (14*2)*sizeof(uint32_t), fp);
 		fclose(fp);
 	}
 	else
@@ -199,12 +199,16 @@ void save_config(void)
 	snprintf(home_path, sizeof(home_path), "%s/.oswan", getenv("HOME"));
 	snprintf(cfg_path, sizeof(cfg_path), "%s/config.bin", home_path);
 	
-	mkdir(home_path, 0655);
+	if (access( home_path, F_OK ) == -1)
+	{
+		mkdir(home_path, 0755);
+	}
+	
 	fp = fopen(cfg_path, "wb");
 	if (fp)
 	{
 		fwrite(&menu_oswan, sizeof(uint8_t), sizeof(menu_oswan), fp);
-		fwrite(&keys_config, sizeof(uint8_t), (14*9)*sizeof(uint32_t), fp);
+		fwrite(&keys_config, sizeof(uint8_t), (14*2)*sizeof(uint32_t), fp);
 		fclose(fp);
 	}
 }

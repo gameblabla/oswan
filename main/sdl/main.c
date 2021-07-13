@@ -77,10 +77,10 @@ int main(int argc, char *argv[])
 #endif
 	m_Flag = GF_MAINUI;
 	
+	load_config();
+	
 	/* Init graphics & sound */
 	initSDL();
-	
-	load_config();
 
     /*	load rom file via args if a rom path is supplied	*/
 	snprintf(gameName, sizeof(gameName) ,"%");
